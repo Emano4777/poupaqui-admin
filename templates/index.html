@@ -86,6 +86,25 @@
     }
 }
 
+/* Ajuste do Botão "Seja um Licenciado" para telas menores */
+@media (max-width: 768px) {
+    .navbar-custom .btn-danger {
+        width: 100%; /* Faz o botão ocupar toda a largura disponível */
+        text-align: center; /* Centraliza o texto */
+        font-size: 14px; /* Ajusta o tamanho da fonte */
+        padding: 10px; /* Dá um espaçamento melhor */
+        border-radius: 15px; /* Mantém um design arredondado */
+    }
+}
+
+/* Ajuste para telas muito pequenas (Celulares Pequenos) */
+@media (max-width: 480px) {
+    .navbar-custom .btn-danger {
+        font-size: 12px; /* Reduz um pouco mais o tamanho do texto */
+        padding: 8px; /* Ajusta a altura do botão */
+    }
+}
+
 /* 📱 Ajuste para telas menores (Tablets e Celulares) */
 @media (max-width: 991px) {
     .col-md-5ths {
