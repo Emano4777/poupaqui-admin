@@ -37,6 +37,10 @@ def allowed_file(filename):
 
 @app.route('/')
 def index():
+    return render_template('manutencao.html') 
+
+@app.route('/pagina', methods=['GET', 'POST'])
+def pagina():
     data = load_images()  # Carregar as imagens salvas
     banners = data.get("banners", [])
     logo = data.get("logo", None)
