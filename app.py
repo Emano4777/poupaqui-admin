@@ -4,6 +4,7 @@ import cloudinary.uploader
 import cloudinary.api
 import json
 import os
+from PIL import Image
 
 # Configurar a API do Cloudinary
 cloudinary.config(
@@ -15,29 +16,32 @@ cloudinary.config(
 app = Flask(__name__)
 app.secret_key = 'segredo123'  # Chave secreta para gerenciar sessões
 
-# Arquivo JSON para armazenar os banners enviados
-BANNERS_FILE = "banners.json"
+# Arquivo JSON para armazenar os banners e a logo
+DATA_FILE = "images.json"
 
-# Carregar os banners salvos no JSON (corrigido para evitar erros em arquivos vazios)
-def load_banners():
-    if os.path.exists(BANNERS_FILE):
-        try:
-            with open(BANNERS_FILE, "r") as f:
-                banners = json.load(f)
-                return banners if isinstance(banners, list) else []  # Garante que seja uma lista
-        except json.JSONDecodeError:
-            return []  # Se o arquivo estiver corrompido, retorna lista vazia
-    return []
+# Carregar imagens salvas no JSON
+def load_images():
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "r") as f:
+            return json.load(f)
+    return {"banners": [], "logo": None}  # Estrutura padrão
 
-# Salvar os banners no JSON
-def save_banners(banners):
-    with open(BANNERS_FILE, "w") as f:
-        json.dump(banners, f, indent=4)  # Indentado para melhor legibilidade
+# Salvar imagens no JSON
+def save_images(data):
+    with open(DATA_FILE, "w") as f:
+        json.dump(data, f)
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/')
 def index():
-    banners = load_banners()  # Carregar os banners do JSON
-    return render_template('index.html', banners=banners)
+    data = load_images()  # Carregar as imagens salvas
+    banners = data.get("banners", [])
+    logo = data.get("logo", None)
+    return render_template('index.html', banners=banners, logo=logo)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -62,33 +66,48 @@ def admin():
     image_url = None
 
     if request.method == 'POST':
-        if 'file' not in request.files:
-            error = "Nenhum arquivo enviado."
+        if 'file' not in request.files or 'image_type' not in request.form:
+            error = "Nenhum arquivo enviado ou tipo de imagem inválido."
         else:
             file = request.files['file']
+            image_type = request.form['image_type']  # Define se é 'banner' ou 'logo'
 
-            if file:
+            if file and allowed_file(file.filename):
                 try:
-                    # Envia a imagem para o Cloudinary
-                    upload_result = cloudinary.uploader.upload(file)
+                    # Criar uma cópia temporária da imagem para evitar problemas com stream
+                    file_path = f"/tmp/{file.filename}"
+                    file.save(file_path)
 
-                    # Pega a URL gerada automaticamente pelo Cloudinary
-                    image_url = upload_result.get('secure_url')
+                    # Verifica dimensões da imagem antes do upload
+                    image = Image.open(file_path)
 
-                    if image_url:  # Se a URL for válida, salva no JSON
-                        banners = load_banners()
-                        banners.append(image_url)
-                        save_banners(banners)  # Atualiza o JSON
+                    if image_type == "banner" and image.size != (1312, 302):
+                        error = "O banner deve ter exatamente 1312x302 pixels!"
+                    elif image_type == "logo" and image.size != (2000, 2000):
+                        error = "A logo deve ter exatamente 2000x2000 pixels!"
+                    else:
+                        # Envia a imagem para o Cloudinary
+                        upload_result = cloudinary.uploader.upload(file_path)
+
+                        # Pega a URL gerada automaticamente pelo Cloudinary
+                        image_url = upload_result['secure_url']
+
+                        # Atualiza as imagens salvas
+                        data = load_images()
+                        if image_type == "banner":
+                            data["banners"].append(image_url)
+                        elif image_type == "logo":
+                            data["logo"] = image_url  # Substitui a logo existente
+
+                        save_images(data)  # Atualiza o JSON
 
                         print(f"Imagem enviada com sucesso: {image_url}")
-                    else:
-                        error = "Erro ao obter URL da imagem."
 
                 except Exception as e:
                     error = f"Erro ao enviar imagem: {str(e)}"
 
-    banners = load_banners()
-    return render_template('admin.html', error=error, image_url=image_url, banners=banners)
+    data = load_images()
+    return render_template('admin.html', error=error, banners=data["banners"], logo=data["logo"])
 
 @app.route('/logout')
 def logout():

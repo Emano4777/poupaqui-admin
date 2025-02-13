@@ -75,9 +75,11 @@
 <!-- Barra de Navegação -->
 <nav class="navbar navbar-light navbar-custom px-4 py-2">
     <a class="navbar-brand" href="#">
-        <!-- ✅ LOGO FIXA (agora com URL correta) -->
-        <img src="https://res.cloudinary.com/dizfq460q/image/upload/v1739462120/tuwuvimhjbwutqdcigjd.jpg" 
-             alt="PoupAqui Logo" class="logo-img">
+        {% if logo %}
+            <img src="{{ logo }}" alt="PoupAqui Logo" class="logo-img">
+        {% else %}
+            <p>Logo não encontrada</p>
+        {% endif %}
     </a>
     <div class="d-flex align-items-center">
         <span class="me-3">📍 Insira seu CEP</span>

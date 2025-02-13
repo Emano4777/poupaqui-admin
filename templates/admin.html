@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Administrativo - Banners</title>
+    <title>Painel Administrativo - Imagens</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
         body {
@@ -49,15 +49,23 @@
 <body>
 
 <div class="container">
-    <h2>Gerenciar Banners</h2>
+    <h2>Gerenciar Imagens</h2>
     {% if error %}
-<p class="text-danger text-center"><strong>{{ error }}</strong></p>
-{% endif %}
+    <p class="text-danger text-center"><strong>{{ error }}</strong></p>
+    {% endif %}
 
-    <p class="text-center">Escolha um banner para substituir e faça o upload da nova imagem.</p>
+    <p class="text-center">Escolha um banner ou a logo para substituir e faça o upload da nova imagem.</p>
 
     <form method="POST" enctype="multipart/form-data">
         <div class="form-group">
+            <label for="image_type"><strong>Escolha o tipo de imagem:</strong></label>
+            <select name="image_type" id="image_type" class="form-control">
+                <option value="banner">Banners (1312x302)</option>
+                <option value="logo">Logo (2000x2000)</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="banner-select">
             <label for="banner_type"><strong>Escolha o banner para editar:</strong></label>
             <select name="banner_type" class="form-control">
                 <option value="BANNER MIDDLE">Banner Principal</option>
@@ -67,7 +75,7 @@
         </div>
 
         <div class="form-group">
-            <label for="file"><strong>Upload da Nova Imagem (1312x302)</strong></label>
+            <label for="file"><strong>Upload da Nova Imagem</strong></label>
             <input type="file" name="file" id="file" class="form-control" accept="image/*" required>
         </div>
 
@@ -77,21 +85,35 @@
         </div>
 
         <div class="btn-container">
-            <button type="submit" class="btn btn-success">Atualizar Banner</button>
+            <button type="submit" class="btn btn-success">Atualizar Imagem</button>
             <a href="{{ url_for('logout') }}" class="btn btn-danger">Sair</a>
         </div>
     </form>
 </div>
 
 <script>
-    document.getElementById('file').addEventListener('change', function(event) {
+    document.getElementById('image_type').addEventListener('change', function () {
+        const bannerSelect = document.getElementById('banner-select');
+        if (this.value === 'logo') {
+            bannerSelect.style.display = 'none';
+        } else {
+            bannerSelect.style.display = 'block';
+        }
+    });
+
+    document.getElementById('file').addEventListener('change', function (event) {
         const file = event.target.files[0];
+        const imageType = document.getElementById('image_type').value;
         if (file) {
             const img = new Image();
             img.src = URL.createObjectURL(file);
-            img.onload = function() {
-                if (img.width !== 1312 || img.height !== 302) {
-                    alert("A imagem deve ter exatamente 1312x302 pixels!");
+            img.onload = function () {
+                if (imageType === 'banner' && (img.width !== 1312 || img.height !== 302)) {
+                    alert("O banner deve ter exatamente 1312x302 pixels!");
+                    document.getElementById('file').value = ''; // Resetar input
+                    document.getElementById('preview').style.display = 'none';
+                } else if (imageType === 'logo' && (img.width !== 2000 || img.height !== 2000)) {
+                    alert("A logo deve ter exatamente 2000x2000 pixels!");
                     document.getElementById('file').value = ''; // Resetar input
                     document.getElementById('preview').style.display = 'none';
                 } else {
