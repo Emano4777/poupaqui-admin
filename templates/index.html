@@ -11,28 +11,27 @@
         }
 
         .carousel-indicators {
-    bottom: 15px !important; /* Ajusta a posição dos indicadores na parte inferior */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+            bottom: 15px !important;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-.carousel-indicators button {
-    width: 12px !important; /* Largura fixa para garantir um círculo */
-    height: 12px !important; /* Altura igual à largura */
-    border-radius: 50% !important; /* Garante que fiquem 100% circulares */
-    background-color: gray !important;
-    border: none !important;
-    margin: 5px !important;
-    opacity: 0.5 !important;
-    transition: opacity 0.3s, background-color 0.3s; /* Suaviza a transição */
-}
+        .carousel-indicators button {
+            width: 12px !important;
+            height: 12px !important;
+            border-radius: 50% !important;
+            background-color: gray !important;
+            border: none !important;
+            margin: 5px !important;
+            opacity: 0.5 !important;
+            transition: opacity 0.3s, background-color 0.3s;
+        }
 
-.carousel-indicators .active {
-    background-color: black !important; /* Cor do indicador ativo */
-    opacity: 1 !important;
-}
-
+        .carousel-indicators .active {
+            background-color: black !important;
+            opacity: 1 !important;
+        }
 
         .logo-img {
             width: 150px;
@@ -69,7 +68,6 @@
             border-radius: 20px;
             font-weight: bold;
         }
-
     </style>
 </head>
 <body>
@@ -77,7 +75,8 @@
 <!-- Barra de Navegação -->
 <nav class="navbar navbar-light navbar-custom px-4 py-2">
     <a class="navbar-brand" href="#">
-        <img src="{{ url_for('uploaded_file', filename=banner.split('/')[-1]) }}" class="d-block w-100">
+        <!-- ✅ LOGO FIXA (corrigido) -->
+        <img src="{{ url_for('uploaded_file', filename='LOGO - TRANSPARENCY - SQUARE.png') }}" 
              alt="PoupAqui Logo" class="logo-img">
     </a>
     <div class="d-flex align-items-center">
@@ -90,27 +89,27 @@
     </div>
 </nav>
 
-<!-- Banner Principal (AQUI TEM MAIS ECONOMIA) -->
-<img src="{{ url_for('uploaded_file', filename=banner.split('/')[-1]) }}" class="d-block w-100">
+<!-- ✅ Banner Fixo (AQUI TEM MAIS ECONOMIA) -->
+<img src="{{ url_for('uploaded_file', filename='BANNER TOP.jpg') }}" alt="AQUI TEM MAIS ECONOMIA" class="banner-top">
 
-<!-- Carrossel de Banners -->
+<!-- ✅ Carrossel de Banners -->
 <div id="carouselExampleIndicators" class="carousel slide banner-middle" data-bs-ride="carousel">
     <div class="carousel-indicators">
         {% for i in range(banners|length) %}
-        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ i }}" class="{% if i == 0 %}active{% endif %}" aria-label="Slide {{ i+1 }}"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ i }}" 
+                class="{% if i == 0 %}active{% endif %}" aria-label="Slide {{ i+1 }}"></button>
         {% endfor %}
     </div>
     <div class="carousel-inner">
         {% for banner in banners %}
         <div class="carousel-item {% if loop.first %}active{% endif %}">
-            <img src="{{ url_for('uploaded_file', filename=banner.split('/')[-1]) }}" class="d-block w-100">
+            <img src="{{ url_for('uploaded_file', filename=banner) }}" class="d-block w-100">
         </div>
         {% endfor %}
     </div>
 </div>
 
-
-<!-- Vantagens -->
+<!-- ✅ Vantagens -->
 <div class="container my-4">
     <div class="row">
         <div class="col-md-3">

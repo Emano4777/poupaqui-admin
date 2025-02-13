@@ -21,11 +21,15 @@ def allowed_file(filename):
 
 @app.route('/')
 def index():
-    # Lista os banners da pasta uploads (se existirem, senão usa os padrões)
+    # Garante que a pasta de uploads existe
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
+
+    # Lista os banners da pasta uploads
     banners = [
-        file if os.path.exists(os.path.join(UPLOAD_FOLDER, file)) else file
-        for file in ["BANNER MIDDLE.jpg", "BANNER 2.jpg", "BANNER 3.jpg"]
+        file for file in os.listdir(UPLOAD_FOLDER) if file.endswith(('.jpg', '.png', '.jpeg'))
     ]
+
     return render_template('index.html', banners=banners)
 
 
