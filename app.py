@@ -5,7 +5,10 @@ from PIL import Image
 app = Flask(__name__)
 app.secret_key = 'segredo123'  # Chave secreta para gerenciar sessões
 
-UPLOAD_FOLDER = 'uploads'  # Pasta onde os banners serão salvos
+UPLOAD_FOLDER = 'uploads'  
+# Criar a pasta "uploads" se não existir (corrige o problema no Vercel)
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)# Pasta onde os banners serão salvos
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
