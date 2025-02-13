@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drogarias PoupAqui</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .carousel-indicators {
+    bottom: 15px !important; /* Ajusta a posição dos indicadores na parte inferior */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.carousel-indicators button {
+    width: 12px !important; /* Largura fixa para garantir um círculo */
+    height: 12px !important; /* Altura igual à largura */
+    border-radius: 50% !important; /* Garante que fiquem 100% circulares */
+    background-color: gray !important;
+    border: none !important;
+    margin: 5px !important;
+    opacity: 0.5 !important;
+    transition: opacity 0.3s, background-color 0.3s; /* Suaviza a transição */
+}
+
+.carousel-indicators .active {
+    background-color: black !important; /* Cor do indicador ativo */
+    opacity: 1 !important;
+}
+
+
+        .logo-img {
+            width: 150px;
+            height: auto;
+        }
+
+        .banner-top {
+            width: 100%;
+            display: block;
+        }
+
+        .banner-middle {
+            width: 100%;
+            display: block;
+        }
+
+        .advantage-box {
+            background: red;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px;
+        }
+
+        .navbar-custom {
+            background-color: white;
+            padding: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-custom .btn-danger {
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- Barra de Navegação -->
+<nav class="navbar navbar-light navbar-custom px-4 py-2">
+    <a class="navbar-brand" href="#">
+        <img src="{{ url_for('serve_file', filename='LOGO - TRANSPARENCY - SQUARE.png') }}" 
+             alt="PoupAqui Logo" class="logo-img">
+    </a>
+    <div class="d-flex align-items-center">
+        <span class="me-3">📍 Insira seu CEP</span>
+        <span class="me-3">☰ Unidades</span>
+        <span class="me-3">💊 Ofertas</span>
+        <span class="me-3">🌿 VitNatu</span>
+        <span class="me-3">📖 Sobre Nós</span>
+        <button class="btn btn-danger">Seja um Licenciado</button>
+    </div>
+</nav>
+
+<!-- Banner Principal (AQUI TEM MAIS ECONOMIA) -->
+<img src="{{ url_for('serve_file', filename='BANNER TOP.jpg') }}" alt="AQUI TEM MAIS ECONOMIA" class="banner-top">
+
+<!-- Carrossel de Banners -->
+<div id="carouselExampleIndicators" class="carousel slide banner-middle" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        {% for i in range(banners|length) %}
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ i }}" class="{% if i == 0 %}active{% endif %}" aria-label="Slide {{ i+1 }}"></button>
+        {% endfor %}
+    </div>
+    <div class="carousel-inner">
+        {% for banner in banners %}
+        <div class="carousel-item {% if loop.first %}active{% endif %}">
+            <img src="{{ url_for('uploaded_file', filename=banner) }}" class="d-block w-100">
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+<!-- Vantagens -->
+<div class="container my-4">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="advantage-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                Atendimento humanizado, como você merece.
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="advantage-box">
+                📍 Sempre perto de você, com lojas por todo o Brasil.
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="advantage-box">
+                💊 Nutracêuticos exclusivos, para todas as idades.
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="advantage-box">
+                🚀 Delivery rápido e fácil. Pediu, chegou!
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

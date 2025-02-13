@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - Banners</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 800px;
+            margin-top: 50px;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .preview-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .preview-img {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 5px;
+            border: 2px solid #ddd;
+            display: none;
+        }
+
+        .btn-container {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Gerenciar Banners</h2>
+    {% if error %}
+<p class="text-danger text-center"><strong>{{ error }}</strong></p>
+{% endif %}
+
+    <p class="text-center">Escolha um banner para substituir e faça o upload da nova imagem.</p>
+
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="banner_type"><strong>Escolha o banner para editar:</strong></label>
+            <select name="banner_type" class="form-control">
+                <option value="BANNER MIDDLE">Banner Principal</option>
+                <option value="BANNER 2">Banner Secundário 1</option>
+                <option value="BANNER 3">Banner Secundário 2</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="file"><strong>Upload da Nova Imagem (1312x302)</strong></label>
+            <input type="file" name="file" id="file" class="form-control" accept="image/*" required>
+        </div>
+
+        <!-- Pré-visualização da imagem -->
+        <div class="preview-container">
+            <img id="preview" class="preview-img">
+        </div>
+
+        <div class="btn-container">
+            <button type="submit" class="btn btn-success">Atualizar Banner</button>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">Sair</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById('file').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
+            img.onload = function() {
+                if (img.width !== 1312 || img.height !== 302) {
+                    alert("A imagem deve ter exatamente 1312x302 pixels!");
+                    document.getElementById('file').value = ''; // Resetar input
+                    document.getElementById('preview').style.display = 'none';
+                } else {
+                    document.getElementById('preview').src = img.src;
+                    document.getElementById('preview').style.display = 'block';
+                }
+            };
+        }
+    });
+</script>
+
+</body>
+</html>
