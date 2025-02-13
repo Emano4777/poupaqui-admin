@@ -5,7 +5,7 @@ from PIL import Image
 app = Flask(__name__)
 app.secret_key = 'segredo123'  # Chave secreta para gerenciar sessões
 
-UPLOAD_FOLDER = 'uploads'  
+UPLOAD_FOLDER = '/tmp/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -60,7 +60,7 @@ def admin():
 
             if file and allowed_file(file.filename):
                 filename = f"{banner_type}.jpg"  # Nome fixo para substituir os banners
-                file_path = os.path.abspath(os.path.join(UPLOAD_FOLDER, filename))
+                file_path = os.path.join(UPLOAD_FOLDER, filename)
 
                 try:
                     # Verifica as dimensões da imagem
@@ -92,6 +92,7 @@ def uploaded_file(filename):
         return "Arquivo não encontrado", 404
 
     return send_from_directory(UPLOAD_FOLDER, filename)
+
 
 
 if __name__ == '__main__':
