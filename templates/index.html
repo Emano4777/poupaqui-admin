@@ -75,8 +75,8 @@
 <!-- Barra de Navegação -->
 <nav class="navbar navbar-light navbar-custom px-4 py-2">
     <a class="navbar-brand" href="#">
-        <!-- ✅ LOGO FIXA (corrigido) -->
-        <img src="{{ url_for('uploaded_file', filename='LOGO - TRANSPARENCY - SQUARE.png') }}" 
+        <!-- ✅ LOGO FIXA (agora com URL correta) -->
+        <img src="https://res.cloudinary.com/dizfq460q/image/upload/v1739462120/tuwuvimhjbwutqdcigjd.jpg" 
              alt="PoupAqui Logo" class="logo-img">
     </a>
     <div class="d-flex align-items-center">
@@ -89,9 +89,6 @@
     </div>
 </nav>
 
-<!-- ✅ Banner Fixo (AQUI TEM MAIS ECONOMIA) -->
-<img src="{{ url_for('uploaded_file', filename='BANNER TOP.jpg') }}" alt="AQUI TEM MAIS ECONOMIA" class="banner-top">
-
 <!-- ✅ Carrossel de Banners -->
 <div id="carouselExampleIndicators" class="carousel slide banner-middle" data-bs-ride="carousel">
     <div class="carousel-indicators">
@@ -103,7 +100,7 @@
     <div class="carousel-inner">
         {% for banner in banners %}
         <div class="carousel-item {% if loop.first %}active{% endif %}">
-            <img src="{{ url_for('uploaded_file', filename=banner) }}" class="d-block w-100">
+            <img src="{{ banner }}" class="d-block w-100">
         </div>
         {% endfor %}
     </div>

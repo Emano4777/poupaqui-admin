@@ -1,37 +1,43 @@
-from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+import json
 import os
-from PIL import Image
+
+# Configurar a API do Cloudinary
+cloudinary.config(
+    cloud_name="dizfq460q",
+    api_key="218941668123635",
+    api_secret="bADJ8clAnP8Ghptg93-I5ZCAVd4"
+)
 
 app = Flask(__name__)
 app.secret_key = 'segredo123'  # Chave secreta para gerenciar sessões
 
-UPLOAD_FOLDER = '/tmp/uploads'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+# Arquivo JSON para armazenar os banners enviados
+BANNERS_FILE = "banners.json"
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# Carregar os banners salvos no JSON (corrigido para evitar erros em arquivos vazios)
+def load_banners():
+    if os.path.exists(BANNERS_FILE):
+        try:
+            with open(BANNERS_FILE, "r") as f:
+                banners = json.load(f)
+                return banners if isinstance(banners, list) else []  # Garante que seja uma lista
+        except json.JSONDecodeError:
+            return []  # Se o arquivo estiver corrompido, retorna lista vazia
+    return []
 
-# Criar a pasta "uploads" se não existir (corrige o problema no Vercel)
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
-
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
+# Salvar os banners no JSON
+def save_banners(banners):
+    with open(BANNERS_FILE, "w") as f:
+        json.dump(banners, f, indent=4)  # Indentado para melhor legibilidade
 
 @app.route('/')
 def index():
-    # Garante que a pasta de uploads existe
-    if not os.path.exists(UPLOAD_FOLDER):
-        os.makedirs(UPLOAD_FOLDER)
-
-    # Lista os banners da pasta uploads
-    banners = [
-        file for file in os.listdir(UPLOAD_FOLDER) if file.endswith(('.jpg', '.png', '.jpeg'))
-    ]
-
+    banners = load_banners()  # Carregar os banners do JSON
     return render_template('index.html', banners=banners)
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -47,57 +53,47 @@ def login():
 
     return render_template('login.html')
 
-
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     if not session.get('logged_in'):
-        return redirect(url_for('login'))  # Redireciona para login se não estiver autenticado
+        return redirect(url_for('login'))
 
     error = None
+    image_url = None
 
     if request.method == 'POST':
         if 'file' not in request.files:
             error = "Nenhum arquivo enviado."
         else:
             file = request.files['file']
-            banner_type = request.form.get('banner_type')
 
-            if file and allowed_file(file.filename):
-                filename = f"{banner_type}.jpg"  # Nome fixo para substituir os banners
-                file_path = os.path.join(UPLOAD_FOLDER, filename)
-
+            if file:
                 try:
-                    # Verifica as dimensões da imagem
-                    file.seek(0)  # Resetar ponteiro antes de abrir a imagem
-                    image = Image.open(file)
-                    if image.size != (1312, 302):
-                        error = "A imagem deve ter exatamente 1312x302 pixels!"
+                    # Envia a imagem para o Cloudinary
+                    upload_result = cloudinary.uploader.upload(file)
+
+                    # Pega a URL gerada automaticamente pelo Cloudinary
+                    image_url = upload_result.get('secure_url')
+
+                    if image_url:  # Se a URL for válida, salva no JSON
+                        banners = load_banners()
+                        banners.append(image_url)
+                        save_banners(banners)  # Atualiza o JSON
+
+                        print(f"Imagem enviada com sucesso: {image_url}")
                     else:
-                        file.seek(0)  # Resetar ponteiro antes de salvar
-                        file.save(file_path)
+                        error = "Erro ao obter URL da imagem."
+
                 except Exception as e:
-                    error = f"Erro ao processar imagem: {str(e)}"
+                    error = f"Erro ao enviar imagem: {str(e)}"
 
-    return render_template('admin.html', error=error)
-
+    banners = load_banners()
+    return render_template('admin.html', error=error, image_url=image_url, banners=banners)
 
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
     return redirect(url_for('login'))
-
-
-@app.route('/uploads/<path:filename>')
-def uploaded_file(filename):
-    file_path = os.path.join(UPLOAD_FOLDER, filename)
-
-    # Se o arquivo não existir, retorna erro 404
-    if not os.path.exists(file_path):
-        return "Arquivo não encontrado", 404
-
-    return send_from_directory(UPLOAD_FOLDER, filename)
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
