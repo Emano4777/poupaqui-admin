@@ -19,12 +19,11 @@ app.secret_key = 'segredo123'  # Chave secreta para gerenciar sessões
 # Arquivo JSON para armazenar os banners e a logo
 DATA_FILE = "images.json"
 
-# Carregar imagens salvas no JSON
 def load_images():
     if os.path.exists(DATA_FILE):
         with open(DATA_FILE, "r") as f:
             return json.load(f)
-    return {"banners": [], "logo": None}  # Estrutura padrão
+    return {"banners": [], "logo": None, "banner_top": None}  # Estrutura padrão
 
 # Salvar imagens no JSON
 def save_images(data):
@@ -41,7 +40,8 @@ def index():
     data = load_images()  # Carregar as imagens salvas
     banners = data.get("banners", [])
     logo = data.get("logo", None)
-    return render_template('index.html', banners=banners, logo=logo)
+    banner_top = data.get("banner_top", None) 
+    return render_template('index.html', banners=banners, logo=logo,banner_top=banner_top)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -70,7 +70,7 @@ def admin():
             error = "Nenhum arquivo enviado ou tipo de imagem inválido."
         else:
             file = request.files['file']
-            image_type = request.form['image_type']  # Define se é 'banner' ou 'logo'
+            image_type = request.form['image_type']  # Define se é 'banner', 'banner_top' ou 'logo'
 
             if file and allowed_file(file.filename):
                 try:
@@ -83,6 +83,8 @@ def admin():
 
                     if image_type == "banner" and image.size != (1312, 302):
                         error = "O banner deve ter exatamente 1312x302 pixels!"
+                    elif image_type == "banner_top" and image.size != (1310, 110):
+                        error = "O banner principal deve ter 1310x110 pixels!"
                     elif image_type == "logo" and image.size != (2000, 2000):
                         error = "A logo deve ter exatamente 2000x2000 pixels!"
                     else:
@@ -96,6 +98,8 @@ def admin():
                         data = load_images()
                         if image_type == "banner":
                             data["banners"].append(image_url)
+                        elif image_type == "banner_top":
+                            data["banner_top"] = image_url  # Atualiza o banner principal corretamente
                         elif image_type == "logo":
                             data["logo"] = image_url  # Substitui a logo existente
 
@@ -107,7 +111,7 @@ def admin():
                     error = f"Erro ao enviar imagem: {str(e)}"
 
     data = load_images()
-    return render_template('admin.html', error=error, banners=data["banners"], logo=data["logo"])
+    return render_template('admin.html', error=error, banners=data["banners"], banner_top=data.get("banner_top"), logo=data["logo"])
 
 @app.route('/logout')
 def logout():

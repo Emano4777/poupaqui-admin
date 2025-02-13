@@ -90,6 +90,11 @@
         <button class="btn btn-danger">Seja um Licenciado</button>
     </div>
 </nav>
+{% if banner_top %}
+    <img src="{{ banner_top }}" alt="Promoção Principal" class="banner-top">
+{% else %}
+    <p class="text-center text-danger">Banner principal não encontrado</p>
+{% endif %}
 
 <!-- ✅ Carrossel de Banners -->
 <div id="carouselExampleIndicators" class="carousel slide banner-middle" data-bs-ride="carousel">
