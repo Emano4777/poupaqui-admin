@@ -17,7 +17,7 @@ app = Flask(__name__)
 app.secret_key = 'segredo123'  # Chave secreta para gerenciar sessões
 
 # Arquivo JSON para armazenar os banners e a logo
-DATA_FILE = "images.json"
+DATA_FILE = "/tmp/images.json"
 
 def load_images():
     if os.path.exists(DATA_FILE):
