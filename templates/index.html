@@ -101,28 +101,8 @@
             font-size: 24px;
             cursor: pointer;
         }
+/* Impede o scroll na página quando o menu mobile está aberto */
 
-        /* Modal do menu mobile */
-        .mobile-menu-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .mobile-menu-content {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            width: 80%;
-            max-width: 300px;
-            text-align: center;
-        }
 
         .mobile-menu-content a {
             display: block;
@@ -148,7 +128,14 @@
                 display: none;
             }
             .mobile-menu {
-                display: block;
+                display: flex;
+                align-items: center;
+            }
+            .mobile-licenciado {
+                margin: 0 auto;
+                display: flex;
+                justify-content: center;
+                align-items: center;
             }
         }
 
@@ -227,6 +214,7 @@
     </div>
 
     <div class="mobile-menu">
+        
         <span class="mobile-menu-icon" onclick="openMobileMenu()">☰</span>
     </div>
 </nav>
@@ -239,6 +227,7 @@
         <a href="#">💊 Ofertas</a>
         <a href="#">🌿 VitNatu</a>
         <a href="#">📖 Sobre Nós</a>
+        <button class="btn btn-danger mobile-licenciado">Seja um Licenciado</button>
         <button class="close-btn" onclick="closeMobileMenu()">Fechar</button>
     </div>
 </div>
@@ -305,12 +294,34 @@
     });
 
     function openMobileMenu() {
-        document.getElementById("mobileMenuModal").style.display = "flex";
+    let modal = document.getElementById("mobileMenuModal");
+    modal.style.display = "flex";
+    document.body.classList.add("modal-open");
+
+    // Garante que o modal role normalmente no mobile
+    let menuContent = modal.querySelector(".mobile-menu-content");
+    menuContent.scrollTop = 0;
+
+    // Impede o scroll da página, mas permite o do modal
+    document.addEventListener('touchmove', blockScroll, { passive: false });
+}
+
+function closeMobileMenu() {
+    let modal = document.getElementById("mobileMenuModal");
+    modal.style.display = "none";
+    document.body.classList.remove("modal-open");
+
+    // Libera o scroll da página quando o modal fecha
+    document.removeEventListener('touchmove', blockScroll);
+}
+
+// Função para bloquear o scroll da página, mas permitir no modal
+function blockScroll(event) {
+    let modal = document.getElementById("mobileMenuModal");
+    if (!modal.contains(event.target)) {
+        event.preventDefault();
     }
-    
-    function closeMobileMenu() {
-        document.getElementById("mobileMenuModal").style.display = "none";
-    }
+}
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
