@@ -6,52 +6,52 @@
     <title>Drogarias PoupAqui</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
+       body {
+    background-color: #f8f9fa;
+}
 
-        .carousel-indicators {
-            bottom: 15px !important;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+/* Indicadores do Carrossel */
+.carousel-indicators {
+    bottom: 15px !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-        .carousel-indicators button {
-            width: 12px !important;
-            height: 12px !important;
-            border-radius: 50% !important;
-            background-color: gray !important;
-            border: none !important;
-            margin: 5px !important;
-            opacity: 0.5 !important;
-            transition: opacity 0.3s, background-color 0.3s;
-        }
+.carousel-indicators button {
+    width: 12px !important;
+    height: 12px !important;
+    border-radius: 50% !important;
+    background-color: gray !important;
+    border: none !important;
+    margin: 5px !important;
+    opacity: 0.5 !important;
+    transition: opacity 0.3s, background-color 0.3s;
+}
 
-        .carousel-indicators .active {
-            background-color: black !important;
-            opacity: 1 !important;
-        }
+.carousel-indicators .active {
+    background-color: black !important;
+    opacity: 1 !important;
+}
 
-        .logo-img {
-            width: 120px;
-            height: auto;
-        }
+/* Ajuste do Logo */
+.logo-img {
+    width: 100px; /* Reduzi um pouco para telas menores */
+    height: auto;
+}
 
-        .banner-top {
-            width: 100%;
-            display: block;
-        }
+/* Banners */
+.banner-top,
+.banner-middle {
+    width: 100%;
+    display: block;
+}
 
-        .banner-middle {
-            width: 100%;
-            display: block;
-        }
-
-        .advantage-box {
+/* Vantagens */
+.advantage-box {
     background: rgb(224, 6, 40);
     color: white;
-    padding: 10px 15px; /* Reduzi o padding para diminuir a altura */
+    padding: 10px 15px;
     border-radius: 8px;
     font-weight: bold;
     text-align: center;
@@ -59,30 +59,57 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 60px; /* Reduzi a altura */
-    font-size: 9px; /* Diminuí um pouco o tamanho da fonte */
+    min-height: 70px;
+    font-size: 11px; /* Reduzi a fonte para telas menores */
 }
 
-        .navbar-custom {
-            background-color: white;
-            padding: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        }
+/* Navbar */
+.navbar-custom {
+    background-color: white;
+    padding: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
 
-        .navbar-custom .btn-danger {
+/* Botão Licenciado */
+.navbar-custom .btn-danger {
     background-color: rgb(224, 6, 40);
     border-color: rgb(224, 6, 40);
     border-radius: 20px;
     font-weight: bold;
 }
 
-@media (min-width: 768px) {
+/* Ajuste para telas grandes (Desktop) */
+@media (min-width: 992px) {
     .col-md-5ths {
         width: 20%;
         float: left;
     }
 }
 
+/* 📱 Ajuste para telas menores (Tablets e Celulares) */
+@media (max-width: 991px) {
+    .col-md-5ths {
+        width: 50%; /* Duas colunas por linha */
+    }
+
+    .advantage-box {
+        font-size: 12px; /* Aumenta um pouco o tamanho do texto */
+        min-height: 80px; /* Mantém os blocos proporcionais */
+    }
+}
+
+/* 📱 Ajuste para telas muito pequenas (Celulares Pequenos) */
+@media (max-width: 576px) {
+    .col-md-5ths {
+        width: 100%; /* Cada bloco ocupa toda a largura */
+        margin-bottom: 10px;
+    }
+
+    .advantage-box {
+        font-size: 14px; /* Mantém um tamanho legível */
+        min-height: 90px;
+    }
+}
     </style>
 </head>
 <body>
