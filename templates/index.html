@@ -103,14 +103,61 @@
         }
 /* Impede o scroll na página quando o menu mobile está aberto */
 
+/* Fundo escuro do modal */
+/* Fundo escuro do modal */
+.mobile-menu-modal {
+    display: none; /* Mantém o modal oculto até ser chamado */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* Fundo escuro ao redor do modal */
+    justify-content: center;
+    align-items: center;
+}
 
-        .mobile-menu-content a {
-            display: block;
-            margin: 10px 0;
-            font-size: 18px;
-            color: black;
-            text-decoration: none;
-        }
+/* Conteúdo do modal (corrigido para fundo branco) */
+.mobile-menu-content {
+    background: white !important; /* Garante fundo branco do menu */
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 300px;
+    text-align: center;
+    max-height: 80vh; /* Define altura máxima */
+    overflow-y: auto; /* Ativa rolagem quando necessário */
+    touch-action: auto;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Sombra */
+}
+
+/* Ajusta os links do modal */
+.mobile-menu-content a {
+    display: block;
+    margin: 10px 0;
+    font-size: 18px;
+    color: black !important; /* Torna os links pretos */
+    text-decoration: none;
+    font-weight: bold;
+}
+/* Estiliza a barra de rolagem no Chrome, Edge e Safari */
+.mobile-menu-content::-webkit-scrollbar {
+    width: 8px; /* Largura da barra */
+}
+
+.mobile-menu-content::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Fundo da barra */
+    border-radius: 10px;
+}
+
+.mobile-menu-content::-webkit-scrollbar-thumb {
+    background: #0b0b0b; /* Cor da barra rolável */
+    border-radius: 10px;
+}
+
+.mobile-menu-content::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8; /* Cor ao passar o mouse */
+}
 
         .mobile-menu-content .close-btn {
             background: red;
@@ -138,6 +185,14 @@
                 align-items: center;
             }
         }
+
+        /* Oculta o modal no desktop */
+@media (min-width: 769px) {
+    .mobile-menu-modal {
+        display: none !important;
+    }
+}
+
 
 
 /* Ajuste para telas grandes (Desktop) */
@@ -295,15 +350,17 @@
 
     function openMobileMenu() {
     let modal = document.getElementById("mobileMenuModal");
-    modal.style.display = "flex";
-    document.body.classList.add("modal-open");
 
-    // Garante que o modal role normalmente no mobile
-    let menuContent = modal.querySelector(".mobile-menu-content");
-    menuContent.scrollTop = 0;
+    if (window.innerWidth <= 768) {
+        modal.style.display = "flex";
+        document.body.classList.add("modal-open");
 
-    // Impede o scroll da página, mas permite o do modal
-    document.addEventListener('touchmove', blockScroll, { passive: false });
+        let menuContent = modal.querySelector(".mobile-menu-content");
+        menuContent.scrollTop = 0;
+
+        // Impede o scroll da página, mas permite no modal
+        document.addEventListener('touchmove', blockScroll, { passive: false });
+    }
 }
 
 function closeMobileMenu() {
@@ -317,8 +374,9 @@ function closeMobileMenu() {
 
 // Função para bloquear o scroll da página, mas permitir no modal
 function blockScroll(event) {
-    let modal = document.getElementById("mobileMenuModal");
-    if (!modal.contains(event.target)) {
+    let modalContent = document.querySelector(".mobile-menu-content");
+
+    if (!modalContent.contains(event.target)) {
         event.preventDefault();
     }
 }
