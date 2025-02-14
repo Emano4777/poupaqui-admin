@@ -105,30 +105,55 @@
 
 /* Fundo escuro do modal */
 /* Fundo escuro do modal */
+/* Fundo escuro do modal com animação */
 .mobile-menu-modal {
-    display: none; /* Mantém o modal oculto até ser chamado */
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7); /* Fundo escuro ao redor do modal */
+    background: rgba(0, 0, 0, 0.7);
     justify-content: center;
-    align-items: center;
+    align-items: flex-end; /* Faz o modal subir de baixo */
+    transition: opacity 0.3s ease-in-out; /* Suaviza a transição */
 }
 
-/* Conteúdo do modal (corrigido para fundo branco) */
+/* Efeito deslizante do modal */
 .mobile-menu-content {
-    background: white !important; /* Garante fundo branco do menu */
+    background: white !important;
     padding: 20px;
-    border-radius: 10px;
-    width: 80%;
-    max-width: 300px;
+    border-radius: 15px 15px 0 0; /* Borda arredondada no topo */
+    width: 100%;
+    max-width: 350px;
     text-align: center;
-    max-height: 80vh; /* Define altura máxima */
-    overflow-y: auto; /* Ativa rolagem quando necessário */
+    max-height: 80vh;
+    overflow-y: auto;
     touch-action: auto;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Sombra */
+    box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.2);
+    transform: translateY(100%); /* Começa fora da tela */
+    transition: transform 0.3s ease-in-out; /* Animação suave */
+}
+
+/* Classe para exibir o modal com animação */
+.mobile-menu-modal.show {
+    display: flex;
+    opacity: 1;
+}
+
+.mobile-menu-content.show {
+    transform: translateY(0); /* Move para a tela ao abrir */
+}
+
+/* Adiciona um indicador de arrastar no topo */
+.mobile-menu-content::before {
+    content: "";
+    width: 50px;
+    height: 5px;
+    background: #ccc;
+    border-radius: 5px;
+    display: block;
+    margin: 10px auto;
 }
 
 /* Ajusta os links do modal */
@@ -348,38 +373,58 @@
         alert("🚧 O site está em manutenção! Algumas funcionalidades podem não estar disponíveis.");
     });
 
+    document.addEventListener("DOMContentLoaded", function () {
+    let modal = document.getElementById("mobileMenuModal");
+    let modalContent = modal.querySelector(".mobile-menu-content");
+
+    modal.style.display = "none"; // Mantém fechado ao iniciar
+
+    let startY = 0;
+
     function openMobileMenu() {
-    let modal = document.getElementById("mobileMenuModal");
-
-    if (window.innerWidth <= 768) {
-        modal.style.display = "flex";
-        document.body.classList.add("modal-open");
-
-        let menuContent = modal.querySelector(".mobile-menu-content");
-        menuContent.scrollTop = 0;
-
-        // Impede o scroll da página, mas permite no modal
-        document.addEventListener('touchmove', blockScroll, { passive: false });
+        if (window.innerWidth <= 768) {
+            modal.style.display = "flex";
+            setTimeout(() => {
+                modal.classList.add("show");
+                modalContent.classList.add("show");
+            }, 10);
+            document.body.classList.add("modal-open");
+        }
     }
-}
 
-function closeMobileMenu() {
-    let modal = document.getElementById("mobileMenuModal");
-    modal.style.display = "none";
-    document.body.classList.remove("modal-open");
-
-    // Libera o scroll da página quando o modal fecha
-    document.removeEventListener('touchmove', blockScroll);
-}
-
-// Função para bloquear o scroll da página, mas permitir no modal
-function blockScroll(event) {
-    let modalContent = document.querySelector(".mobile-menu-content");
-
-    if (!modalContent.contains(event.target)) {
-        event.preventDefault();
+    function closeMobileMenu() {
+        modalContent.classList.remove("show");
+        setTimeout(() => {
+            modal.classList.remove("show");
+            modal.style.display = "none";
+            document.body.classList.remove("modal-open");
+        }, 300); // Tempo da animação
     }
-}
+
+    // Fechar ao clicar fora do modal
+    modal.addEventListener("click", function (event) {
+        if (!modalContent.contains(event.target)) {
+            closeMobileMenu();
+        }
+    });
+
+    // Fechar ao arrastar para baixo no mobile (Swipe Down)
+    modalContent.addEventListener("touchstart", function (event) {
+        startY = event.touches[0].clientY;
+    });
+
+    modalContent.addEventListener("touchmove", function (event) {
+        let moveY = event.touches[0].clientY;
+        let diffY = moveY - startY;
+
+        if (diffY > 100) { // Se arrastar 100px para baixo, fecha o modal
+            closeMobileMenu();
+        }
+    });
+
+    window.openMobileMenu = openMobileMenu;
+    window.closeMobileMenu = closeMobileMenu;
+});
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
