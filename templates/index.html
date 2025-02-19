@@ -6,8 +6,11 @@
     <title>Drogarias PoupAqui</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
-       body {
+       body, html{
     background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
 }
 
 /* Indicadores do Carrossel */
@@ -39,6 +42,37 @@
     opacity: 1 !important;
 }
 
+.carousel-inner {
+    width: 100vw !important;
+    height: auto;
+    max-height: 400px;
+}
+.carousel-item img {
+    width: 100vw !important;
+    height: auto;
+    max-height: 400px;
+    object-fit: cover; /* Ajuste para cobrir sem distorção */
+}
+.carousel-img {
+    width: 100vw !important; /* Ocupa 100% da largura da tela */
+    height: auto;
+    max-height: 400px;
+    object-fit: cover; /* Garante que preenche o espaço sem distorcer */
+}
+
+.container-fluid {
+    margin: 0;
+    padding: 0;
+}
+
+.banner-top {
+    width: 100%;
+    height: auto;
+    max-height: 400px; /* Ajuste para limitar a altura */
+    object-fit: contain; /* Mantém a proporção da imagem */
+}
+
+
 /* Ajuste do Logo */
 .logo-img {
     width: 100px; /* Reduzi um pouco para telas menores */
@@ -47,10 +81,20 @@
 
 /* Banners */
 .banner-top,
-.banner-middle {
-    width: 100%;
-    display: block;
+    .banner-middle {
+    width: 100vw !important;  /* Largura total da tela */
+    height: auto;
+    max-height: 400px; /* Ajuste conforme necessário */
+    margin: 0;
+    padding: 0;
 }
+
+#carouselExampleIndicators {
+    width: 100vw !important;  /* Força a largura total */
+    margin: 0;
+    padding: 0;
+}
+
 
 /* Vantagens */
 .advantage-box {
@@ -317,22 +361,25 @@
     <p class="text-center text-danger">Banner principal não encontrado</p>
 {% endif %}
 
-<!-- ✅ Carrossel de Banners -->
-<div id="carouselExampleIndicators" class="carousel slide banner-middle" data-bs-ride="carousel">
-    <div class="carousel-indicators">
-        {% for i in range(banners|length) %}
-        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ i }}" 
-                class="{% if i == 0 %}active{% endif %}" aria-label="Slide {{ i+1 }}"></button>
-        {% endfor %}
-    </div>
-    <div class="carousel-inner">
-        {% for banner in banners %}
-        <div class="carousel-item {% if loop.first %}active{% endif %}">
-            <img src="{{ banner }}" class="d-block w-100">
+<!-- ✅ Carrossel de Banners (Largura Total) -->
+<div class="container-fluid p-0">
+    <div id="carouselExampleIndicators" class="carousel slide banner-middle" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            {% for i in range(banners|length) %}
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ i }}" 
+                    class="{% if i == 0 %}active{% endif %}" aria-label="Slide {{ i+1 }}"></button>
+            {% endfor %}
         </div>
-        {% endfor %}
+        <div class="carousel-inner">
+            {% for banner in banners %}
+            <div class="carousel-item {% if loop.first %}active{% endif %}">
+                <img src="{{ banner }}" class="d-block w-100 carousel-img">
+            </div>
+            {% endfor %}
+        </div>
     </div>
 </div>
+
 
 <!-- ✅ Vantagens -->
 <div class="container my-4">
