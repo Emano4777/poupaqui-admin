@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
@@ -18,6 +18,84 @@ cloudinary.config(
 
 app = Flask(__name__)
 app.secret_key = 'segredo123'  # Chave secreta para gerenciar sessões
+
+def load_store_images():
+    """ Busca as imagens das lojas no Cloudinary e garante que os metadados sejam carregados corretamente. """
+    try:
+        timestamp = int(time.time())
+        stores = []
+
+        # 🔹 Buscar imagens com a tag 'lojas_poupAqui', garantindo que os metadados sejam carregados
+        result = cloudinary.api.resources_by_tag("lojas_poupAqui", max_results=20, context=True)
+
+        for img in result["resources"]:
+            context = img.get("context", {}).get("custom", {})  # Obtém os metadados corretamente
+
+            store = {
+                "url": f"{img['secure_url']}?t={timestamp}",
+                "public_id": img["public_id"],
+                "cidade": context.get("cidade", "Cidade Teste"),
+                "telefone": context.get("telefone", "(99) 99999-9999"),
+                "whatsapp": context.get("whatsapp", "https://wa.me/5599999999999")
+            }
+            stores.append(store)
+
+        print("📸 Imagens carregadas:", stores)  # 🔹 Debug: Verificar se os metadados foram carregados corretamente
+
+        return stores
+    except Exception as e:
+        print(f"❌ Erro ao carregar imagens das lojas: {e}")
+        return []
+    
+@app.route('/lojas')
+def lojas():
+    lojas = load_store_images()
+    print("Imagens carregadas:", lojas)  # 🔹 Verifica se há imagens na lista
+    return render_template('lojas.html', lojas=lojas)
+
+
+
+@app.route('/admin/lojas', methods=['GET', 'POST'])
+def admin_lojas():
+    if request.method == 'POST':
+        file = request.files.get('file')
+        cidade = request.form.get("cidade")
+        telefone = request.form.get("telefone")
+        whatsapp = request.form.get("whatsapp")
+
+        if not file or file.filename == '':
+            flash('Selecione uma imagem para upload.', 'danger')
+            return redirect(request.url)
+
+        try:
+            # 🔹 Upload da imagem
+            upload_result = cloudinary.uploader.upload(file, tags=["lojas_poupAqui"])
+
+            # 🔹 Define os metadados manualmente após o upload
+            cloudinary.api.update(upload_result["public_id"], context={
+                "cidade": cidade,
+                "telefone": telefone,
+                "whatsapp": whatsapp
+            })
+
+            print("Metadados Atualizados:", cidade, telefone, whatsapp)  # 🔹 Debug
+
+            flash("Imagem enviada com sucesso!", "success")
+        except Exception as e:
+            flash(f"Erro ao enviar imagem: {e}", "danger")
+
+    lojas = load_store_images()
+    return render_template('admin_lojas.html', lojas=lojas)
+
+@app.route('/admin/lojas/delete/<public_id>')
+def delete_loja(public_id):
+    try:
+        cloudinary.uploader.destroy(public_id)
+        flash("Imagem removida com sucesso!", "success")
+    except Exception as e:
+        flash(f"Erro ao excluir imagem: {e}", "danger")
+
+    return redirect(url_for('admin_lojas'))
 
 
 def load_images():

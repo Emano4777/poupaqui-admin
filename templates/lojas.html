@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nossas Lojas - PoupaAqui</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+         body, html{
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+.navbar-brand .logo-img {
+    max-width: 80px; /* Ajusta a largura da logo para telas menores */
+    height: auto;
+}
+
+/* Navbar */
+.navbar-custom {
+    background-color: white;
+    padding: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Botão Licenciado */
+.navbar-custom .btn-danger {
+    background-color: rgb(224, 6, 40);
+    border-color: rgb(224, 6, 40);
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+ /* Estilização do menu mobile */
+ .mobile-menu {
+            display: none;
+        }
+
+        .mobile-menu-icon {
+            font-size: 24px;
+            cursor: pointer;
+        }
+/* Impede o scroll na página quando o menu mobile está aberto */
+
+/* Fundo escuro do modal */
+/* Fundo escuro do modal */
+/* Fundo escuro do modal com animação */
+.mobile-menu-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: flex-end; /* Faz o modal subir de baixo */
+    transition: opacity 0.3s ease-in-out; /* Suaviza a transição */
+}
+
+/* Efeito deslizante do modal */
+.mobile-menu-content {
+    background: white !important;
+    padding: 20px;
+    border-radius: 15px 15px 0 0; /* Borda arredondada no topo */
+    width: 100%;
+    max-width: 350px;
+    text-align: center;
+    max-height: 80vh;
+    overflow-y: auto;
+    touch-action: auto;
+    box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.2);
+    transform: translateY(100%); /* Começa fora da tela */
+    transition: transform 0.3s ease-in-out; /* Animação suave */
+}
+
+/* Classe para exibir o modal com animação */
+.mobile-menu-modal.show {
+    display: flex;
+    opacity: 1;
+}
+
+.mobile-menu-content.show {
+    transform: translateY(0); /* Move para a tela ao abrir */
+}
+
+/* Adiciona um indicador de arrastar no topo */
+.mobile-menu-content::before {
+    content: "";
+    width: 50px;
+    height: 5px;
+    background: #ccc;
+    border-radius: 5px;
+    display: block;
+    margin: 10px auto;
+}
+
+/* Ajusta os links do modal */
+.mobile-menu-content a {
+    display: block;
+    margin: 10px 0;
+    font-size: 18px;
+    color: black !important; /* Torna os links pretos */
+    text-decoration: none;
+    font-weight: bold;
+}
+/* Estiliza a barra de rolagem no Chrome, Edge e Safari */
+.mobile-menu-content::-webkit-scrollbar {
+    width: 8px; /* Largura da barra */
+}
+
+.mobile-menu-content::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Fundo da barra */
+    border-radius: 10px;
+}
+
+.mobile-menu-content::-webkit-scrollbar-thumb {
+    background: #0b0b0b; /* Cor da barra rolável */
+    border-radius: 10px;
+}
+
+.mobile-menu-content::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8; /* Cor ao passar o mouse */
+}
+
+        .mobile-menu-content .close-btn {
+            background: red;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .desktop-menu {
+                display: none;
+            }
+            .mobile-menu {
+                display: flex;
+                align-items: center;
+            }
+            .mobile-licenciado {
+                margin: 0 auto;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+
+        /* Oculta o modal no desktop */
+@media (min-width: 769px) {
+    .mobile-menu-modal {
+        display: none !important;
+    }
+}
+
+
+
+/* Ajuste para telas grandes (Desktop) */
+@media (min-width: 992px) {
+    .col-md-5ths {
+        width: 20%;
+        float: left;
+    }
+}
+
+/* Ajuste do Botão "Seja um Licenciado" para telas menores */
+@media (max-width: 768px) {
+    .navbar-custom .btn-danger {
+        width: 100%; /* Faz o botão ocupar toda a largura disponível */
+        text-align: center; /* Centraliza o texto */
+        font-size: 14px; /* Ajusta o tamanho da fonte */
+        padding: 10px; /* Dá um espaçamento melhor */
+        border-radius: 15px; /* Mantém um design arredondado */
+    }
+}
+
+/* Ajuste para telas muito pequenas (Celulares Pequenos) */
+@media (max-width: 480px) {
+    .navbar-custom .btn-danger {
+        font-size: 12px; /* Reduz um pouco mais o tamanho do texto */
+        padding: 8px; /* Ajusta a altura do botão */
+    }
+}
+
+/* 📱 Ajuste para telas menores (Tablets e Celulares) */
+@media (max-width: 991px) {
+    .col-md-5ths {
+        width: 50%; /* Duas colunas por linha */
+    }
+
+    .advantage-box {
+        font-size: 12px; /* Aumenta um pouco o tamanho do texto */
+        min-height: 80px; /* Mantém os blocos proporcionais */
+    }
+}
+
+/* 📱 Ajuste para telas muito pequenas (Celulares Pequenos) */
+@media (max-width: 576px) {
+    .col-md-5ths {
+        width: 100%; /* Cada bloco ocupa toda a largura */
+        margin-bottom: 10px;
+    }
+
+    .advantage-box {
+        font-size: 14px; /* Mantém um tamanho legível */
+        min-height: 90px;
+    }
+}
+
+        .container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loja-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .loja-card {
+            width: 250px;
+            background-color: red;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .loja-card img {
+            width: 100%;
+            border-radius: 10px;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .info {
+            padding: 10px;
+        }
+
+        .whatsapp {
+            font-size: 20px;
+            color: #25D366;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+
+        .whatsapp:hover {
+            color: #1da851;
+        }
+    </style>
+</head>
+<body>
+<!-- Barra de Navegação -->
+<nav class="navbar navbar-light navbar-custom px-4 py-2">
+    <a class="navbar-brand" href="#">
+        {% if logo %}
+            <img src="{{ logo }}" alt="PoupAqui Logo" class="logo-img">
+        {% else %}
+            <p>Logo não encontrada</p>
+        {% endif %}
+    </a>
+    <div class="desktop-menu">
+        <span class="me-3">📍 Insira seu CEP</span>
+        <span class="me-3">☰ Unidades</span>
+        <span class="me-3">💊 Ofertas</span>
+        <span class="me-3">🌿 VitNatu</span>
+        <span class="me-3">📖 Sobre Nós</span>
+        <button class="btn btn-danger">Seja um Licenciado</button>
+    </div>
+
+    <div class="mobile-menu">
+        
+        <span class="mobile-menu-icon" onclick="openMobileMenu()">☰</span>
+    </div>
+</nav>
+
+<!-- Modal do Menu Mobile -->
+<div class="mobile-menu-modal" id="mobileMenuModal">
+    <div class="mobile-menu-content">
+        <a href="#">📍 Insira seu CEP</a>
+        <a href="#">☰ Unidades</a>
+        <a href="#">💊 Ofertas</a>
+        <a href="#">🌿 VitNatu</a>
+        <a href="#">📖 Sobre Nós</a>
+        <button class="btn btn-danger mobile-licenciado">Seja um Licenciado</button>
+        <button class="close-btn" onclick="closeMobileMenu()">Fechar</button>
+    </div>
+</div>
+    <div class="container">
+        <h2>Nossas Lojas</h2>
+
+        {% if lojas and lojas|length > 0 %}
+        <div class="loja-grid">
+            {% for loja in lojas %}
+            <div class="loja-card">
+                <img src="{{ loja.url }}" alt="Loja PoupaAqui">
+                <div class="info">
+                    <h5>{{ loja.cidade }}</h5>
+                    <p>{{ loja.telefone }}</p>
+                    <a href="{{ loja.whatsapp }}" target="_blank" class="whatsapp">📞 WhatsApp</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+            <p style="margin-top: 20px; color: gray;">Nenhuma loja cadastrada no momento.</p>
+        {% endif %}
+    </div>
+
+</body>
+</html>

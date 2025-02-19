@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Lojas - Painel Admin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 800px;
+            margin-top: 50px;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .loja-card {
+            position: relative;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="container">
+        <h2>Gerenciar Imagens das Lojas</h2>
+    
+        <form method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="file" class="form-label">Upload de Nova Imagem</label>
+                <input type="file" name="file" id="file" class="form-control" accept="image/*" required>
+            </div>
+    
+            <div class="mb-3">
+                <label for="cidade" class="form-label">Cidade</label>
+                <input type="text" name="cidade" id="cidade" class="form-control" placeholder="Digite a cidade" required>
+            </div>
+    
+            <div class="mb-3">
+                <label for="telefone" class="form-label">Telefone</label>
+                <input type="text" name="telefone" id="telefone" class="form-control" placeholder="(99) 99999-9999" required>
+            </div>
+    
+            <div class="mb-3">
+                <label for="whatsapp" class="form-label">Link do WhatsApp</label>
+                <input type="text" name="whatsapp" id="whatsapp" class="form-control" placeholder="https://wa.me/5599999999999" required>
+            </div>
+    
+            <div class="btn-container">
+                <button type="submit" class="btn btn-success">Enviar Imagem</button>
+                <a href="{{ url_for('logout') }}" class="btn btn-danger">Sair</a>
+            </div>
+        </form>
+
+    <h3 class="mt-4">Imagens Cadastradas</h3>
+    <div class="row">
+        {% for loja in lojas %}
+        <div class="col-md-4 loja-card">
+            <button class="delete-btn" data-url="{{ url_for('delete_loja', public_id=loja.public_id) }}" onclick="deleteImage(this)">🗑️</button>
+            <img src="{{ loja.url }}" alt="Loja PoupaAqui">
+            <p><strong>{{ loja.cidade }}</strong></p>
+            <p>{{ loja.telefone }}</p>
+            <a href="{{ loja.whatsapp }}" target="_blank">📞 WhatsApp</a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function deleteImage(button) {
+            var url = button.getAttribute("data-url");
+            window.location.href = url;
+        }
+    </script>
+    
+</div>
+</body>
+</html>
