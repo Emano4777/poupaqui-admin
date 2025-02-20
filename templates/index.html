@@ -224,6 +224,23 @@
     border-radius: 10px;
 }
 
+/* 📌 Botão "Unidades" */
+.btn-unidades {
+    background-color: transparent; /* Fundo transparente */
+    color: #d80000; /* Cor vermelha para combinar com o tema */
+    font-weight: bold;
+    text-decoration: none; /* Remove o sublinhado */
+    padding: 8px 15px;
+    border-radius: 20px;
+    transition: 0.3s;
+    display: inline-block;
+}
+
+.btn-unidades:hover {
+    background-color: #d80000; /* Fundo vermelho ao passar o mouse */
+    color: white; /* Texto branco */
+}
+
 .mobile-menu-content::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8; /* Cor ao passar o mouse */
 }
@@ -321,7 +338,7 @@
 
 <!-- Barra de Navegação -->
 <nav class="navbar navbar-light navbar-custom px-4 py-2">
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand" href="{{ url_for('index') }}">
         {% if logo %}
             <img src="{{ logo }}" alt="PoupAqui Logo" class="logo-img">
         {% else %}
@@ -330,7 +347,9 @@
     </a>
     <div class="desktop-menu">
         <span class="me-3">📍 Insira seu CEP</span>
-        <span class="me-3">☰ Unidades</span>
+        <a href="{{ url_for('lojas') }}" class="btn-unidades">
+            ☰ Unidades
+        </a> 
         <span class="me-3">💊 Ofertas</span>
         <span class="me-3">🌿 VitNatu</span>
         <span class="me-3">📖 Sobre Nós</span>
@@ -347,7 +366,9 @@
 <div class="mobile-menu-modal" id="mobileMenuModal">
     <div class="mobile-menu-content">
         <a href="#">📍 Insira seu CEP</a>
-        <a href="#">☰ Unidades</a>
+        <a href="{{ url_for('lojas') }}" class="btn-unidades">
+            ☰ Unidades
+        </a>     
         <a href="#">💊 Ofertas</a>
         <a href="#">🌿 VitNatu</a>
         <a href="#">📖 Sobre Nós</a>

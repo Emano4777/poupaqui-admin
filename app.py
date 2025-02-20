@@ -24,6 +24,7 @@ def load_store_images():
     try:
         timestamp = int(time.time())
         stores = []
+        logo = None
 
         # 🔹 Buscar imagens com a tag 'lojas_poupAqui', garantindo que os metadados sejam carregados
         result = cloudinary.api.resources_by_tag("lojas_poupAqui", max_results=20, context=True)
@@ -45,19 +46,22 @@ def load_store_images():
             }
             stores.append(store)
 
-        print("📸 Imagens carregadas:", stores)  # 🔹 Debug: Verificar se os metadados foram carregados corretamente
+            result_logo = cloudinary.api.resources_by_tag("logo", max_results=1)
+            if result_logo["resources"]:
+                logo = f"{result_logo['resources'][0]['secure_url']}?t={timestamp}"  # Adiciona timestamp para evitar cache
 
-        return stores
+
+        print("📸 Imagens carregadas:", stores)  # 🔹 Debug: Verificar se os metadados foram carregados corretamente
+        print(f"🎨 Logo carregada: {logo}")
+        return {"stores": stores, "logo": logo}
     except Exception as e:
         print(f"❌ Erro ao carregar imagens das lojas: {e}")
         return []
     
 @app.route('/lojas')
 def lojas():
-    lojas = load_store_images()
-    print("Imagens carregadas:", lojas)  # 🔹 Verifica se há imagens na lista
-    return render_template('lojas.html', lojas=lojas)
-
+    data = load_store_images()  # Carrega imagens das lojas + logo
+    return render_template('lojas.html', lojas=data["stores"], logo=data["logo"])
 
 
 @app.route('/admin/lojas', methods=['GET', 'POST'])

@@ -243,8 +243,8 @@
 
         .loja-card img {
             width: 100%;
-            border-radius: 10px;
-            height: 150px;
+            border-radius: 8px;
+            height: 195px;
             object-fit: cover;
         }
 
@@ -265,43 +265,56 @@
 
 
         /* 🔍 Estilo do campo de pesquisa */
+/* 🔍 Estilizando o campo de pesquisa */
 .search-container {
     display: flex;
     justify-content: center;
+    align-items: center;
     margin-bottom: 20px;
-    position: relative;
     width: 100%;
     max-width: 400px;
     margin-left: auto;
     margin-right: auto;
+    position: relative;
 }
 
 .search-box {
     width: 100%;
-    padding: 10px 15px;
-    border: 2px solid #ddd;
+    padding: 12px 15px;
+    border: 2px solid #ccc;
     border-radius: 25px;
     outline: none;
     font-size: 16px;
     transition: 0.3s;
-    padding-right: 40px;
+    padding-right: 50px; /* Ajuste para o ícone */
 }
 
 .search-box:focus {
-    border-color: #dc3545;
-    box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
+    border-color: #d80000;
+    box-shadow: 0 0 8px rgba(216, 0, 0, 0.5);
 }
 
+/* 🔍 Estilizando o botão de pesquisa */
 .search-btn {
     position: absolute;
-    right: 10px;
+    right: 15px;
     top: 50%;
     transform: translateY(-50%);
     background: none;
     border: none;
     cursor: pointer;
+    font-size: 18px;
+    color: #d80000;
+    transition: 0.3s;
+}
+
+.search-btn:hover {
+    color: #a80000;
+}
+
+/* 🔍 Ajuste no ícone de pesquisa */
+.search-btn i {
     font-size: 20px;
-    color: #dc3545;
 }
 
 /* Estilo do botão "Como Chegar" */
@@ -354,7 +367,45 @@
 .btn-whatsapp i {
     margin-right: 5px;
 }
+/* 📌 Estilização do título "Nossas Lojas" */
+h2 {
+    font-size: 28px; /* Aumenta o tamanho */
+    font-weight: bold; /* Deixa em negrito */
+    text-align: center; /* Centraliza */
+    color: #d80000; /* Vermelho da identidade visual */
+    text-transform: uppercase; /* Deixa em maiúsculas */
+    letter-spacing: 1px; /* Adiciona um espaçamento entre letras */
+    margin-bottom: 20px; /* Ajusta o espaçamento inferior */
+    position: relative;
+}
 
+/* Adiciona uma linha decorativa abaixo do título */
+h2::after {
+    content: "";
+    display: block;
+    width: 60px; /* Define a largura da linha */
+    height: 4px; /* Define a altura da linha */
+    background-color: #d80000; /* Cor da linha */
+    margin: 10px auto 0; /* Centraliza a linha abaixo do título */
+    border-radius: 5px; /* Deixa a linha levemente arredondada */
+}
+
+/* 📌 Botão "Unidades" */
+.btn-unidades {
+    background-color: transparent; /* Fundo transparente */
+    color: #d80000; /* Cor vermelha para combinar com o tema */
+    font-weight: bold;
+    text-decoration: none; /* Remove o sublinhado */
+    padding: 8px 15px;
+    border-radius: 20px;
+    transition: 0.3s;
+    display: inline-block;
+}
+
+.btn-unidades:hover {
+    background-color: #d80000; /* Fundo vermelho ao passar o mouse */
+    color: white; /* Texto branco */
+}
 
 
     </style>
@@ -362,7 +413,7 @@
 <body>
 <!-- Barra de Navegação -->
 <nav class="navbar navbar-light navbar-custom px-4 py-2">
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand" href="{{ url_for('index') }}">
         {% if logo %}
             <img src="{{ logo }}" alt="PoupAqui Logo" class="logo-img">
         {% else %}
@@ -371,7 +422,9 @@
     </a>
     <div class="desktop-menu">
         <span class="me-3">📍 Insira seu CEP</span>
-        <span class="me-3">☰ Unidades</span>
+        <a href="{{ url_for('lojas') }}" class="btn-unidades">
+            ☰ Unidades
+        </a>        
         <span class="me-3">💊 Ofertas</span>
         <span class="me-3">🌿 VitNatu</span>
         <span class="me-3">📖 Sobre Nós</span>
@@ -388,7 +441,9 @@
 <div class="mobile-menu-modal" id="mobileMenuModal">
     <div class="mobile-menu-content">
         <a href="#">📍 Insira seu CEP</a>
-        <a href="#">☰ Unidades</a>
+        <a href="{{ url_for('lojas') }}" class="btn-unidades">
+            ☰ Unidades
+        </a> 
         <a href="#">💊 Ofertas</a>
         <a href="#">🌿 VitNatu</a>
         <a href="#">📖 Sobre Nós</a>
@@ -399,13 +454,13 @@
 <div class="container">
     <h2>Nossas Lojas</h2>
 
-    <!-- 🔍 Barra de Pesquisa -->
     <div class="search-container">
-        <input type="text" id="searchInput" class="search-box" placeholder="Buscar por cidade...">
+        <input type="text" id="searchInput" class="search-box" placeholder="🔎 Buscar por cidade...">
         <button class="search-btn">
-            🔍
+            <i class="fas fa-search"></i>
         </button>
     </div>
+    
 
     {% if lojas and lojas|length > 0 %}
     <div class="loja-grid" id="lojaGrid">
