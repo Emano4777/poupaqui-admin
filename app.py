@@ -95,14 +95,16 @@ def admin_lojas():
                 "whatsapp": whatsapp
             })
 
-            print("Metadados Atualizados:", cidade,endereco, telefone, whatsapp)  # 🔹 Debug
+            print("Metadados Atualizados:", cidade, endereco, telefone, whatsapp)  # 🔹 Debug
 
             flash("Imagem enviada com sucesso!", "success")
         except Exception as e:
             flash(f"Erro ao enviar imagem: {e}", "danger")
 
+    # 🔹 Busca as lojas e já garante que elas estejam ordenadas
     lojas = load_store_images()
-    return render_template('admin_lojas.html', lojas=lojas)
+    
+    return render_template('admin_lojas.html', lojas=lojas["stores"], logo=lojas["logo"])
 
 @app.route('/admin/lojas/delete/<public_id>')
 def delete_loja(public_id):
@@ -117,8 +119,10 @@ def delete_loja(public_id):
 
 @app.route('/admin/lojas/edit/<public_id>', methods=['GET', 'POST'])
 def edit_loja(public_id):
-    """ Permite editar os metadados de uma loja e substituir a imagem no Cloudinary """
-    loja = next((l for l in load_store_images() if l["public_id"] == public_id), None)
+    lojas_data = load_store_images()  # Agora retorna um dicionário {"stores": [...], "logo": "URL"}
+    lojas = lojas_data["stores"]  # Acessa apenas a lista de lojas
+    
+    loja = next((l for l in lojas if l["public_id"] == public_id), None)
 
     if not loja:
         flash("Loja não encontrada!", "danger")
