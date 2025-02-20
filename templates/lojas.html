@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nossas Lojas - PoupaAqui</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
          body, html{
     background-color: #f8f9fa;
@@ -261,6 +262,101 @@
         .whatsapp:hover {
             color: #1da851;
         }
+
+
+        /* 🔍 Estilo do campo de pesquisa */
+.search-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.search-box {
+    width: 100%;
+    padding: 10px 15px;
+    border: 2px solid #ddd;
+    border-radius: 25px;
+    outline: none;
+    font-size: 16px;
+    transition: 0.3s;
+    padding-right: 40px;
+}
+
+.search-box:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
+}
+
+.search-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    color: #dc3545;
+}
+
+/* Estilo do botão "Como Chegar" */
+.btn-maps {
+    background-color: white; /* Fundo branco para contrastar com o vermelho */
+    color: red; /* Texto e ícone vermelhos */
+    border: 2px solid red; /* Borda vermelha para combinar */
+    border-radius: 20px; /* Bordas arredondadas */
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    width: 90%;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.btn-maps:hover {
+    background-color: red;
+    color: white;
+}
+
+/* Ícone do botão */
+.btn-maps i {
+    margin-right: 5px;
+}
+/* Estilo do botão WhatsApp */
+.btn-whatsapp {
+    background-color: white; /* Fundo branco para contraste */
+    color: green; /* Cor do WhatsApp */
+    border: 2px solid green; /* Borda verde */
+    border-radius: 20px; /* Bordas arredondadas */
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    width: 90%;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.btn-whatsapp:hover {
+    background-color: green;
+    color: white;
+}
+
+/* Ícone do botão */
+.btn-whatsapp i {
+    margin-right: 5px;
+}
+
+
+
     </style>
 </head>
 <body>
@@ -300,26 +396,57 @@
         <button class="close-btn" onclick="closeMobileMenu()">Fechar</button>
     </div>
 </div>
-    <div class="container">
-        <h2>Nossas Lojas</h2>
+<div class="container">
+    <h2>Nossas Lojas</h2>
 
-        {% if lojas and lojas|length > 0 %}
-        <div class="loja-grid">
-            {% for loja in lojas %}
-            <div class="loja-card">
-                <img src="{{ loja.url }}" alt="Loja PoupaAqui">
-                <div class="info">
-                    <h5>{{ loja.cidade }}</h5>
-                    <p>{{ loja.telefone }}</p>
-                    <a href="{{ loja.whatsapp }}" target="_blank" class="whatsapp">📞 WhatsApp</a>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% else %}
-            <p style="margin-top: 20px; color: gray;">Nenhuma loja cadastrada no momento.</p>
-        {% endif %}
+    <!-- 🔍 Barra de Pesquisa -->
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-box" placeholder="Buscar por cidade...">
+        <button class="search-btn">
+            🔍
+        </button>
     </div>
 
+    {% if lojas and lojas|length > 0 %}
+    <div class="loja-grid" id="lojaGrid">
+        {% for loja in lojas %}
+        <div class="loja-card" data-cidade="{{ loja.cidade | lower }}">
+            <img src="{{ loja.url }}" alt="Loja PoupaAqui">
+            <div class="info">
+                <h5>{{ loja.cidade }}</h5>
+                <p><strong>Endereço:</strong> {{ loja.endereco }}</p>
+                <p>{{ loja.telefone }}</p>
+                 <!-- Botão WhatsApp -->
+            <a href="{{ loja.whatsapp }}" target="_blank" class="btn-whatsapp mt-2">
+                <i class="fab fa-whatsapp"></i> WhatsApp
+            </a>
+                <br>
+                <a href="{{ loja.google_maps }}" target="_blank" class="btn-maps mt-2">
+                    <i class="fas fa-map-marker-alt"></i> Como Chegar
+                </a>                
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <p style="margin-top: 20px; color: gray;">Nenhuma loja cadastrada no momento.</p>
+    {% endif %}
+</div>
+    </div>
+    <script>
+        document.getElementById('searchInput').addEventListener('keyup', function () {
+            let filter = this.value.toLowerCase();
+            let cards = document.querySelectorAll('.loja-card');
+    
+            cards.forEach(card => {
+                let cidade = card.getAttribute('data-cidade');
+                if (cidade.includes(filter)) {
+                    card.style.display = "block";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        });
+    </script>
 </body>
 </html>

@@ -31,12 +31,17 @@ def load_store_images():
         for img in result["resources"]:
             context = img.get("context", {}).get("custom", {})  # Obtém os metadados corretamente
 
+            endereco = context.get("endereco", "Endereço não informado")
+            google_maps_url = f"https://www.google.com/maps/search/?api=1&query={endereco.replace(' ', '+')}" if endereco != "Endereço não informado" else "#"
+
             store = {
                 "url": f"{img['secure_url']}?t={timestamp}",
                 "public_id": img["public_id"],
                 "cidade": context.get("cidade", "Cidade Teste"),
+                "endereco": context.get("endereco", "Endereço não informado"),
                 "telefone": context.get("telefone", "(99) 99999-9999"),
-                "whatsapp": context.get("whatsapp", "https://wa.me/5599999999999")
+                "whatsapp": context.get("whatsapp", "https://wa.me/5599999999999"),
+                "google_maps": google_maps_url
             }
             stores.append(store)
 
@@ -60,6 +65,7 @@ def admin_lojas():
     if request.method == 'POST':
         file = request.files.get('file')
         cidade = request.form.get("cidade")
+        endereco = request.form.get("endereco")
         telefone = request.form.get("telefone")
         whatsapp = request.form.get("whatsapp")
 
@@ -74,11 +80,12 @@ def admin_lojas():
             # 🔹 Define os metadados manualmente após o upload
             cloudinary.api.update(upload_result["public_id"], context={
                 "cidade": cidade,
+                "endereco": endereco,
                 "telefone": telefone,
                 "whatsapp": whatsapp
             })
 
-            print("Metadados Atualizados:", cidade, telefone, whatsapp)  # 🔹 Debug
+            print("Metadados Atualizados:", cidade,endereco, telefone, whatsapp)  # 🔹 Debug
 
             flash("Imagem enviada com sucesso!", "success")
         except Exception as e:
@@ -96,6 +103,62 @@ def delete_loja(public_id):
         flash(f"Erro ao excluir imagem: {e}", "danger")
 
     return redirect(url_for('admin_lojas'))
+
+
+@app.route('/admin/lojas/edit/<public_id>', methods=['GET', 'POST'])
+def edit_loja(public_id):
+    """ Permite editar os metadados de uma loja e substituir a imagem no Cloudinary """
+    loja = next((l for l in load_store_images() if l["public_id"] == public_id), None)
+
+    if not loja:
+        flash("Loja não encontrada!", "danger")
+        return redirect(url_for('admin_lojas'))
+
+    if request.method == 'POST':
+        cidade = request.form.get("cidade")
+        endereco = request.form.get("endereco")
+        telefone = request.form.get("telefone")
+        whatsapp = request.form.get("whatsapp")
+        file = request.files.get('file')  # Novo upload de imagem
+
+        try:
+            # Se uma nova imagem foi enviada, faz upload e deleta a antiga
+            if file and file.filename != '':
+                new_upload = cloudinary.uploader.upload(file, tags=["lojas_poupAqui"])
+
+                # Deletar a imagem antiga do Cloudinary
+                cloudinary.uploader.destroy(public_id)
+
+                # Atualizar o ID da imagem para o novo
+                public_id = new_upload["public_id"]
+
+                # Atualizar metadados da nova imagem
+                cloudinary.api.update(public_id, context={
+                    "cidade": cidade,
+                    "endereco": endereco,
+                    "telefone": telefone,
+                    "whatsapp": whatsapp
+                })
+
+                loja["url"] = new_upload["secure_url"]  # Atualiza a URL para exibição imediata
+            else:
+                # Apenas atualiza os metadados da imagem existente
+                cloudinary.api.update(public_id, context={
+                    "cidade": cidade,
+                    "endereco": endereco,
+                    "telefone": telefone,
+                    "whatsapp": whatsapp
+                })
+
+            flash("Informações da loja atualizadas com sucesso!", "success")
+            return redirect(url_for('admin_lojas'))
+        except Exception as e:
+            flash(f"Erro ao atualizar informações: {e}", "danger")
+
+    return render_template('edit_loja.html', loja=loja)
+
+
+
 
 
 def load_images():

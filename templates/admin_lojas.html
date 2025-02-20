@@ -55,6 +55,11 @@
                 <label for="cidade" class="form-label">Cidade</label>
                 <input type="text" name="cidade" id="cidade" class="form-control" placeholder="Digite a cidade" required>
             </div>
+
+            <div class="mb-3">
+                <label for="endereco" class="form-label">Endereço</label>
+                <input type="text" name="endereco" id="endereco" class="form-control" placeholder="Digite o endereço" required>
+            </div>
     
             <div class="mb-3">
                 <label for="telefone" class="form-label">Telefone</label>
@@ -77,9 +82,11 @@
         {% for loja in lojas %}
         <div class="col-md-4 loja-card">
             <button class="delete-btn" data-url="{{ url_for('delete_loja', public_id=loja.public_id) }}" onclick="deleteImage(this)">🗑️</button>
+            <a href="{{ url_for('edit_loja', public_id=loja.public_id) }}" class="btn btn-warning btn-sm">✏️ Editar</a>
             <img src="{{ loja.url }}" alt="Loja PoupaAqui">
             <p><strong>{{ loja.cidade }}</strong></p>
             <p>{{ loja.telefone }}</p>
+            <p>{{ loja.endereco }}</p>
             <a href="{{ loja.whatsapp }}" target="_blank">📞 WhatsApp</a>
         </div>
         {% endfor %}
