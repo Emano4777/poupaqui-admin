@@ -39,24 +39,30 @@ def load_store_images():
                 "url": f"{img['secure_url']}?t={timestamp}",
                 "public_id": img["public_id"],
                 "cidade": context.get("cidade", "Cidade Teste"),
-                "endereco": context.get("endereco", "Endereço não informado"),
+                "endereco": endereco,
                 "telefone": context.get("telefone", "(99) 99999-9999"),
                 "whatsapp": context.get("whatsapp", "https://wa.me/5599999999999"),
                 "google_maps": google_maps_url
             }
             stores.append(store)
 
-            result_logo = cloudinary.api.resources_by_tag("logo", max_results=1)
-            if result_logo["resources"]:
-                logo = f"{result_logo['resources'][0]['secure_url']}?t={timestamp}"  # Adiciona timestamp para evitar cache
+        # 🔹 Ordena as lojas em ordem alfabética pelo nome da cidade
+        stores.sort(key=lambda loja: loja["cidade"].lower())
 
+        # 🔹 Buscar a logo apenas uma vez, fora do loop
+        result_logo = cloudinary.api.resources_by_tag("logo", max_results=1)
+        if result_logo["resources"]:
+            logo = f"{result_logo['resources'][0]['secure_url']}?t={timestamp}"  # Adiciona timestamp para evitar cache
 
-        print("📸 Imagens carregadas:", stores)  # 🔹 Debug: Verificar se os metadados foram carregados corretamente
+        print("📸 Imagens carregadas e ordenadas:", stores)  # 🔹 Debug
         print(f"🎨 Logo carregada: {logo}")
+        
         return {"stores": stores, "logo": logo}
+    
     except Exception as e:
         print(f"❌ Erro ao carregar imagens das lojas: {e}")
-        return []
+        return {"stores": [], "logo": None}
+
     
 @app.route('/lojas')
 def lojas():
