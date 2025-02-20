@@ -172,9 +172,6 @@ def edit_loja(public_id):
     return render_template('edit_loja.html', loja=loja)
 
 
-
-
-
 def load_images():
     """ Busca imagens no Cloudinary e mantém a estrutura correta. """
     try:

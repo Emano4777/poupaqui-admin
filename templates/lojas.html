@@ -47,10 +47,7 @@
             font-size: 24px;
             cursor: pointer;
         }
-/* Impede o scroll na página quando o menu mobile está aberto */
 
-/* Fundo escuro do modal */
-/* Fundo escuro do modal */
 /* Fundo escuro do modal com animação */
 .mobile-menu-modal {
     display: none;
@@ -61,15 +58,15 @@
     height: 100%;
     background: rgba(0, 0, 0, 0.7);
     justify-content: center;
-    align-items: flex-end; /* Faz o modal subir de baixo */
-    transition: opacity 0.3s ease-in-out; /* Suaviza a transição */
+    align-items: flex-end;
+    transition: opacity 0.3s ease-in-out;
+    z-index: 9999; /* Aumentando a prioridade */
 }
 
-/* Efeito deslizante do modal */
 .mobile-menu-content {
     background: white !important;
     padding: 20px;
-    border-radius: 15px 15px 0 0; /* Borda arredondada no topo */
+    border-radius: 15px 15px 0 0;
     width: 100%;
     max-width: 350px;
     text-align: center;
@@ -77,9 +74,11 @@
     overflow-y: auto;
     touch-action: auto;
     box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.2);
-    transform: translateY(100%); /* Começa fora da tela */
-    transition: transform 0.3s ease-in-out; /* Animação suave */
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 10000; /* Garante que o conteúdo do modal fique acima */
 }
+
 
 /* Classe para exibir o modal com animação */
 .mobile-menu-modal.show {
@@ -232,6 +231,7 @@
         }
 
         .loja-card {
+            z-index: 1;
             width: 250px;
             background-color: red;
             border-radius: 10px;
@@ -460,7 +460,6 @@ h2::after {
             <i class="fas fa-search"></i>
         </button>
     </div>
-    
 
     {% if lojas and lojas|length > 0 %}
     <div class="loja-grid" id="lojaGrid">
@@ -502,6 +501,63 @@ h2::after {
                 }
             });
         });
+        document.addEventListener("DOMContentLoaded", function() {
+        alert("🚧 O site está em manutenção! Algumas funcionalidades podem não estar disponíveis.");
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+    let modal = document.getElementById("mobileMenuModal");
+    let modalContent = modal.querySelector(".mobile-menu-content");
+
+    modal.style.display = "none"; // Mantém fechado ao iniciar
+
+    let startY = 0;
+
+    function openMobileMenu() {
+        if (window.innerWidth <= 768) {
+            modal.style.display = "flex";
+            setTimeout(() => {
+                modal.classList.add("show");
+                modalContent.classList.add("show");
+            }, 10);
+            document.body.classList.add("modal-open");
+        }
+    }
+
+    function closeMobileMenu() {
+        modalContent.classList.remove("show");
+        setTimeout(() => {
+            modal.classList.remove("show");
+            modal.style.display = "none";
+            document.body.classList.remove("modal-open");
+        }, 300); // Tempo da animação
+    }
+
+    // Fechar ao clicar fora do modal
+    modal.addEventListener("click", function (event) {
+        if (!modalContent.contains(event.target)) {
+            closeMobileMenu();
+        }
+    });
+
+    // Fechar ao arrastar para baixo no mobile (Swipe Down)
+    modalContent.addEventListener("touchstart", function (event) {
+        startY = event.touches[0].clientY;
+    });
+
+    modalContent.addEventListener("touchmove", function (event) {
+        let moveY = event.touches[0].clientY;
+        let diffY = moveY - startY;
+
+        if (diffY > 100) { // Se arrastar 100px para baixo, fecha o modal
+            closeMobileMenu();
+        }
+    });
+
+    window.openMobileMenu = openMobileMenu;
+    window.closeMobileMenu = closeMobileMenu;
+});
+       
     </script>
 </body>
 </html>
