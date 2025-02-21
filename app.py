@@ -28,7 +28,7 @@ def load_store_images():
         logo = None
 
         # 🔹 Buscar imagens com a tag 'lojas_poupAqui', garantindo que os metadados sejam carregados
-        result = cloudinary.api.resources_by_tag("lojas_poupAqui", max_results=20, context=True)
+        result = cloudinary.api.resources_by_tag("lojas_poupAqui", max_results=120, context=True)
 
         for img in result["resources"]:
             context = img.get("context", {}).get("custom", {})  # Obtém os metadados corretamente
