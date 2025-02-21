@@ -609,32 +609,41 @@
     }
 
     fetch("/buscar_loja", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cep: cep })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            alert(data.error);
-        } else {
-            if (isMobile) {
-    document.getElementById("modalEnderecoMobile").innerHTML = `<i class=""></i>  ${data.endereco}, ${data.cidade}`;
-    document.getElementById("modalTelefoneMobile").innerHTML = `<i class=""></i>  ${data.telefone}`;
-    document.getElementById("modalWhatsappMobile").innerHTML = `<i class=""></i> <a href="${data.whatsapp}" target="_blank">Fale no WhatsApp</a>`;
-    document.getElementById("modalGoogleMapsMobile").href = data.google_maps;
-    document.getElementById("modalLojaMobile").classList.add("show"); // Exibir modal
-} else {
-    document.getElementById("modalEndereco").innerHTML = `<i class=""></i>  ${data.endereco}, ${data.cidade}`;
-    document.getElementById("modalTelefone").innerHTML = `<i class=""></i> ${data.telefone}`;
-    document.getElementById("modalWhatsapp").innerHTML = `<i class=""></i> <a href="${data.whatsapp}" target="_blank">Fale no WhatsApp</a>`;
-    document.getElementById("modalGoogleMaps").href = data.google_maps;
-    document.getElementById("modalLoja").style.display = "flex";
-}
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ cep: cep })
+})
+.then(response => response.json())
+.then(data => {
+    console.log("🔍 Dados recebidos da API:", data); // Adicione esta linha
+
+    if (data.error) {
+        alert(data.error);
+    } else {
+        const loja = data.lojas ? data.lojas[0] : data; // Se a API retorna {"lojas": [...]}, acessamos o primeiro item
+
+        if (!loja) {
+            alert("Nenhuma loja encontrada.");
+            return;
         }
-    })
-    .catch(error => console.error("Erro ao buscar loja:", error));
-}
+
+        if (isMobile) {
+            document.getElementById("modalEnderecoMobile").innerHTML = `<i class=""></i>  ${loja.endereco}, ${loja.cidade}`;
+            document.getElementById("modalTelefoneMobile").innerHTML = `<i class=""></i>  ${loja.telefone}`;
+            document.getElementById("modalWhatsappMobile").innerHTML = `<i class=""></i> <a href="${loja.whatsapp}" target="_blank">Fale no WhatsApp</a>`;
+            document.getElementById("modalGoogleMapsMobile").href = loja.google_maps;
+            document.getElementById("modalLojaMobile").classList.add("show"); // Exibir modal
+        } else {
+            document.getElementById("modalEndereco").innerHTML = `<i class=""></i>  ${loja.endereco}, ${loja.cidade}`;
+            document.getElementById("modalTelefone").innerHTML = `<i class=""></i> ${loja.telefone}`;
+            document.getElementById("modalWhatsapp").innerHTML = `<i class=""></i> <a href="${loja.whatsapp}" target="_blank">Fale no WhatsApp</a>`;
+            document.getElementById("modalGoogleMaps").href = loja.google_maps;
+            document.getElementById("modalLoja").style.display = "flex";
+        }
+    }
+})
+.catch(error => console.error("Erro ao buscar loja:", error));
+  }
 
 
 function abrirModal(loja) {

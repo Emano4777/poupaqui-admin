@@ -8,6 +8,11 @@ import io
 from PIL import Image
 import time
 import re
+from math import radians, sin, cos, sqrt, atan2
+import requests
+
+CACHE_FILE = "cep_coordinates_cache.json"
+
 
 
 # Configurar a API do Cloudinary
@@ -20,8 +25,147 @@ cloudinary.config(
 app = Flask(__name__)
 app.secret_key = 'segredo123'  # Chave secreta para gerenciar sessões
 
+CACHE_FILE = "cep_coordinates_cache.json"
+STORES_FILE = "stores_data.json"  # Novo arquivo para guardar as lojas carregadas
+
+# 🔹 Carregar cache de coordenadas do CEP se existir
+if os.path.exists(CACHE_FILE):
+    with open(CACHE_FILE, "r") as f:
+        cep_cache = json.load(f)
+else:
+    cep_cache = {}
+
+def save_cache():
+    """ Salva o cache de coordenadas no arquivo JSON """
+    with open(CACHE_FILE, "w") as f:
+        json.dump(cep_cache, f, indent=4)
+
+        
+
+def get_coordinates_from_cep(cep):
+    """ Obtém latitude e longitude a partir de um CEP, utilizando cache e fallback. """
+    cep = cep.replace("-", "").strip()
+
+    # 🔹 Verifica se já está no cache
+    if cep in cep_cache:
+        print(f"✅ [CACHE] Coordenadas do CEP {cep}: {cep_cache[cep]}")
+        return cep_cache[cep]["lat"], cep_cache[cep]["lon"]
+
+    # 🔹 Primeira tentativa com OpenStreetMap (Nominatim)
+    url_osm = f"https://nominatim.openstreetmap.org/search?q={cep}&countrycodes=BR&format=json"
+    headers = {"User-Agent": "PoupAquiBot/1.0 (contato@poupAqui.com)"}
+
+    try:
+        response = requests.get(url_osm, headers=headers, timeout=5)
+        response.raise_for_status()
+        data = response.json()
+
+        if isinstance(data, list) and len(data) > 0:
+            latitude = float(data[0]["lat"])
+            longitude = float(data[0]["lon"])
+            print(f"✅ Coordenadas do CEP {cep}: ({latitude}, {longitude})")
+
+            # 🔹 Adicionamos ao cache e salvamos
+            cep_cache[cep] = {"lat": latitude, "lon": longitude}
+            save_cache()
+            return latitude, longitude
+        else:
+            print(f"⚠️ Primeira tentativa falhou para {cep}, tentando fallback...")
+            return get_coordinates_from_brasilapi(cep)
+
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Erro ao buscar coordenadas: {e}")
+        return None, None
+    
+def get_city_from_cep(cep):
+    """ Obtém a cidade a partir do CEP usando a BrasilAPI ou OpenStreetMap como fallback. """
+    url_brasilapi = f"https://brasilapi.com.br/api/cep/v1/{cep}"
+
+    try:
+        response = requests.get(url_brasilapi, timeout=5)
+        response.raise_for_status()
+        data = response.json()
+
+        if "city" in data:
+            print(f"✅ Cidade encontrada via BrasilAPI: {data['city']}")
+            return data["city"]
+
+    except requests.exceptions.RequestException:
+        print(f"⚠️ BrasilAPI falhou, tentando OpenStreetMap...")
+
+    # 🔹 Se BrasilAPI falhar, tenta via OpenStreetMap
+    url_osm = f"https://nominatim.openstreetmap.org/search?q={cep}&countrycodes=BR&format=json"
+    
+    try:
+        response = requests.get(url_osm, timeout=5)
+        response.raise_for_status()
+        data = response.json()
+
+        if isinstance(data, list) and len(data) > 0:
+            cidade = data[0]["display_name"].split(",")[1].strip()
+            print(f"✅ Cidade encontrada via OpenStreetMap: {cidade}")
+            return cidade
+
+    except requests.exceptions.RequestException:
+        print(f"❌ Falha ao obter cidade para o CEP {cep}")
+
+    return None
+
+
+def get_coordinates_from_brasilapi(cep):
+    """ Obtém informações do CEP via BrasilAPI e tenta converter para coordenadas. """
+    url_brasilapi = f"https://brasilapi.com.br/api/cep/v1/{cep}"
+
+    try:
+        response = requests.get(url_brasilapi, timeout=10)  # ⏳ Aumentamos o timeout
+        response.raise_for_status()
+        data = response.json()
+
+        if "state" in data and "city" in data:
+            cidade = data["city"]
+            estado = data["state"]
+            print(f"🔍 Buscando coordenadas da cidade: {cidade}, {estado}...")
+
+            # 🔹 Busca coordenadas da cidade como fallback
+            url_osm = f"https://nominatim.openstreetmap.org/search?q={cidade},+{estado},+Brasil&format=json"
+            response = requests.get(url_osm, timeout=5)
+            data_osm = response.json()
+
+            if isinstance(data_osm, list) and len(data_osm) > 0:
+                latitude = float(data_osm[0]["lat"])
+                longitude = float(data_osm[0]["lon"])
+                print(f"✅ Coordenadas da cidade {cidade}: ({latitude}, {longitude})")
+
+                # 🔹 Adicionamos ao cache
+                cep_cache[cep] = {"lat": latitude, "lon": longitude}
+                save_cache()
+                return latitude, longitude
+
+    except requests.exceptions.Timeout:
+        print(f"⚠️ Timeout na BrasilAPI para {cep}. Usando fallback de cidade cadastrada...")
+
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Erro ao buscar BrasilAPI: {e}")
+
+    return None, None
+
+def extract_cep(endereco):
+    """ Extrai o CEP do endereço se ele estiver presente. """
+    match = re.search(r"(\d{5}-?\d{3})", endereco)
+    if match:
+        return match.group(1).replace("-", "").strip()
+    return None
+
+
+def extract_city(endereco):
+    """ Extrai a cidade do endereço no formato correto. """
+    padrao = r",\s*([^,]+)\s*-\s*[A-Z]{2}"  # Captura a cidade antes do estado (ex: Adamantina - SP)
+    match = re.search(padrao, endereco)
+    return match.group(1).strip().lower() if match else "desconhecido"
+
+
 def load_store_images():
-    """ Busca as imagens das lojas no Cloudinary e garante que os metadados sejam carregados corretamente. """
+    """ Busca imagens das lojas no Cloudinary e garante que os metadados sejam carregados corretamente. """
     try:
         timestamp = int(time.time())
         stores = []
@@ -31,14 +175,19 @@ def load_store_images():
         result = cloudinary.api.resources_by_tag("lojas_poupAqui", max_results=120, context=True)
 
         for img in result["resources"]:
-            context = img.get("context", {}).get("custom", {})  # Obtém os metadados corretamente
+            context = img.get("context", {}).get("custom", {})
             endereco = context.get("endereco", "Endereço não informado")
             google_maps_url = f"https://www.google.com/maps/search/?api=1&query={endereco.replace(' ', '+')}" if endereco != "Endereço não informado" else "#"
-            cep = context.get("cep", "").replace("-", "").strip() 
+            cep = context.get("cep", "").replace("-", "").strip()
+            cidade = context.get("cidade", "").strip()
+
+            if not cidade:
+                cidade = extract_city(endereco)  # 🔹 Se a cidade não estiver nos metadados, extrai do endereço
+            
             store = {
                 "url": f"{img['secure_url']}?t={timestamp}",
                 "public_id": img["public_id"],
-                "cidade": context.get("cidade", "Cidade Teste"),
+                "cidade": cidade,
                 "endereco": endereco,
                 "telefone": context.get("telefone", "(99) 99999-9999"),
                 "whatsapp": context.get("whatsapp", "https://wa.me/5599999999999"),
@@ -53,9 +202,9 @@ def load_store_images():
         # 🔹 Buscar a logo apenas uma vez, fora do loop
         result_logo = cloudinary.api.resources_by_tag("logo", max_results=1)
         if result_logo["resources"]:
-            logo = f"{result_logo['resources'][0]['secure_url']}?t={timestamp}"  # Adiciona timestamp para evitar cache
+            logo = f"{result_logo['resources'][0]['secure_url']}?t={timestamp}"
 
-        print("📸 Imagens carregadas e ordenadas:", stores)  # 🔹 Debug
+        print("📸 Imagens carregadas e ordenadas:", stores)
         print(f"🎨 Logo carregada: {logo}")
         
         return {"stores": stores, "logo": logo}
@@ -64,51 +213,80 @@ def load_store_images():
         print(f"❌ Erro ao carregar imagens das lojas: {e}")
         return {"stores": [], "logo": None}
 
+
+def haversine(lat1, lon1, lat2, lon2):
+    """ Calcula a distância entre dois pontos geográficos usando a Fórmula de Haversine """
+    R = 6371  # Raio da Terra em KM
+    lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
+    
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    
+    return R * c  # Retorna a distância em KM
+
 @app.route('/buscar_loja', methods=['POST'])
 def buscar_loja():
-    """ Rota para buscar a loja mais próxima pelo CEP informado. """
+    """ Rota para buscar a loja mais próxima pelo CEP informado, priorizando busca por cidade. """
     cep_digitado = request.json.get("cep", "").replace("-", "").replace(" ", "").strip()
 
     if not cep_digitado:
         return jsonify({"error": "CEP não informado."}), 400
 
-    lojas = load_store_images().get("stores", [])  # 🔹 Garante que estamos pegando a lista de lojas
+    data = load_store_images()
+    lojas = data.get("stores", [])
 
-    loja_mais_proxima = None
+    if not lojas:
+        return jsonify({"error": "Nenhuma loja cadastrada."}), 404
 
-    for loja in lojas:
-        endereco_loja = loja.get("endereco", "").strip()
+    # 🔹 Obtém a cidade pelo CEP
+    cidade_usuario = get_city_from_cep(cep_digitado)
 
-        # 🔹 Usa regex para tentar capturar o CEP no final do endereço
-        match = re.search(r"(\d{5}-?\d{3})$", endereco_loja)
-
-        if match:
-            cep_loja = match.group(1).replace("-", "").strip()  # 🔹 Remove qualquer hífen
-
-            if cep_loja[:5] == cep_digitado[:5]:  # 🔹 Compara os primeiros 5 dígitos
-                loja_mais_proxima = loja
-                break  # Para a busca ao encontrar a primeira loja correspondente
-
-    if loja_mais_proxima:
-        return jsonify(loja_mais_proxima)
-    else:
-        return jsonify({"error": "Nenhuma loja encontrada para esse CEP."}), 404
-
+    if not cidade_usuario:
+        return jsonify({"error": "Cidade não encontrada para o CEP informado."}), 404
     
+    cidade_usuario = cidade_usuario.lower().strip()
+
+    # 🔍 Debug: Exibir todas as cidades encontradas nas lojas
+    cidades_lojas = set(loja["cidade"].lower().strip() for loja in lojas)
+    print(f"🔍 Buscando lojas na cidade: {cidade_usuario}")
+    print(f"🏢 Cidades encontradas nas lojas: {cidades_lojas}")
+
+    # 🔹 Filtra as lojas que pertencem à cidade
+    lojas_cidade = [loja for loja in lojas if cidade_usuario in loja["cidade"].lower()]
+
+    if not lojas_cidade:
+        print(f"❌ Nenhuma loja encontrada na cidade: {cidade_usuario}")
+        return jsonify({"error": "Nenhuma loja encontrada nesta cidade."}), 404
+
+    print(f"🏪 Total de lojas encontradas em {cidade_usuario}: {len(lojas_cidade)}")
+
+    # 🔹 Retorna apenas a primeira loja (para evitar erro no JS)
+    loja_mais_proxima = lojas_cidade[0]
+
+    print(f"📦 Retornando loja: {loja_mais_proxima}")  # Debug
+
+    return jsonify(loja_mais_proxima)
+
+
+
 @app.route('/lojas')
 def lojas():
     data = load_store_images()  # Carrega imagens das lojas + logo
     return render_template('lojas.html', lojas=data["stores"], logo=data["logo"])
 
 
+
 @app.route('/admin/lojas', methods=['GET', 'POST'])
 def admin_lojas():
     if request.method == 'POST':
         file = request.files.get('file')
-        cidade = request.form.get("cidade")
-        endereco = request.form.get("endereco")
-        telefone = request.form.get("telefone")
-        whatsapp = request.form.get("whatsapp")
+        cidade = request.form.get("cidade").strip()
+        endereco = request.form.get("endereco").strip()
+        telefone = request.form.get("telefone").strip()
+        whatsapp = request.form.get("whatsapp").strip()
+        cep = extract_cep(endereco)  # 🔹 Extrai o CEP do endereço automaticamente
 
         if not file or file.filename == '':
             flash('Selecione uma imagem para upload.', 'danger')
@@ -118,15 +296,16 @@ def admin_lojas():
             # 🔹 Upload da imagem
             upload_result = cloudinary.uploader.upload(file, tags=["lojas_poupAqui"])
 
-            # 🔹 Define os metadados manualmente após o upload
+            # 🔹 Define os metadados corretamente após o upload
             cloudinary.api.update(upload_result["public_id"], context={
                 "cidade": cidade,
                 "endereco": endereco,
                 "telefone": telefone,
-                "whatsapp": whatsapp
+                "whatsapp": whatsapp,
+                "cep": cep  # 🔹 Agora o CEP também é salvo nos metadados
             })
 
-            print("Metadados Atualizados:", cidade, endereco, telefone, whatsapp)  # 🔹 Debug
+            print("Metadados Atualizados:", cidade, endereco, telefone, whatsapp, cep)
 
             flash("Imagem enviada com sucesso!", "success")
         except Exception as e:
@@ -136,6 +315,7 @@ def admin_lojas():
     lojas = load_store_images()
     
     return render_template('admin_lojas.html', lojas=lojas["stores"], logo=lojas["logo"])
+
 
 @app.route('/admin/lojas/delete/<public_id>')
 def delete_loja(public_id):
@@ -214,12 +394,12 @@ def load_images():
         banners = []
 
         # 🔹 Buscar apenas o banner_top
-        result_top = cloudinary.api.resources_by_tag("banner_top", max_results=1)
+        result_top = cloudinary.api.resources_by_tag("banner_top", max_results=3)
         if result_top["resources"]:
             banner_top = f"{result_top['resources'][0]['secure_url']}?t={timestamp}"  # Adiciona timestamp
 
         # 🔹 Buscar apenas a logo
-        result_logo = cloudinary.api.resources_by_tag("logo", max_results=1)
+        result_logo = cloudinary.api.resources_by_tag("logo", max_results=3)
         if result_logo["resources"]:
             logo = f"{result_logo['resources'][0]['secure_url']}?t={timestamp}"  # Adiciona timestamp
 
