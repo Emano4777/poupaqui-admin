@@ -224,7 +224,7 @@ def load_images():
             logo = f"{result_logo['resources'][0]['secure_url']}?t={timestamp}"  # Adiciona timestamp
 
         # 🔹 Buscar todos os banners normais
-        result_banners = cloudinary.api.resources_by_tag("poupAqui", max_results=10)
+        result_banners = cloudinary.api.resources_by_tag("poupAqui", max_results=120)
         for img in result_banners["resources"]:
             tags = img.get("tags", [])
 
@@ -249,7 +249,7 @@ def load_images():
 def delete_old_image(tag):
     """ Deleta todas as imagens antigas associadas a uma tag específica (banner_top ou logo). """
     try:
-        result = cloudinary.api.resources_by_tag(tag, max_results=50)
+        result = cloudinary.api.resources_by_tag(tag, max_results=120)
         for img in result["resources"]:
             cloudinary.uploader.destroy(img["public_id"])
             print(f"Imagem antiga removida: {img['public_id']}")
