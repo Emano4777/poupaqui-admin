@@ -7,6 +7,7 @@ import os
 import io
 from PIL import Image
 import time
+import re
 
 
 # Configurar a API do Cloudinary
@@ -31,10 +32,9 @@ def load_store_images():
 
         for img in result["resources"]:
             context = img.get("context", {}).get("custom", {})  # Obtém os metadados corretamente
-
             endereco = context.get("endereco", "Endereço não informado")
             google_maps_url = f"https://www.google.com/maps/search/?api=1&query={endereco.replace(' ', '+')}" if endereco != "Endereço não informado" else "#"
-
+            cep = context.get("cep", "").replace("-", "").strip() 
             store = {
                 "url": f"{img['secure_url']}?t={timestamp}",
                 "public_id": img["public_id"],
@@ -42,7 +42,8 @@ def load_store_images():
                 "endereco": endereco,
                 "telefone": context.get("telefone", "(99) 99999-9999"),
                 "whatsapp": context.get("whatsapp", "https://wa.me/5599999999999"),
-                "google_maps": google_maps_url
+                "google_maps": google_maps_url,
+                "cep": cep
             }
             stores.append(store)
 
@@ -62,6 +63,36 @@ def load_store_images():
     except Exception as e:
         print(f"❌ Erro ao carregar imagens das lojas: {e}")
         return {"stores": [], "logo": None}
+
+@app.route('/buscar_loja', methods=['POST'])
+def buscar_loja():
+    """ Rota para buscar a loja mais próxima pelo CEP informado. """
+    cep_digitado = request.json.get("cep", "").replace("-", "").replace(" ", "").strip()
+
+    if not cep_digitado:
+        return jsonify({"error": "CEP não informado."}), 400
+
+    lojas = load_store_images().get("stores", [])  # 🔹 Garante que estamos pegando a lista de lojas
+
+    loja_mais_proxima = None
+
+    for loja in lojas:
+        endereco_loja = loja.get("endereco", "").strip()
+
+        # 🔹 Usa regex para tentar capturar o CEP no final do endereço
+        match = re.search(r"(\d{5}-?\d{3})$", endereco_loja)
+
+        if match:
+            cep_loja = match.group(1).replace("-", "").strip()  # 🔹 Remove qualquer hífen
+
+            if cep_loja[:5] == cep_digitado[:5]:  # 🔹 Compara os primeiros 5 dígitos
+                loja_mais_proxima = loja
+                break  # Para a busca ao encontrar a primeira loja correspondente
+
+    if loja_mais_proxima:
+        return jsonify(loja_mais_proxima)
+    else:
+        return jsonify({"error": "Nenhuma loja encontrada para esse CEP."}), 404
 
     
 @app.route('/lojas')
