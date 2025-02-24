@@ -130,14 +130,16 @@
 }
 
         .mobile-menu-content .close-btn {
-            background: red;
-            color: white;
-            border: none;
-            padding: 10px;
-            width: 100%;
-            cursor: pointer;
-            border-radius: 5px;
-            font-weight: bold;
+            position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    color:  rgb(224, 6, 40);
+    padding: 4px 8px; /* diminui a "tarja" vermelha */
+    border: none;
+    border-radius: 5px;
         }
 
         @media (max-width: 768px) {
@@ -377,6 +379,10 @@ h2 {
     position: relative;
 }
 
+.btn-danger{
+    background:rgb(224, 6, 40);
+}
+
 /* Adiciona uma linha decorativa abaixo do título */
 h2::after {
     content: "";
@@ -450,7 +456,7 @@ h2::after {
         <button class="btn btn-danger mobile-licenciado" onclick="window.open('https://farmaciaspoupaqui.com.br/?utm_source=Trafego_Direto&utm_medium=site&utm_campaign=Direto_Site', '_blank')">
             <i class="fas fa-user-plus"></i> Seja um Licenciado
         </button>                   
-        <button class="close-btn" onclick="closeMobileMenu()">Fechar</button>
+        <button class="close-btn" onclick="closeMobileMenu()"><i class="fas fa-times-circle"></i> </button></button>
     </div>
 </div>
 <div class="container">
