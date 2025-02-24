@@ -105,9 +105,9 @@
 
 /* 🔎 Botão de busca */
 .btn-buscar {
-    background: #b00000; /* Cor principal */
+    background: rgb(224, 6, 40);
     color: rgb(250, 246, 246);
-    font-size: 11px;
+    font-size: 13px;
     font-weight: bold;
     border: 2px solid #8a0000;
     border-radius: 8px;
@@ -119,16 +119,16 @@
     letter-spacing: 0.5px;
 }
 
-/* 🖱️ Efeito ao passar o mouse */
+
 .btn-buscar:hover {
-    background: #8a0000;
-    border-color: #6b0000;
+    background: rgb(224, 6, 40);
+    border-color:rgb(224, 6, 40);
     transform: translateY(-2px);
 }
 
 /* 🎨 Ícone dentro do botão */
 .btn-buscar i {
-    font-size: 15px;
+    font-size: 13px;
 }
 
 /* Indicadores do Carrossel */
@@ -213,8 +213,6 @@
     padding: 0;
 }
 
-
-/* Vantagens */
 .advantage-box {
     background: rgb(224, 6, 40);
     color: white;
@@ -229,7 +227,6 @@
     min-height: 70px;
     font-size: 11px; /* Reduzi a fonte para telas menores */
 }
-
 .navbar-brand .logo-img {
     max-width: 80px; /* Ajusta a largura da logo para telas menores */
     height: auto;
@@ -284,10 +281,13 @@
     position: absolute;
     top: 10px;
     right: 15px;
-    font-size: 24px;
+    font-size: 13px;
     font-weight: bold;
     cursor: pointer;
-    color: #333;
+    color:  rgb(224, 6, 40);
+    padding: 4px 8px; /* diminui a "tarja" vermelha */
+    border: none;
+    border-radius: 5px;
 }
 
 /* Botão de Fechar Estilizado */
@@ -441,16 +441,6 @@
     background: #a8a8a8; /* Cor ao passar o mouse */
 }
 
-        .mobile-menu-content .close-btn {
-            background: red;
-            color: white;
-            border: none;
-            padding: 10px;
-            width: 100%;
-            cursor: pointer;
-            border-radius: 5px;
-            font-weight: bold;
-        }
 
         @media (max-width: 768px) {
             .desktop-menu {
@@ -594,7 +584,7 @@
         <button class="btn btn-danger mobile-licenciado" onclick="window.open('https://farmaciaspoupaqui.com.br/?utm_source=Trafego_Direto&utm_medium=site&utm_campaign=Direto_Site', '_blank')">
             <i class="fas fa-user-plus"></i> Seja um Licenciado
         </button>           
-        <button class="close-btn" onclick="closeMobileMenu()"><i class="fas fa-times-circle"></i> Fechar</button>
+        <button class="close-btn" onclick="closeMobileMenu()"><i class="fas fa-times-circle"></i> </button>
     </div>
 </div>
 <div id="modalLojaMobile" class="custom-modal mobile-only">
