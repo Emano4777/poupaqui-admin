@@ -258,7 +258,10 @@ def buscar_loja():
 
     if not lojas_cidade:
         print(f"❌ Nenhuma loja encontrada na cidade: {cidade_usuario}")
-        return jsonify({"error": "Nenhuma loja encontrada nesta cidade."}), 404
+        return jsonify({
+        "error": "Nenhuma loja encontrada nesta cidade.",
+        "message": f"Nenhuma loja encontrada em {cidade_usuario}. <a href='/lojas'>Clique aqui</a> para conferir todas as nossas lojas."
+    }), 404
 
     print(f"🏪 Total de lojas encontradas em {cidade_usuario}: {len(lojas_cidade)}")
 

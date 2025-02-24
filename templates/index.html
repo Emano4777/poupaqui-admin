@@ -254,6 +254,87 @@
     font-weight: bold;
 }
 
+
+/* Estilização do Modal */
+.modal-erro {
+    display: none; 
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 400px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    text-align: center;
+    padding: 20px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Conteúdo do Modal */
+.modal-content {
+    position: relative;
+    padding: 20px;
+}
+
+/* Botão de Fechar no Canto Superior */
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #333;
+}
+
+/* Botão de Fechar Estilizado */
+.btn-fechar {
+    display: block;
+    width: 100%;
+    background: #ff4d4d;
+    color: white;
+    padding: 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background 0.3s ease-in-out;
+}
+
+.btn-fechar:hover {
+    background: #d84343;
+}
+
+/* Animação de Entrada */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+/* Responsividade para Telas Pequenas */
+@media (max-width: 480px) {
+    .modal-erro {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .btn-fechar {
+        padding: 10px;
+        font-size: 14px;
+    }
+}
+
+
  /* Estilização do menu mobile */
  .mobile-menu {
             display: none;
@@ -471,9 +552,12 @@
         <span class="me-3"><i class="fas fa-tags"></i> Ofertas</span>
         <span class="me-3"><i class="fas fa-leaf"></i> VitNatu</span>
         <span class="me-3"><i class="fas fa-info-circle"></i> Sobre Nós</span>
-        <button class="btn btn-danger"><i class="fas fa-user-plus"></i> Seja um Licenciado</button>
+        <a href="https://farmaciaspoupaqui.com.br/?utm_source=Trafego_Direto&utm_medium=site&utm_campaign=Direto_Site">
+            <button class="btn btn-danger">
+              <i class="fas fa-user-plus"></i> Seja um Licenciado
+            </button>
+          </a>          
     </div>
-
     <!-- Modal para exibir os resultados -->
     <div id="modalLoja" class="custom-modal">
         <div class="custom-modal-content">
@@ -509,7 +593,11 @@
         <a href="#"><i class="fas fa-tags"></i> Ofertas</a>
         <a href="#"><i class="fas fa-leaf"></i> VitNatu</a>
         <a href="#"><i class="fas fa-info-circle"></i> Sobre Nós</a>
-        <button class="btn btn-danger mobile-licenciado"><i class="fas fa-user-plus"></i> Seja um Licenciado</button>
+        <a href="https://farmaciaspoupaqui.com.br/?utm_source=Trafego_Direto&utm_medium=site&utm_campaign=Direto_Site">
+            <button class="btn btn-danger mobile-licenciado">
+              <i class="fas fa-user-plus"></i> Seja um Licenciado
+            </button>
+          </a>          
         <button class="close-btn" onclick="closeMobileMenu()"><i class="fas fa-times-circle"></i> Fechar</button>
     </div>
 </div>
@@ -528,6 +616,15 @@
         </div>
     </div>
 </div>
+
+<div id="modalErroContainer" class="modal-erro">
+    <div class="modal-content">
+        <span class="close-btn" onclick="fecharModalErro()">&times;</span>
+        <div id="modalErro"></div>
+        <button class="btn-fechar" onclick="fecharModalErro()">Fechar</button>
+    </div>
+</div>
+
 {% if banner_top %}
     <img src="{{ banner_top }}?t={{ timestamp }}" alt="Promoção Principal" class="banner-top">
 {% else %}
@@ -615,36 +712,58 @@
 })
 .then(response => response.json())
 .then(data => {
-    console.log("🔍 Dados recebidos da API:", data); // Adicione esta linha
+    console.log("🔍 Dados recebidos da API:", data); // Debug para verificar a resposta
 
     if (data.error) {
-        alert(data.error);
+        let message = data.message ? data.message : data.error;
+        
+        // Criando um alerta com um link para a página de todas as lojas
+        let errorMessage = `${message} <br><br> <a href="/lojas" style="color: blue; text-decoration: underline;"></a>`;
+        
+        // Exibir a mensagem em um modal ou alerta
+        document.getElementById("modalErro").innerHTML = errorMessage;
+        document.getElementById("modalErroContainer").style.display = "block"; // Exibir modal de erro
+
+        return;
+    }
+
+    const loja = data.lojas ? data.lojas[0] : data; // Se a API retorna {"lojas": [...]}, acessamos o primeiro item
+
+    if (!loja) {
+        let noStoreMessage = ` <br><br> <a href="/lojas" style="color: blue; text-decoration: underline;"></a> .`;
+        
+        document.getElementById("modalErro").innerHTML = noStoreMessage;
+        document.getElementById("modalErroContainer").style.display = "block"; // Exibir modal de erro
+        
+        return;
+    }
+
+    if (isMobile) {
+        document.getElementById("modalEnderecoMobile").innerHTML = `<i class=""></i>  ${loja.endereco}, ${loja.cidade}`;
+        document.getElementById("modalTelefoneMobile").innerHTML = `<i class=""></i>  ${loja.telefone}`;
+        document.getElementById("modalWhatsappMobile").innerHTML = `<i class=""></i> <a href="${loja.whatsapp}" target="_blank">Fale no WhatsApp</a>`;
+        document.getElementById("modalGoogleMapsMobile").href = loja.google_maps;
+        document.getElementById("modalLojaMobile").classList.add("show"); // Exibir modal
     } else {
-        const loja = data.lojas ? data.lojas[0] : data; // Se a API retorna {"lojas": [...]}, acessamos o primeiro item
-
-        if (!loja) {
-            alert("Nenhuma loja encontrada.");
-            return;
-        }
-
-        if (isMobile) {
-            document.getElementById("modalEnderecoMobile").innerHTML = `<i class=""></i>  ${loja.endereco}, ${loja.cidade}`;
-            document.getElementById("modalTelefoneMobile").innerHTML = `<i class=""></i>  ${loja.telefone}`;
-            document.getElementById("modalWhatsappMobile").innerHTML = `<i class=""></i> <a href="${loja.whatsapp}" target="_blank">Fale no WhatsApp</a>`;
-            document.getElementById("modalGoogleMapsMobile").href = loja.google_maps;
-            document.getElementById("modalLojaMobile").classList.add("show"); // Exibir modal
-        } else {
-            document.getElementById("modalEndereco").innerHTML = `<i class=""></i>  ${loja.endereco}, ${loja.cidade}`;
-            document.getElementById("modalTelefone").innerHTML = `<i class=""></i> ${loja.telefone}`;
-            document.getElementById("modalWhatsapp").innerHTML = `<i class=""></i> <a href="${loja.whatsapp}" target="_blank">Fale no WhatsApp</a>`;
-            document.getElementById("modalGoogleMaps").href = loja.google_maps;
-            document.getElementById("modalLoja").style.display = "flex";
-        }
+        document.getElementById("modalEndereco").innerHTML = `<i class=""></i>  ${loja.endereco}, ${loja.cidade}`;
+        document.getElementById("modalTelefone").innerHTML = `<i class=""></i> ${loja.telefone}`;
+        document.getElementById("modalWhatsapp").innerHTML = `<i class=""></i> <a href="${loja.whatsapp}" target="_blank">Fale no WhatsApp</a>`;
+        document.getElementById("modalGoogleMaps").href = loja.google_maps;
+        document.getElementById("modalLoja").style.display = "flex";
     }
 })
 .catch(error => console.error("Erro ao buscar loja:", error));
   }
 
+
+  function exibirModalErro(mensagem) {
+    document.getElementById("modalErro").innerHTML = mensagem;
+    document.getElementById("modalErroContainer").style.display = "block";
+}
+
+function fecharModalErro() {
+    document.getElementById("modalErroContainer").style.display = "none";
+}
 
 function abrirModal(loja) {
     let isMobile = window.innerWidth <= 768;
@@ -664,6 +783,10 @@ function abrirModal(loja) {
 }
 
 }
+
+function fecharModalErro() {
+        document.getElementById("modalErroContainer").style.display = "none";
+    }
 
 function fecharModal() {
     document.getElementById("modalLoja").style.display = "none";
