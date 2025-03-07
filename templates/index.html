@@ -14,6 +14,31 @@
     overflow-x: hidden;
 }
 
+/* Estilização do Botão Flutuante */
+
+    .help-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #d80000;
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        text-decoration: none;
+        transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+    }
+
+    .help-button:hover {
+        background-color: #b00000;
+        transform: scale(1.1);
+    }
+
 /* 🌟 Estilização do Modal */
 .custom-modal {
     display: none;
@@ -335,6 +360,7 @@
 }
 
 
+
  /* Estilização do menu mobile */
  .mobile-menu {
             display: none;
@@ -635,6 +661,10 @@
     </div>
 </div>
 
+<a href="https://wa.me/5517996797429" target="_blank" class="help-button" data-bs-toggle="tooltip" data-bs-placement="left" title="Está com problemas no site? Clique aqui e obtenha ajuda!">
+    <i class="fas fa-question-circle"></i>
+</a>
+
 
 <!-- ✅ Vantagens -->
 <div class="container my-4">
@@ -785,6 +815,10 @@ function fecharModalMobile() {
     document.addEventListener("DOMContentLoaded", function () {
     let modal = document.getElementById("mobileMenuModal");
     let modalContent = modal.querySelector(".mobile-menu-content");
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
 
     modal.style.display = "none"; // Mantém fechado ao iniciar
 
