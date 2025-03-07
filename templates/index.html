@@ -12,6 +12,7 @@
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    
 }
 
 .help-button {
@@ -574,6 +575,38 @@ textarea {
     background: #a8a8a8; /* Cor ao passar o mouse */
 }
 
+.footer {
+    width: 100%;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 14px;
+    color: #666;
+    background: #f8f9fa;
+    position: relative;
+    box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.footer p {
+    margin: 5px 0;
+}
+
+.footer-link {
+    text-decoration: none;
+    color: #d80000;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.footer-link:hover {
+    color: #b00000;
+    text-decoration: underline;
+}
+
+.footer i {
+    margin-right: 5px;
+    font-size: 16px;
+}
 
         @media (max-width: 768px) {
             .desktop-menu {
@@ -824,6 +857,24 @@ textarea {
         </div>
     </div>
 </div>
+
+<!-- ✅ Rodapé -->
+<footer class="footer">
+    <p>
+        <a href="https://www.instagram.com/licencefarma/" target="_blank" class="footer-link">
+            <i class="fab fa-instagram"></i> Conheça a licenciadora PoupAqui
+        </a> |
+        <a href="https://farmaciaspoupaqui.com.br/?utm_source=Trafego_Direto&utm_medium=site&utm_campaign=Direto_Site" target="_blank" class="footer-link">
+            <i class="fas fa-user-plus"></i> Tenha sua loja PoupAqui
+        </a>
+    </p>
+    <p>
+        Site desenvolvido por 
+        <a href="https://wa.me/5517991436759" target="_blank" class="footer-link">
+            <i class="fab fa-whatsapp"></i> <strong>Emanuel Carlos</strong>
+        </a>
+    </p>
+</footer>
 <script>
   function buscarLoja() {
     let isMobile = window.innerWidth <= 768;
