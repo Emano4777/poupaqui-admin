@@ -79,6 +79,39 @@
     z-index: 10000; /* Garante que o conteúdo do modal fique acima */
 }
 
+.footer {
+    width: 100%;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 14px;
+    color: #666;
+    background: #f8f9fa;
+    position: relative;
+    box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.footer p {
+    margin: 5px 0;
+}
+
+.footer-link {
+    text-decoration: none;
+    color: #d80000;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.footer-link:hover {
+    color: #b00000;
+    text-decoration: underline;
+}
+
+.footer i {
+    margin-right: 5px;
+    font-size: 16px;
+}
+
 
 /* Classe para exibir o modal com animação */
 .mobile-menu-modal.show {
@@ -408,6 +441,34 @@ h2::after {
     color: white; /* Texto branco */
 }
 
+/* 🔎 Botão de busca */
+.btn-buscar {
+    background: rgb(224, 6, 40);
+    color: rgb(250, 246, 246);
+    font-size: 13px;
+    font-weight: bold;
+    border: 2px solid #8a0000;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    align-items: center;
+    gap: 5px; /* Espaço entre ícone e texto */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+
+.btn-buscar:hover {
+    background: rgb(224, 6, 40);
+    border-color:rgb(224, 6, 40);
+    transform: translateY(-2px);
+}
+
+/* 🎨 Ícone dentro do botão */
+.btn-buscar i {
+    font-size: 13px;
+}
+
 
     </style>
 </head>
@@ -422,17 +483,19 @@ h2::after {
         {% endif %}
     </a>
     <div class="desktop-menu">
+        <input type="text" id="cepInputDesktop" placeholder="Digite seu CEP">
+        <button class="btn-buscar" onclick="buscarLoja()">
+            <i class="fas fa-search"></i> Buscar
+        </button>
         <a href="{{ url_for('lojas') }}" class="btn-unidades">
-            ☰ Unidades
-        </a>        
-        <span class="me-3">💊 Ofertas</span>
-        <span class="me-3">🌿 VitNatu</span>
-        <span class="me-3">📖 Sobre Nós</span>
-        <a href="https://farmaciaspoupaqui.com.br/?utm_source=Trafego_Direto&utm_medium=site&utm_campaign=Direto_Site">
-            <button class="btn btn-danger">
-              <i class="fas fa-user-plus"></i> Seja um Licenciado
-            </button>
-          </a>          
+            <i class="fas fa-store"></i> Unidades
+        </a> 
+        <span class="me-3"><i class="fas fa-tags"></i> Ofertas</span>
+        <span class="me-3"><i class="fas fa-leaf"></i> VitNatu</span>
+        <span class="me-3"><i class="fas fa-info-circle"></i> Sobre Nós</span>
+        <button class="btn btn-danger" onclick="window.open('https://farmaciaspoupaqui.com.br/?utm_source=Trafego_Direto&utm_medium=site&utm_campaign=Direto_Site', '_blank')">
+            <i class="fas fa-user-plus"></i> Seja um Licenciado
+        </button>          
     </div>
 
     <div class="mobile-menu">
@@ -441,19 +504,23 @@ h2::after {
     </div>
 </nav>
 
-<!-- Modal do Menu Mobile -->
+<!-- ✅ Modal do Menu Mobile -->
 <div class="mobile-menu-modal" id="mobileMenuModal">
     <div class="mobile-menu-content">
+        <input type="text" id="cepInputMobile" placeholder="Digite seu CEP">
+        <button class="btn-buscar" onclick="buscarLoja()">
+            <i class="fas fa-search"></i> Buscar
+        </button>
         <a href="{{ url_for('lojas') }}" class="btn-unidades">
-            ☰ Unidades
-        </a> 
-        <a href="#">💊 Ofertas</a>
-        <a href="#">🌿 VitNatu</a>
-        <a href="#">📖 Sobre Nós</a>
+            <i class="fas fa-store"></i> Unidades
+        </a>     
+        <a href="#"><i class="fas fa-tags"></i> Ofertas</a>
+        <a href="#"><i class="fas fa-leaf"></i> VitNatu</a>
+        <a href="#"><i class="fas fa-info-circle"></i> Sobre Nós</a>
         <button class="btn btn-danger mobile-licenciado" onclick="window.open('https://farmaciaspoupaqui.com.br/?utm_source=Trafego_Direto&utm_medium=site&utm_campaign=Direto_Site', '_blank')">
             <i class="fas fa-user-plus"></i> Seja um Licenciado
-        </button>                   
-        <button class="close-btn" onclick="closeMobileMenu()"><i class="fas fa-times-circle"></i> </button></button>
+        </button>           
+        <button class="close-btn" onclick="closeMobileMenu()"><i class="fas fa-times-circle"></i> </button>
     </div>
 </div>
 <div class="container">
@@ -492,6 +559,24 @@ h2::after {
     {% endif %}
 </div>
     </div>
+
+    <!-- ✅ Rodapé -->
+<footer class="footer">
+    <p>
+        <a href="https://www.instagram.com/licencefarma/" target="_blank" class="footer-link">
+            <i class="fab fa-instagram"></i> Conheça a licenciadora PoupAqui
+        </a> |
+        <a href="https://farmaciaspoupaqui.com.br/?utm_source=Trafego_Direto&utm_medium=site&utm_campaign=Direto_Site" target="_blank" class="footer-link">
+            <i class="fas fa-user-plus"></i> Tenha sua loja PoupAqui
+        </a>
+    </p>
+    <p>
+        Site desenvolvido por 
+        <a href="https://wa.me/5517991436759" target="_blank" class="footer-link">
+            <i class="fab fa-whatsapp"></i> <strong>Emanuel Carlos</strong>
+        </a>
+    </p>
+</footer>
     <script>
         document.getElementById('searchInput').addEventListener('keyup', function () {
             let filter = this.value.toLowerCase();
