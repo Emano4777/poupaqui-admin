@@ -441,34 +441,6 @@ h2::after {
     color: white; /* Texto branco */
 }
 
-/* 🔎 Botão de busca */
-.btn-buscar {
-    background: rgb(224, 6, 40);
-    color: rgb(250, 246, 246);
-    font-size: 13px;
-    font-weight: bold;
-    border: 2px solid #8a0000;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-    align-items: center;
-    gap: 5px; /* Espaço entre ícone e texto */
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-
-.btn-buscar:hover {
-    background: rgb(224, 6, 40);
-    border-color:rgb(224, 6, 40);
-    transform: translateY(-2px);
-}
-
-/* 🎨 Ícone dentro do botão */
-.btn-buscar i {
-    font-size: 13px;
-}
-
 
     </style>
 </head>
@@ -483,10 +455,6 @@ h2::after {
         {% endif %}
     </a>
     <div class="desktop-menu">
-        <input type="text" id="cepInputDesktop" placeholder="Digite seu CEP">
-        <button class="btn-buscar" onclick="buscarLoja()">
-            <i class="fas fa-search"></i> Buscar
-        </button>
         <a href="{{ url_for('lojas') }}" class="btn-unidades">
             <i class="fas fa-store"></i> Unidades
         </a> 
