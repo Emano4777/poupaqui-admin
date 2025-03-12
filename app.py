@@ -8,11 +8,11 @@ import io
 from PIL import Image
 import time
 import re
+import psycopg2
 from math import radians, sin, cos, sqrt, atan2
 import requests
 
 CACHE_FILE = "cep_coordinates_cache.json"
-
 
 
 # Configurar a API do Cloudinary
@@ -21,6 +21,11 @@ cloudinary.config(
     api_key="218941668123635",
     api_secret="bADJ8clAnP8Ghptg93-I5ZCAVd4"
 )
+
+
+def get_db_connection():
+    return psycopg2.connect("postgresql://postgres:Poupaqui123@406279.hstgr.cloud:5432/postgres")
+
 
 app = Flask(__name__)
 app.secret_key = 'segredo123'  # Chave secreta para gerenciar sessões
@@ -35,12 +40,50 @@ if os.path.exists(CACHE_FILE):
 else:
     cep_cache = {}
 
+
 def save_cache():
     """ Salva o cache de coordenadas no arquivo JSON """
     with open(CACHE_FILE, "w") as f:
         json.dump(cep_cache, f, indent=4)
 
-        
+@app.route('/registrar-clique', methods=['POST'])
+def registrar_clique():
+    data = request.json
+    botao = data.get('botao', 'desconhecido')
+    link = data.get('link', 'sem link')
+
+    print("Recebendo clique:", botao, link)  # 🔍 Debug para verificar se os dados chegam corretamente
+
+    conn = get_db_connection()
+    if not conn:
+        print("❌ Falha ao conectar ao banco de dados!")
+        return jsonify({"error": "Falha na conexão com o banco"}), 500
+
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS cliques (
+                id SERIAL PRIMARY KEY,
+                botao TEXT NOT NULL,
+                link TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        print("✅ Tabela verificada/criada com sucesso.")  # 🔍 Log para saber se a criação da tabela ocorreu corretamente
+
+        cursor.execute("INSERT INTO cliques (botao, link) VALUES (%s, %s)", (botao, link))
+        conn.commit()
+        print("✅ Clique registrado no banco!")  # 🔍 Log para confirmar que o commit foi feito
+
+        return jsonify({"message": "Clique registrado com sucesso"}), 200
+    except Exception as e:
+        conn.rollback()
+        print("❌ Erro ao registrar clique:", e)
+        return jsonify({"error": "Erro ao registrar clique"}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 def get_coordinates_from_cep(cep):
     """ Obtém latitude e longitude a partir de um CEP, utilizando cache e fallback. """
@@ -283,6 +326,10 @@ def lojas():
 
 @app.route('/admin/lojas', methods=['GET', 'POST'])
 def admin_lojas():
+     # 🔹 Verifica se o usuário está logado antes de permitir o acesso
+    if not session.get('logged_in'):
+        flash('Você precisa estar logado para acessar esta página.', 'danger')
+        return redirect(url_for('login'))
     if request.method == 'POST':
         file = request.files.get('file')
         cidade = request.form.get("cidade").strip()

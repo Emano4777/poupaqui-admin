@@ -508,9 +508,12 @@ h2::after {
                 <p><strong>Endereço:</strong> {{ loja.endereco }}</p>
                 <p>{{ loja.telefone }}</p>
                  <!-- Botão WhatsApp -->
-            <a href="{{ loja.whatsapp }}" target="_blank" class="btn-whatsapp mt-2">
-                <i class="fab fa-whatsapp"></i> WhatsApp
-            </a>
+                 <a href="{{ loja.whatsapp }}" 
+                    target="_blank" 
+                    class="btn-whatsapp mt-2" 
+                    onclick="registrarClique('{{ loja.whatsapp }}')">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                    </a>
                 <br>
                 <a href="{{ loja.google_maps }}" target="_blank" class="btn-maps mt-2">
                     <i class="fas fa-map-marker-alt"></i> Como Chegar
@@ -557,6 +560,19 @@ h2::after {
             });
         });
 
+        function registrarClique(whatsapp) {
+    fetch('/registrar-clique', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ botao: 'whatsapp', link: whatsapp })
+    })
+    .then(response => response.json())
+    .then(data => console.log("Clique registrado:", data))
+    .catch(error => console.error("Erro ao registrar clique:", error));
+}
+
     document.addEventListener("DOMContentLoaded", function () {
     let modal = document.getElementById("mobileMenuModal");
     let modalContent = modal.querySelector(".mobile-menu-content");
@@ -564,6 +580,8 @@ h2::after {
     modal.style.display = "none"; // Mantém fechado ao iniciar
 
     let startY = 0;
+
+
 
     function openMobileMenu() {
         if (window.innerWidth <= 768) {
