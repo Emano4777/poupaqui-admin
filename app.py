@@ -46,13 +46,30 @@ def save_cache():
     with open(CACHE_FILE, "w") as f:
         json.dump(cep_cache, f, indent=4)
 
+
+def obter_regiao(ip):
+    try:
+        response = requests.get(f"http://ip-api.com/json/{ip}")
+        dados = response.json()
+
+        if dados["status"] == "success":
+            return f"{dados['city']}, {dados['regionName']}, {dados['country']}"
+        else:
+            return "Desconhecido"
+    except Exception as e:
+        print("Erro ao obter região:", e)
+        return "Erro na geolocalização"
+
+# Rota protegida para registrar cliques
 @app.route('/registrar-clique', methods=['POST'])
 def registrar_clique():
     data = request.json
     botao = data.get('botao', 'desconhecido')
     link = data.get('link', 'sem link')
+    ip_usuario = request.remote_addr  # Obtém o IP do usuário
+    regiao = obter_regiao(ip_usuario)  # Obtém a região com base no IP
 
-    print("Recebendo clique:", botao, link)  # 🔍 Debug para verificar se os dados chegam corretamente
+    print("📌 Recebendo clique:", botao, link, "| IP:", ip_usuario, "| Região:", regiao)  # 🔍 Debug para verificar se os dados chegam corretamente
 
     conn = get_db_connection()
     if not conn:
@@ -62,21 +79,26 @@ def registrar_clique():
     cursor = conn.cursor()
 
     try:
+        # Criar tabela, incluindo IP e região
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS cliques (
+            CREATE TABLE IF NOT EXISTS public.cliques (
                 id SERIAL PRIMARY KEY,
                 botao TEXT NOT NULL,
                 link TEXT,
+                ip VARCHAR(45),
+                regiao TEXT,
                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
         print("✅ Tabela verificada/criada com sucesso.")  # 🔍 Log para saber se a criação da tabela ocorreu corretamente
 
-        cursor.execute("INSERT INTO cliques (botao, link) VALUES (%s, %s)", (botao, link))
+        # Inserir o clique no banco, incluindo IP e região
+        cursor.execute("INSERT INTO public.cliques (botao, link, ip, regiao) VALUES (%s, %s, %s, %s)", 
+                       (botao, link, ip_usuario, regiao))
         conn.commit()
         print("✅ Clique registrado no banco!")  # 🔍 Log para confirmar que o commit foi feito
 
-        return jsonify({"message": "Clique registrado com sucesso"}), 200
+        return jsonify({"message": "Clique registrado com sucesso", "regiao": regiao}), 200
     except Exception as e:
         conn.rollback()
         print("❌ Erro ao registrar clique:", e)
@@ -321,7 +343,6 @@ def buscar_loja():
 def lojas():
     data = load_store_images()  # Carrega imagens das lojas + logo
     return render_template('lojas.html', lojas=data["stores"], logo=data["logo"])
-
 
 
 @app.route('/admin/lojas', methods=['GET', 'POST'])
