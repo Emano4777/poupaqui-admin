@@ -516,6 +516,8 @@ textarea {
     opacity: 1;
 }
 
+
+
 .mobile-menu-content.show {
     transform: translateY(0); /* Move para a tela ao abrir */
 }
@@ -597,6 +599,39 @@ textarea {
     color: #d80000;
     font-weight: bold;
     transition: 0.3s;
+}
+
+.menu-link {
+    color: inherit; /* Mantém a cor do texto conforme o restante do menu */
+    text-decoration: none; /* Remove o sublinhado */
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.menu-link:hover {
+    color: white !important; /* Deixa o texto branco para melhor contraste */
+    background-color:  #d80000 !important; /* Muda o fundo para vermelho ao passar o mouse */
+    padding: 5px 10px; /* Mantém o espaçamento */
+    border-radius: 5px;
+}
+
+
+/* 📌 Botão "Unidades" */
+.btn-unidades {
+    background-color: transparent; /* Fundo transparente */
+    color: #d80000; /* Cor vermelha para combinar com o tema */
+    font-weight: bold;
+    text-decoration: none; /* Remove o sublinhado */
+    padding: 8px 15px;
+    border-radius: 20px;
+    transition: 0.3s;
+    display: inline-block;
+}
+
+.btn-unidades:hover {
+    background-color: #d80000; /* Fundo vermelho ao passar o mouse */
+    color: white; /* Texto branco */
 }
 
 .footer-link:hover {
@@ -708,9 +743,9 @@ textarea {
         </a> 
         <span class="me-3"><i class="fas fa-tags"></i> Ofertas</span>
         <span class="me-3"><i class="fas fa-leaf"></i> VitNatu</span>
-        <a href="{{ url_for('sobre_nos') }}" class="me-3 text-decoration-none text-reset">
+        <a href="{{ url_for('sobre_nos') }}" class="me-3 menu-link">
             <i class="fas fa-info-circle"></i> Sobre Nós
-        </a>    
+        </a>
         <button class="btn btn-danger" onclick="window.open('https://farmaciaspoupaqui.com.br/?utm_source=Trafego_Direto&utm_medium=site&utm_campaign=Direto_Site', '_blank')">
             <i class="fas fa-user-plus"></i> Seja um Licenciado
         </button>          
@@ -749,9 +784,9 @@ textarea {
         </a>     
         <a href="#"><i class="fas fa-tags"></i> Ofertas</a>
         <a href="#"><i class="fas fa-leaf"></i> VitNatu</a>
-        <a href="{{ url_for('sobre_nos') }}" class="me-3 text-decoration-none text-reset">
+        <a href="{{ url_for('sobre_nos') }}" class="me-3 menu-link">
             <i class="fas fa-info-circle"></i> Sobre Nós
-        </a>   
+        </a>
         <button class="btn btn-danger mobile-licenciado" onclick="window.open('https://farmaciaspoupaqui.com.br/?utm_source=Trafego_Direto&utm_medium=site&utm_campaign=Direto_Site', '_blank')">
             <i class="fas fa-user-plus"></i> Seja um Licenciado
         </button>           
