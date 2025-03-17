@@ -651,6 +651,60 @@ h2::after {
             }, { threshold: 0.3 });
             elements.forEach(element => observer.observe(element));
         });
+        document.addEventListener("DOMContentLoaded", function () {
+    let modal = document.getElementById("mobileMenuModal");
+    let modalContent = modal.querySelector(".mobile-menu-content");
+
+    modal.style.display = "none"; // Mantém fechado ao iniciar
+
+    let startY = 0;
+
+
+
+    function openMobileMenu() {
+        if (window.innerWidth <= 768) {
+            modal.style.display = "flex";
+            setTimeout(() => {
+                modal.classList.add("show");
+                modalContent.classList.add("show");
+            }, 10);
+            document.body.classList.add("modal-open");
+        }
+    }
+
+    function closeMobileMenu() {
+        modalContent.classList.remove("show");
+        setTimeout(() => {
+            modal.classList.remove("show");
+            modal.style.display = "none";
+            document.body.classList.remove("modal-open");
+        }, 300); // Tempo da animação
+    }
+
+    // Fechar ao clicar fora do modal
+    modal.addEventListener("click", function (event) {
+        if (!modalContent.contains(event.target)) {
+            closeMobileMenu();
+        }
+    });
+
+    // Fechar ao arrastar para baixo no mobile (Swipe Down)
+    modalContent.addEventListener("touchstart", function (event) {
+        startY = event.touches[0].clientY;
+    });
+
+    modalContent.addEventListener("touchmove", function (event) {
+        let moveY = event.touches[0].clientY;
+        let diffY = moveY - startY;
+
+        if (diffY > 100) { // Se arrastar 100px para baixo, fecha o modal
+            closeMobileMenu();
+        }
+    });
+
+    window.openMobileMenu = openMobileMenu;
+    window.closeMobileMenu = closeMobileMenu;
+});
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
