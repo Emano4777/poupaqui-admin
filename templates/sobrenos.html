@@ -498,6 +498,22 @@ h2::after {
             border-radius: 6px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
+
+        .menu-link {
+    color: inherit; /* Mantém a cor do texto conforme o restante do menu */
+    text-decoration: none; /* Remove o sublinhado */
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.menu-link:hover {
+    color: white !important; /* Deixa o texto branco para melhor contraste */
+    background-color:  #d80000 !important; /* Muda o fundo para vermelho ao passar o mouse */
+    padding: 5px 10px; /* Mantém o espaçamento */
+    border-radius: 5px;
+}
+
         .show {
             opacity: 1 !important;
             transform: translateY(0) !important;
@@ -535,8 +551,9 @@ h2::after {
             <i class="fas fa-store"></i> Unidades
         </a> 
         <span class="me-3"><i class="fas fa-tags"></i> Ofertas</span>
-        <span class="me-3"><i class="fas fa-leaf"></i> VitNatu</span>
-        <span class="me-3"><i class="fas fa-info-circle"></i> Sobre Nós</span>
+        <a href="{{ url_for('vitnatu') }}" class="me-3 menu-link">
+            <i class="fas fa-leaf"></i> VitNatu
+        </a>
         <button class="btn btn-danger" onclick="window.open('https://farmaciaspoupaqui.com.br/?utm_source=Trafego_Direto&utm_medium=site&utm_campaign=Direto_Site', '_blank')">
             <i class="fas fa-user-plus"></i> Seja um Licenciado
         </button>          
@@ -555,8 +572,9 @@ h2::after {
             <i class="fas fa-store"></i> Unidades
         </a>     
         <a href="#"><i class="fas fa-tags"></i> Ofertas</a>
-        <a href="#"><i class="fas fa-leaf"></i> VitNatu</a>
-        <a href="#"><i class="fas fa-info-circle"></i> Sobre Nós</a>
+        <a href="{{ url_for('vitnatu') }}" class="me-3 menu-link">
+            <i class="fas fa-leaf"></i> VitNatu
+        </a>
         <button class="btn btn-danger mobile-licenciado" onclick="window.open('https://farmaciaspoupaqui.com.br/?utm_source=Trafego_Direto&utm_medium=site&utm_campaign=Direto_Site', '_blank')">
             <i class="fas fa-user-plus"></i> Seja um Licenciado
         </button>           

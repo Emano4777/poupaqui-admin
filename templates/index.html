@@ -654,6 +654,7 @@ textarea {
 }
 
 
+
 /* 📌 Botão "Unidades" */
 .btn-unidades {
     background-color: transparent; /* Fundo transparente */
@@ -792,7 +793,9 @@ textarea {
             <i class="fas fa-store"></i> Unidades
         </a> 
         <span class="me-3"><i class="fas fa-tags"></i> Ofertas</span>
-        <span class="me-3"><i class="fas fa-leaf"></i> VitNatu</span>
+        <a href="{{ url_for('vitnatu') }}" class="me-3 menu-link">
+            <i class="fas fa-leaf"></i> VitNatu
+        </a>
         <a href="{{ url_for('sobre_nos') }}" class="me-3 menu-link">
             <i class="fas fa-info-circle"></i> Sobre Nós
         </a>
@@ -818,7 +821,6 @@ textarea {
         </div>
     </div>
 
-
     <div class="mobile-menu">
         
         <span class="mobile-menu-icon" onclick="openMobileMenu()">☰</span>
@@ -835,7 +837,9 @@ textarea {
             <i class="fas fa-store"></i> Unidades
         </a>     
         <a href="#"><i class="fas fa-tags"></i> Ofertas</a>
-        <a href="#"><i class="fas fa-leaf"></i> VitNatu</a>
+        <a href="{{ url_for('vitnatu') }}" class="me-3 menu-link">
+            <i class="fas fa-leaf"></i> VitNatu
+        </a>
         <a href="{{ url_for('sobre_nos') }}" class="me-3 menu-link">
             <i class="fas fa-info-circle"></i> Sobre Nós
         </a>
@@ -1196,6 +1200,9 @@ window.enviarWhatsApp = enviarWhatsApp;
 
     window.openMobileMenu = openMobileMenu;
     window.closeMobileMenu = closeMobileMenu;
+    window.onload = function() {
+    alert("🚀 Novidade! Agora temos a página VitNatu disponível! Clique no menu para conferir.");
+};
 });
 </script>
 

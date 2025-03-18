@@ -112,6 +112,11 @@ def sobre_nos():
     data = load_store_images() 
     return render_template('sobrenos.html', lojas=data["stores"], logo=data["logo"])
 
+@app.route('/vitnatu')
+def vitnatu():
+    data = load_store_images() 
+    return render_template('vitnatu.html', lojas=data["stores"], logo=data["logo"])
+
 def get_coordinates_from_cep(cep):
     """ Obtém latitude e longitude a partir de um CEP, utilizando cache e fallback. """
     cep = cep.replace("-", "").strip()
