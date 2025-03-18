@@ -237,6 +237,27 @@ textarea {
     }
 }
 
+/* 🔹 Contêiner do campo de busca */
+.cep-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 280px; /* Define um tamanho fixo para o campo de busca */
+    flex-shrink: 0; /* Evita que ele diminua muito */
+}
+
+/* 🔹 Campo de entrada do CEP */
+#cepInputDesktop {
+    flex: 1;
+    padding: 8px;
+    font-size: 14px;
+    border: 2px solid #8a0000;
+    border-radius: 8px;
+    outline: none;
+    width: 150px; /* Define um tamanho mínimo */
+}
+
+
 /* 🔎 Botão de busca */
 .btn-buscar {
     background: rgb(224, 6, 40);
@@ -263,6 +284,22 @@ textarea {
 /* 🎨 Ícone dentro do botão */
 .btn-buscar i {
     font-size: 13px;
+}
+
+/* Responsividade */
+@media (max-width: 500px) {
+    .cep-container {
+        flex-direction: column; /* Empilha os elementos */
+        max-width: 100%;
+    }
+
+    #cepInputDesktop {
+        width: 100%; /* Faz o input ocupar toda a largura */
+    }
+
+    .btn-buscar {
+        width: 100%; /* Faz o botão ocupar toda a largura */
+    }
 }
 
 /* Indicadores do Carrossel */
@@ -366,15 +403,15 @@ textarea {
     height: auto;
 }
 
-/* Navbar */
+/* 🔹 Navbar Principal */
 .navbar-custom {
-    background-color: white;
-    padding: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between; /* Garante que a logo fique à esquerda e o menu ao lado */
+    padding: 10px 20px;
+    background: #fff;
+    flex-wrap: nowrap; /* Evita que os itens quebrem */
+    height: 70px; /* Mantém a altura da navbar */
 }
 
 /* Botão Licenciado */
@@ -644,6 +681,16 @@ textarea {
     font-size: 16px;
 }
 
+/* 🔹 Contêiner do menu */
+.desktop-menu {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Espaço entre os elementos */
+    flex-grow: 1; /* Permite que ocupe espaço sem empurrar a logo */
+    justify-content: flex-end; /* Mantém o menu alinhado à direita */
+}
+
+
         @media (max-width: 768px) {
             .desktop-menu {
                 display: none;
@@ -734,10 +781,13 @@ textarea {
         {% endif %}
     </a>
     <div class="desktop-menu">
-        <input type="text" id="cepInputDesktop" placeholder="Digite seu CEP">
-        <button class="btn-buscar" onclick="buscarLoja()">
-            <i class="fas fa-search"></i> Buscar
-        </button>
+        <div class="cep-container">
+            <input type="text" id="cepInputDesktop" placeholder="Digite seu CEP">
+            <button class="btn-buscar" onclick="buscarLoja()">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+        </div>   
+        
         <a href="{{ url_for('lojas') }}" class="btn-unidades">
             <i class="fas fa-store"></i> Unidades
         </a> 
@@ -748,8 +798,10 @@ textarea {
         </a>
         <button class="btn btn-danger" onclick="window.open('https://farmaciaspoupaqui.com.br/?utm_source=Trafego_Direto&utm_medium=site&utm_campaign=Direto_Site', '_blank')">
             <i class="fas fa-user-plus"></i> Seja um Licenciado
-        </button>          
+        </button>     
+  
     </div>
+
     <!-- Modal para exibir os resultados -->
     <div id="modalLoja" class="custom-modal">
         <div class="custom-modal-content">
