@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash,send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash,send_file
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
@@ -109,7 +109,7 @@ def registrar_clique():
 
 @app.route('/ads.txt')
 def ads_txt():
-    return send_from_directory(os.path.dirname(os.path.abspath(__file__)), 'ads.txt')
+    return send_file('ads.txt', mimetype='text/plain')
 
 @app.route('/sobre-nos')
 def sobre_nos():
