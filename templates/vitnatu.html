@@ -892,11 +892,12 @@ function abrirModalCEP() {
 
     modais.forEach(modal => {
         modal.addEventListener("hidden.bs.modal", function () {
+            document.body.classList.remove("modal-open"); // Remove a classe que impede a rolagem
+            document.body.style.overflow = ""; // Restaura a rolagem da página
             let backdrop = document.querySelector(".modal-backdrop");
             if (backdrop) {
-                backdrop.remove(); // Remove o fundo preto
+                backdrop.remove(); // Remove o fundo escuro do modal
             }
-            document.body.classList.remove("modal-open"); // Remove classe que desativa rolagem
         });
     });
 
