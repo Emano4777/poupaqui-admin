@@ -468,10 +468,6 @@ def edit_loja(public_id):
 
     return render_template('edit_loja.html', loja=loja)
 
-@app.route('/ads.txt')
-def ads_txt():
-    return send_from_directory('.', 'ads.txt')
-
 
 def load_images():
     """ Busca imagens no Cloudinary e mantém a estrutura correta. """
@@ -514,8 +510,6 @@ def load_images():
         return {"banners": [], "banner_top": None, "logo": None}
 
 
-
-
 def delete_old_image(tag):
     """ Deleta todas as imagens antigas associadas a uma tag específica (banner_top ou logo). """
     try:
@@ -525,8 +519,7 @@ def delete_old_image(tag):
             print(f"Imagem antiga removida: {img['public_id']}")
     except Exception as e:
         print(f"Erro ao excluir imagem ({tag}): {e}")
-
-    
+   
 
 def save_images(data):
     os.environ["BANNERS"] = json.dumps(data["banners"])  # Garante que seja uma string JSON válida
