@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash,send_file
+
+from flask import Flask, render_template, send_from_directory,request, redirect, url_for, session, jsonify, flash,send_file
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
@@ -466,6 +467,10 @@ def edit_loja(public_id):
             flash(f"Erro ao atualizar informações: {e}", "danger")
 
     return render_template('edit_loja.html', loja=loja)
+
+@app.route('/ads.txt')
+def ads_txt():
+    return send_from_directory('.', 'ads.txt')
 
 
 def load_images():
