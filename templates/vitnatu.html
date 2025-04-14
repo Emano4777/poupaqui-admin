@@ -26,6 +26,47 @@
             margin-top: 20px;
         }
 
+        .card-vitnatu {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    margin: 10px;
+    text-align: center;
+    width: 250px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%; /* Faz todos os cards terem a mesma altura */
+}
+
+.card-vitnatu .btn {
+    width: 100%;
+    margin-bottom: 6px;
+}
+
+.card-vitnatu img {
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+.card-vitnatu h5 {
+    font-weight: bold;
+    color: #d80000;
+}
+
+.card-vitnatu p {
+    font-size: 14px;
+    color: #333;
+}
+
+.card-vitnatu .btn {
+    width: 90%;
+    margin-top: 8px;
+}
+
         .carousel-container {
             display: flex;
             align-items: center;
@@ -237,6 +278,49 @@ h2::after {
 .mobile-menu-content::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8; /* Cor ao passar o mouse */
 }
+
+
+.vitnatu-carousel-wrapper {
+    position: relative;
+    max-width: 100%;
+    overflow: hidden;
+    padding: 20px 40px; /* espaço para as setas */
+}
+
+.vitnatu-carousel {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 10px 0;
+}
+
+.vitnatu-carousel::-webkit-scrollbar {
+    display: none; /* esconde scroll no Chrome */
+}
+
+.arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 30px;
+    color: #d80000;
+    cursor: pointer;
+    z-index: 10;
+    background: white;
+    border-radius: 50%;
+    padding: 5px 10px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+.left-arrow {
+    left: 0;
+}
+
+.right-arrow {
+    right: 0;
+}
+
 
         .mobile-menu-content .close-btn {
             position: absolute;
@@ -650,16 +734,18 @@ h2 {
 </div>
 
 <div class="container mt-5">
-    <h2 class="text-danger">Conheça os Produtos VitNatu - Nossa Marca Própria</h2>
+    <h2 class="text-danger">LINHA VITNATU: SAÚDE E BEM ESTAR PARA TODA A FAMÍLIA</h2>
 
-    <!-- Carrossel de Produtos -->
-    <div class="carousel-container">
-        <i class="fas fa-chevron-left arrow" onclick="prevProduct()"></i>
-        
-        <div id="product-container"></div>
-
-        <i class="fas fa-chevron-right arrow" onclick="nextProduct()"></i>
+    <div class="vitnatu-carousel-wrapper position-relative">
+        <i class="fas fa-chevron-left arrow left-arrow" onclick="prevProduct()"></i>
+    
+        <div class="vitnatu-carousel" id="product-container">
+            <!-- Produtos injetados aqui -->
+        </div>
+    
+        <i class="fas fa-chevron-right arrow right-arrow" onclick="nextProduct()"></i>
     </div>
+    
 </div>
 <footer class="footer text-center mt-5 py-3 bg-light">
     <p>&copy; 2025 PoupAqui. Todos os direitos reservados.
@@ -721,30 +807,59 @@ h2 {
     const perPage = 1;
     const productContainer = document.getElementById("product-container");
 
-    function displayProducts() {
-        productContainer.innerHTML = ""; 
-
-        const start = currentIndex * perPage;
-        const end = start + perPage;
-        const productsToShow = products.slice(start, end);
-
-        productsToShow.forEach(product => {
-            const productCard = `
-                <div class="product-card">
-                    <img src="${product.img}" alt="${product.name}">
-                    <div class="product-info">
-                        <h4>${product.name}</h4>
-                        <p>${product.desc}</p>
-                        <p><strong>Dosagem:</strong> ${product.dose}</p>
-                       <a href="#" class="btn-buy" onclick="abrirModalCEP()">
-    <i class="fas fa-shopping-cart"></i> Onde Comprar
-</a>
-                    </div>
-                </div>
-            `;
-            productContainer.innerHTML += productCard;
-        });
+    const vitnatuData = [
+    {
+        nome: "VITCALM",
+        descricao: "Reduz ansiedade, melhora sono e humor.",
+        imagem: "https://res.cloudinary.com/dizfq460q/image/upload/v1742308226/Vitcalm_ansqmm.png"
+    },
+    {
+        nome: "ÔMEGA 3",
+        descricao: "Melhora colesterol, memória, saúde cardiovascular, ação anti-inflamatória.",
+        imagem: "https://res.cloudinary.com/dizfq460q/image/upload/v1742307495/Omega3_dszwai.png"
+    },
+    {
+        nome: "COLÁGENO TIPO II",
+        descricao: "Lubrificação das articulações, redução da inflamação e dor.",
+        imagem: "https://res.cloudinary.com/dizfq460q/image/upload/v1742308117/Screenshot_29_wxfwxo.png"
+    },
+    {
+        nome: "CÁLCIO MDK",
+        descricao: "Auxilia no tratamento da Osteoporose, reduz dores e fadiga.",
+        imagem: "https://res.cloudinary.com/dizfq460q/image/upload/v1742308181/Screenshot_31_whdwnt.png"
+    },
+    {
+        nome: "CAFEÍNA",
+        descricao: "Ação energética, melhora desempenho físico e reduz fadiga.",
+        imagem: "https://res.cloudinary.com/dizfq460q/image/upload/v1742308299/Screenshot_32_add3gr.png"
     }
+];
+
+const container = document.getElementById('product-container');
+vitnatuData.forEach(produto => {
+    const card = document.createElement('div');
+    card.classList.add('card-vitnatu');
+    
+    card.innerHTML = `
+        <img src="${produto.imagem}" alt="${produto.nome}">
+        <h5>${produto.nome}</h5>
+        <p>${produto.descricao}</p>
+        <a href="#" class="btn btn-sm btn-danger">
+            <i class="fas fa-info-circle"></i> Informações
+        </a>
+        <a href="javascript:void(0);" onclick="abrirModalCEP()" class="btn btn-sm btn-danger">
+            <i class="fas fa-shopping-cart"></i> Onde Comprar
+        </a>
+    `;
+    
+    const col = document.createElement('div');
+    col.classList.add('d-flex', 'justify-content-center');
+col.style.minWidth = '250px'; // largura fixa para scroll
+col.style.flexShrink = '0';   // impede encolhimento
+    col.appendChild(card);
+
+    container.appendChild(col);
+});
 
     function buscarLoja() {
     let isMobile = window.innerWidth <= 768;
@@ -821,19 +936,19 @@ function abrirModalCEP() {
     cepModal.show();
 }
 
-    function prevProduct() {
-        if (currentIndex > 0) {
-            currentIndex--;
-            displayProducts();
-        }
-    }
+function prevProduct() {
+    document.getElementById("product-container").scrollBy({
+        left: -270, // largura do card + gap
+        behavior: 'smooth'
+    });
+}
 
-    function nextProduct() {
-        if (currentIndex < products.length - perPage) {
-            currentIndex++;
-            displayProducts();
-        }
-    }
+function nextProduct() {
+    document.getElementById("product-container").scrollBy({
+        left: 270,
+        behavior: 'smooth'
+    });
+}
 
     displayProducts(); // Chama ao carregar a página
     document.addEventListener("DOMContentLoaded", function () {
