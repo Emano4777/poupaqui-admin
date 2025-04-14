@@ -582,24 +582,18 @@ h2::after {
 </div>
     </div>
 
-<!-- Modal de Redirecionamento -->
-<div id="modalRedirect" class="modal" style="display:none;">
-    <div class="modal-content">
-      <span class="close" onclick="fecharModal()">&times;</span>
-      <h4>Redirecionando para o WhatsApp...</h4>
-      <div class="banner">
-        <!-- Banner AdSense -->
-        <ins class="adsbygoogle"
-             style="display:block; margin: 10px auto;"
-             data-ad-client="ca-pub-7995010197286628"
-             data-ad-slot="4494321349"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
+    <div id="modalRedirect" class="modal" style="display:none;">
+        <div class="modal-content">
+          <span class="close" onclick="fecharModal()">&times;</span>
+          <h4>Redirecionando para o WhatsApp...</h4>
+          <div class="banner">
+            <!-- Container onde o AdSense será injetado dinamicamente -->
+            <div id="adsenseContainer" style="margin: 10px auto;"></div>
+          </div>
+          <p>Você será redirecionado em <span id="contador">5</span> segundos...</p>
+          <p><a id="linkWhatsApp" href="#" target="_blank">Ir agora para o WhatsApp</a></p>
+        </div>
       </div>
-      <p>Você será redirecionado em <span id="contador">5</span> segundos...</p>
-      <p><a id="linkWhatsApp" href="#" target="_blank">Ir agora para o WhatsApp</a></p>
-    </div>
-  </div>
 
     <!-- ✅ Rodapé -->
 <footer class="footer">
@@ -702,10 +696,28 @@ h2::after {
     window.closeMobileMenu = closeMobileMenu;
 });
 
-function abrirModal(whatsUrl) {
+window.abrirModal = function (whatsUrl) {
   document.getElementById("modalRedirect").style.display = "block";
   document.getElementById("linkWhatsApp").href = whatsUrl;
 
+  // ⚡ Renderiza o anúncio AdSense no momento em que o modal é exibido
+  const adDiv = document.getElementById("adsenseContainer");
+  adDiv.innerHTML = `
+    <ins class="adsbygoogle"
+         style="display:block; margin: 10px auto;"
+         data-ad-client="ca-pub-7995010197286628"
+         data-ad-slot="4494321349"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+  `;
+
+  try {
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  } catch (e) {
+    console.error("Erro ao renderizar AdSense:", e);
+  }
+
+  // Inicia a contagem
   let countdown = 5;
   document.getElementById("contador").textContent = countdown;
 
@@ -715,14 +727,15 @@ function abrirModal(whatsUrl) {
     if (countdown <= 0) {
       clearInterval(timer);
       window.open(whatsUrl, '_blank');
-      fecharModal();
+      window.fecharModal();
     }
   }, 1000);
-}
+};
 
-function fecharModal() {
+window.fecharModal = function () {
   document.getElementById("modalRedirect").style.display = "none";
-}
+  document.getElementById("adsenseContainer").innerHTML = ""; // Limpa para evitar duplicidade em reabertura
+};
        
     </script>
     
