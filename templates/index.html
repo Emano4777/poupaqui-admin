@@ -269,11 +269,12 @@ textarea {
     color: rgb(250, 246, 246);
     font-size: 13px;
     font-weight: bold;
-    border: 2px solid #8a0000;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
     align-items: center;
+    border: none;
+    box-shadow: none;  
     gap: 5px; /* Espaço entre ícone e texto */
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -367,11 +368,14 @@ textarea {
 }
 
 
-/* Ajuste do Logo */
 .logo-img {
-    width: 100px; /* Reduzi um pouco para telas menores */
-    height: auto;
+    width: 130px;
+    height: 200px !important;       /* 👈 Define uma altura fixa */
+    margin-left: 80px !important;
+    object-fit: contain; /* Garante que a imagem não fique distorcida */
 }
+
+
 
 /* Banners */
 .banner-top,
@@ -602,7 +606,7 @@ textarea {
 /* 📌 Botão "Unidades" */
 .btn-unidades {
     background-color: transparent; /* Fundo transparente */
-    color: #d80000; /* Cor vermelha para combinar com o tema */
+    color: black; /* Cor vermelha para combinar com o tema */
     font-weight: bold;
     text-decoration: none; /* Remove o sublinhado */
     padding: 8px 15px;
@@ -612,7 +616,7 @@ textarea {
 }
 
 .btn-unidades:hover {
-    background-color: #d80000; /* Fundo vermelho ao passar o mouse */
+    background-color: black; /* Fundo vermelho ao passar o mouse */
     color: white; /* Texto branco */
 }
 
@@ -663,13 +667,13 @@ textarea {
 /* 📌 Botão "Unidades" */
 .btn-unidades {
     background-color: transparent; /* Fundo transparente */
-    color: #d80000; /* Cor vermelha para combinar com o tema */
-    font-weight: bold;
+    color: black; /* Cor vermelha para combinar com o tema */
     text-decoration: none; /* Remove o sublinhado */
     padding: 8px 15px;
     border-radius: 20px;
     transition: 0.3s;
-    display: inline-block;
+    font-size: 17px;
+    font-weight: normal;
 }
 
 .btn-unidades:hover {
@@ -798,14 +802,14 @@ textarea {
         </div>   
         
         <a href="{{ url_for('lojas') }}" class="btn-unidades">
-            <i class="fas fa-store"></i> Unidades
+            <i class=""></i> Unidades
         </a> 
-        <span class="me-3"><i class="fas fa-tags"></i> Ofertas</span>
+        <span class="me-3"><i class=""></i> Ofertas</span>
         <a href="{{ url_for('vitnatu') }}" class="me-3 menu-link">
-            <i class="fas fa-leaf"></i> VitNatu
+            <i class=""></i> VitNatu
         </a>
         <a href="{{ url_for('sobre_nos') }}" class="me-3 menu-link">
-            <i class="fas fa-info-circle"></i> Sobre Nós
+            <i class=""></i> Sobre Nós
         </a>
         <button class="btn btn-danger" onclick="window.open('https://farmaciaspoupaqui.com.br/?utm_source=Trafego_Direto&utm_medium=site&utm_campaign=Direto_Site', '_blank')">
             <i class="fas fa-user-plus"></i> Seja um Licenciado
@@ -843,14 +847,14 @@ textarea {
             <i class="fas fa-search"></i> Buscar
         </button>
         <a href="{{ url_for('lojas') }}" class="btn-unidades">
-            <i class="fas fa-store"></i> Unidades
+            <i class=""></i> Unidades
         </a>     
-        <a href="#"><i class="fas fa-tags"></i> Ofertas</a>
+        <a href="#"><i class=""></i> Ofertas</a>
         <a href="{{ url_for('vitnatu') }}" class="me-3 menu-link">
-            <i class="fas fa-leaf"></i> VitNatu
+            <i class=""></i> VitNatu
         </a>
         <a href="{{ url_for('sobre_nos') }}" class="me-3 menu-link">
-            <i class="fas fa-info-circle"></i> Sobre Nós
+            <i class=""></i> Sobre Nós
         </a>
         <button class="btn btn-danger mobile-licenciado" onclick="window.open('https://farmaciaspoupaqui.com.br/?utm_source=Trafego_Direto&utm_medium=site&utm_campaign=Direto_Site', '_blank')">
             <i class="fas fa-user-plus"></i> Seja um Licenciado
@@ -934,30 +938,28 @@ textarea {
     <div class="row">
         <div class="col-md-5ths">
             <div class="advantage-box">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                </svg>
+                
                 Atendimento humanizado, como você merece.
             </div>
         </div>
         <div class="col-md-5ths">
             <div class="advantage-box">
-                📍 Sempre perto de você, com lojas por todo o Brasil.
+                Sempre perto de você, com lojas por todo o Brasil.
             </div>
         </div>
         <div class="col-md-5ths">
             <div class="advantage-box">
-                💊 Nutracêuticos exclusivos, para todas as idades.
+                Nutracêuticos exclusivos, para todas as idades.
             </div>
         </div>
         <div class="col-md-5ths">
             <div class="advantage-box">
-                🏥 Saúde, bem-estar e economia.
+                Saúde, bem-estar e economia.
             </div>
         </div>
         <div class="col-md-5ths">
             <div class="advantage-box">
-                🚀 Delivery rápido e fácil. Pediu, chegou!
+                 Delivery rápido e fácil. Pediu, chegou!
             </div>
         </div>
     </div>

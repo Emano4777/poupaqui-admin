@@ -17,6 +17,10 @@
     overflow-x: hidden;
 }
 
+.loja-card .info {
+    min-height: 230px; /* Ajuste conforme necessário para que todos os cards tenham a mesma "altura interna" */
+}
+
 .navbar-brand .logo-img {
     max-width: 80px; /* Ajusta a largura da logo para telas menores */
     height: auto;
@@ -263,6 +267,7 @@
             justify-content: center;
             gap: 15px;
             margin-top: 20px;
+            align-items: stretch;
         }
 
         .loja-card {
@@ -274,6 +279,9 @@
             text-align: center;
             color: white;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .loja-card img {
@@ -442,6 +450,27 @@ h2::after {
     border-radius: 5px;
 }
 
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0,0,0,0.7);
+  z-index: 9999;
+}
+.modal-content {
+  background-color: white;
+  margin: 15% auto;
+  padding: 20px;
+  max-width: 400px;
+  border-radius: 8px;
+  text-align: center;
+}
+.close {
+  float: right;
+  font-size: 22px;
+  cursor: pointer;
+}
+
 /* 📌 Botão "Unidades" */
 .btn-unidades {
     background-color: transparent; /* Fundo transparente */
@@ -533,12 +562,12 @@ h2::after {
                 <p><strong>Endereço:</strong> {{ loja.endereco }}</p>
                 <p>{{ loja.telefone }}</p>
                  <!-- Botão WhatsApp -->
-                 <a href="{{ loja.whatsapp }}" 
-                    target="_blank" 
-                    class="btn-whatsapp mt-2" 
-                    onclick="registrarClique('{{ loja.whatsapp }}')">
-                    <i class="fab fa-whatsapp"></i> WhatsApp
-                    </a>
+                 <a href="javascript:void(0);"
+                 class="btn-whatsapp mt-2"
+                 onclick="registrarClique('{{ loja.whatsapp }}'); abrirModal('{{ loja.whatsapp }}')">
+                 <i class="fab fa-whatsapp"></i> WhatsApp
+              </a>
+              
                 <br>
                 <a href="{{ loja.google_maps }}" target="_blank" class="btn-maps mt-2">
                     <i class="fas fa-map-marker-alt"></i> Como Chegar
@@ -552,6 +581,25 @@ h2::after {
     {% endif %}
 </div>
     </div>
+
+<!-- Modal de Redirecionamento -->
+<div id="modalRedirect" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" onclick="fecharModal()">&times;</span>
+      <h4>Redirecionando para o WhatsApp...</h4>
+      <div class="banner">
+        <!-- Banner AdSense -->
+        <ins class="adsbygoogle"
+             style="display:block; margin: 10px auto;"
+             data-ad-client="ca-pub-7995010197286628"
+             data-ad-slot="4494321349"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+      </div>
+      <p>Você será redirecionado em <span id="contador">5</span> segundos...</p>
+      <p><a id="linkWhatsApp" href="#" target="_blank">Ir agora para o WhatsApp</a></p>
+    </div>
+  </div>
 
     <!-- ✅ Rodapé -->
 <footer class="footer">
@@ -653,7 +701,33 @@ h2::after {
     window.openMobileMenu = openMobileMenu;
     window.closeMobileMenu = closeMobileMenu;
 });
+
+function abrirModal(whatsUrl) {
+  document.getElementById("modalRedirect").style.display = "block";
+  document.getElementById("linkWhatsApp").href = whatsUrl;
+
+  let countdown = 5;
+  document.getElementById("contador").textContent = countdown;
+
+  const timer = setInterval(() => {
+    countdown--;
+    document.getElementById("contador").textContent = countdown;
+    if (countdown <= 0) {
+      clearInterval(timer);
+      window.open(whatsUrl, '_blank');
+      fecharModal();
+    }
+  }, 1000);
+}
+
+function fecharModal() {
+  document.getElementById("modalRedirect").style.display = "none";
+}
        
     </script>
+    
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
 </body>
 </html>
