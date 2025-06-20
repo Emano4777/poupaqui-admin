@@ -354,9 +354,20 @@ def buscar_loja():
 
 
 
+import locale
+
 @app.route('/lojas')
 def lojas():
-    data = load_store_images()  # Carrega imagens das lojas + logo
+    import locale
+    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')  # Define a ordem brasileira
+
+    data = load_store_images()
+
+    data["stores"] = sorted(
+        data["stores"],
+        key=lambda x: locale.strxfrm(x.get('cidade', '').split('/')[0].strip())
+    )
+
     return render_template('lojas.html', lojas=data["stores"], logo=data["logo"])
 
 
