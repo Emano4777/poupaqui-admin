@@ -17,8 +17,26 @@
     overflow-x: hidden;
 }
 
+
 .loja-card .info {
-    min-height: 230px; /* Ajuste conforme necessário para que todos os cards tenham a mesma "altura interna" */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.loja-card h5 {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 10px 0 5px;
+    min-height: 24px; /* evita quebra */
+}
+
+.loja-card p {
+    margin: 3px 0;
+    font-size: 14px;
+    min-height: 18px; /* mantém espaço reservado mesmo que vazio */
+    word-break: break-word;
+    line-height: 1.3em;
 }
 
 .navbar-brand .logo-img {
@@ -272,6 +290,7 @@
 
         .loja-card {
             z-index: 1;
+            min-height: 480px;
             width: 250px;
             background-color: red;
             border-radius: 10px;
