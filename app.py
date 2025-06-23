@@ -356,16 +356,17 @@ def buscar_loja():
 
 import locale
 
+
+from pyuca import Collator
+
 @app.route('/lojas')
 def lojas():
-    import locale
-    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')  # Define a ordem brasileira
-
     data = load_store_images()
 
+    collator = Collator()
     data["stores"] = sorted(
         data["stores"],
-        key=lambda x: locale.strxfrm(x.get('cidade', '').split('/')[0].strip())
+        key=lambda x: collator.sort_key(x.get('cidade', '').split('/')[0].strip())
     )
 
     return render_template('lojas.html', lojas=data["stores"], logo=data["logo"])
