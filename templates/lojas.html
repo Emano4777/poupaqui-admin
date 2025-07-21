@@ -593,9 +593,10 @@ h2::after {
               </a>
               
                 <br>
-                <a href="{{ loja.google_maps }}" target="_blank" class="btn-maps mt-2">
-                    <i class="fas fa-map-marker-alt"></i> Como Chegar
-                </a>                
+<a href="javascript:void(0);" onclick="abrirModalMaps('{{ loja.google_maps }}')" class="btn-maps mt-2">
+  <i class="fas fa-map-marker-alt" style="margin-right: 5px;"></i> Como Chegar
+</a>
+
             </div>
         </div>
         {% endfor %}
@@ -776,9 +777,64 @@ window.fecharModal = function () {
 };
        
     </script>
+
+    <script>
+function abrirModalMaps(url) {
+  document.getElementById("modalMaps").style.display = "block";
+  document.getElementById("linkMaps").href = url;
+
+  let segundos = 5;
+  const contador = document.getElementById("contadorMaps");
+  contador.textContent = segundos;
+
+  const intervalo = setInterval(() => {
+    segundos--;
+    contador.textContent = segundos;
+    if (segundos <= 0) {
+      clearInterval(intervalo);
+      window.open(url, '_blank');
+      fecharModalMaps();
+    }
+  }, 1000);
+}
+
+function fecharModalMaps() {
+  document.getElementById("modalMaps").style.display = "none";
+}
+</script>
     
 <script>
     (adsbygoogle = window.adsbygoogle || []).push({});
   </script>
+  <div id="modalMaps" class="modal" style="display:none;">
+  <div class="modal-content">
+    <span class="close" onclick="fecharModalMaps()" style="cursor:pointer;">&times;</span>
+    <h4>Redirecionando para o Google Maps...</h4>
+    <div class="banner">
+      <div id="adsenseContainerMaps" style="margin: 10px auto;">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-7995010197286628"
+             data-ad-slot="7900389281"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+      </div>
+    </div>
+    <p>Você será redirecionado em <span id="contadorMaps">5</span> segundos...</p>
+    <p>
+      <a id="linkMaps"
+         href="#"
+         target="_blank"
+         class="btn-maps mt-3"
+         style="display: inline-flex; align-items: center; justify-content: center;">
+        <i class="fas fa-map-marker-alt" style="margin-right: 5px;"></i> Ir agora para o Google Maps
+      </a>
+    </p>
+  </div>
+</div>
+
 </body>
 </html>
