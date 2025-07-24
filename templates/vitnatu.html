@@ -741,6 +741,7 @@ h2 {
         </div>
     </div>
 </div>
+<div id="listaProdutos" class="row"></div>
 
 <div class="container mt-5">
     <h2 class="text-danger">LINHA VITNATU: SAÚDE E BEM ESTAR PARA TODA A FAMÍLIA</h2>
@@ -823,30 +824,35 @@ h2 {
     const productContainer = document.getElementById("product-container");
 
     const vitnatuData = [
-    {
+   {
         nome: "VITCALM",
         descricao: "Reduz ansiedade, melhora sono e humor.",
-        imagem: "https://res.cloudinary.com/dizfq460q/image/upload/v1742308226/Vitcalm_ansqmm.png"
+        imagem: "https://res.cloudinary.com/dizfq460q/image/upload/v1742308226/Vitcalm_ansqmm.png",
+        tabela: "https://res.cloudinary.com/dizfq460q/image/upload/v1753376953/Screenshot_77_rj8e9o.png"
     },
     {
         nome: "ÔMEGA 3",
         descricao: "Melhora colesterol, memória, saúde cardiovascular, ação anti-inflamatória.",
-        imagem: "https://res.cloudinary.com/dizfq460q/image/upload/v1742307495/Omega3_dszwai.png"
+        imagem: "https://res.cloudinary.com/dizfq460q/image/upload/v1742307495/Omega3_dszwai.png",
+        tabela: "https://res.cloudinary.com/dizfq460q/image/upload/v1753376594/Screenshot_73_uesbqs.png"
     },
     {
         nome: "COLÁGENO TIPO II",
         descricao: "Lubrificação das articulações, redução da inflamação e dor.",
-        imagem: "https://res.cloudinary.com/dizfq460q/image/upload/v1742308117/Screenshot_29_wxfwxo.png"
+        imagem: "https://res.cloudinary.com/dizfq460q/image/upload/v1742308117/Screenshot_29_wxfwxo.png",
+        tabela: "https://res.cloudinary.com/dizfq460q/image/upload/v1753376704/Screenshot_74_ytmjqw.png"
     },
     {
         nome: "CÁLCIO MDK",
         descricao: "Auxilia no tratamento da Osteoporose, reduz dores e fadiga.",
-        imagem: "https://res.cloudinary.com/dizfq460q/image/upload/v1742308181/Screenshot_31_whdwnt.png"
+        imagem: "https://res.cloudinary.com/dizfq460q/image/upload/v1742308181/Screenshot_31_whdwnt.png",
+        tabela: "https://res.cloudinary.com/dizfq460q/image/upload/v1753376813/Screenshot_75_ieegdh.png"
     },
     {
         nome: "CAFEÍNA",
         descricao: "Ação energética, melhora desempenho físico e reduz fadiga.",
-        imagem: "https://res.cloudinary.com/dizfq460q/image/upload/v1742308299/Screenshot_32_add3gr.png"
+        imagem: "https://res.cloudinary.com/dizfq460q/image/upload/v1742308299/Screenshot_32_add3gr.png",
+        tabela: "https://res.cloudinary.com/dizfq460q/image/upload/v1753376868/Screenshot_76_t5rgdi.png"
     }
 ];
 
@@ -856,25 +862,64 @@ vitnatuData.forEach(produto => {
     card.classList.add('card-vitnatu');
     
     card.innerHTML = `
-        <img src="${produto.imagem}" alt="${produto.nome}">
-        <h5>${produto.nome}</h5>
-        <p>${produto.descricao}</p>
-        <a href="#" class="btn btn-sm btn-danger">
-            <i class="fas fa-info-circle"></i> Informações
-        </a>
-        <a href="javascript:void(0);" onclick="abrirModalCEP()" class="btn btn-sm btn-danger">
-            <i class="fas fa-shopping-cart"></i> Onde Comprar
-        </a>
-    `;
+    <div class="d-flex flex-column h-100 justify-content-between">
+        <div>
+            <img src="${produto.imagem}" alt="${produto.nome}" class="img-fluid mb-3">
+            <h5 class="text-center text-danger">${produto.nome}</h5>
+            <p class="text-center">${produto.descricao}</p>
+        </div>
+        <div class="mt-auto text-center">
+            ${
+                produto.tabela
+                    ? `<a href="#" class="btn btn-sm btn-danger mb-2" onclick="abrirModalInformacoes('${produto.tabela}')">
+                            <i class="fas fa-info-circle"></i> Informações
+                       </a><br>`
+                    : ''
+            }
+            <a href="javascript:void(0);" onclick="abrirModalCEP()" class="btn btn-sm btn-danger">
+                <i class="fas fa-shopping-cart"></i> Onde Comprar
+            </a>
+        </div>
+    </div>
+`;
     
     const col = document.createElement('div');
     col.classList.add('d-flex', 'justify-content-center');
-col.style.minWidth = '250px'; // largura fixa para scroll
-col.style.flexShrink = '0';   // impede encolhimento
+    col.style.minWidth = '250px';
+    col.style.flexShrink = '0';
     col.appendChild(card);
-
     container.appendChild(col);
 });
+
+function exibirProdutos() {
+    const container = document.getElementById("listaProdutos");
+    container.innerHTML = "";
+
+    vitnatuData.forEach((produto, index) => {
+        container.innerHTML += `
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow">
+                <img src="${produto.imagem}" class="card-img-top" alt="${produto.nome}">
+                <div class="card-body">
+                    <h5 class="card-title">${produto.nome}</h5>
+                    <p class="card-text">${produto.descricao}</p>
+                    <a href="#" class="btn btn-sm btn-danger" onclick="abrirModalInformacoes('${produto.tabela}')">
+                        <i class="fas fa-info-circle"></i> Informações
+                    </a>
+                    <a href="javascript:void(0);" onclick="abrirModalCEP()" class="btn btn-sm btn-danger">
+                        <i class="fas fa-shopping-cart"></i> Onde Comprar
+                    </a>
+                </div>
+            </div>
+        </div>
+        `;
+    });
+}
+function abrirModalInformacoes(tabelaUrl) {
+    document.getElementById("imgTabelaProduto").src = tabelaUrl;
+    const modal = new bootstrap.Modal(document.getElementById('modalInformacoes'));
+    modal.show();
+}
 
     function buscarLoja() {
     let isMobile = window.innerWidth <= 768;
@@ -931,8 +976,9 @@ col.style.flexShrink = '0';   // impede encolhimento
         <i class="fab fa-whatsapp"></i> Fale no WhatsApp
     </a>`;
         document.getElementById("modalGoogleMaps").href = loja.google_maps;
-        document.getElementById("cepModal").style.display = "none";  // Fecha o modal do CEP
-        document.getElementById("modalLoja").style.display = "flex"; // Exibe modal com loja
+        let cepModal = bootstrap.Modal.getOrCreateInstance(document.getElementById("cepModal"));
+        cepModal.hide();
+
         let modalLoja = new bootstrap.Modal(document.getElementById("modalLoja"));
         modalLoja.show();
     })
@@ -1038,6 +1084,20 @@ function nextProduct() {
 });
     
 </script>
+<!-- Modal de Informações -->
+<div class="modal fade" id="modalInformacoes" tabindex="-1" aria-labelledby="modalInformacoesLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="modalInformacoesLabel">Informações do Produto</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="imgTabelaProduto" src="" class="img-fluid" alt="Tabela Nutricional">
+      </div>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

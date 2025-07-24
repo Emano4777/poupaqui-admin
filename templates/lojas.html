@@ -22,6 +22,20 @@
     overflow-x: hidden;
 }
 
+.loja-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 1;
+    width: 250px;
+    background-color: red;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    color: white;
+    position: relative;
+    min-height: 500px; /* 🔧 Ajuste se necessário */
+}
 
 .loja-card .info {
     flex: 1;
@@ -580,24 +594,26 @@ h2::after {
     <div class="loja-grid" id="lojaGrid">
         {% for loja in lojas %}
         <div class="loja-card" data-cidade="{{ loja.cidade | lower }}">
-            <img src="{{ loja.url }}" alt="Loja PoupaAqui">
-            <div class="info">
-                <h5>{{ loja.cidade }}</h5>
-                <p><strong>Endereço:</strong> {{ loja.endereco }}</p>
-                <p>{{ loja.telefone }}</p>
-                 <!-- Botão WhatsApp -->
-                 <a href="javascript:void(0);"
-                 class="btn-whatsapp mt-2"
-                 onclick="registrarClique('{{ loja.whatsapp }}'); abrirModal('{{ loja.whatsapp }}')">
-                 <i class="fab fa-whatsapp"></i> WhatsApp
-              </a>
-              
-                <br>
-<a href="javascript:void(0);" onclick="abrirModalMaps('{{ loja.google_maps }}')" class="btn-maps mt-2">
-  <i class="fas fa-map-marker-alt" style="margin-right: 5px;"></i> Como Chegar
-</a>
+    <img src="{{ loja.url }}" alt="Loja PoupaAqui">
+    <div class="info">
+        <div>
+            <h5>{{ loja.cidade }}</h5>
+            <p><strong>Endereço:</strong> {{ loja.endereco }}</p>
+            <p>{{ loja.telefone }}</p>
+        </div>
+        <div>
+            <a href="javascript:void(0);"
+               class="btn-whatsapp mt-2"
+               onclick="registrarClique('{{ loja.whatsapp }}'); abrirModal('{{ loja.whatsapp }}')">
+               <i class="fab fa-whatsapp"></i> WhatsApp
+            </a>
 
-            </div>
+            <a href="javascript:void(0);" onclick="abrirModalMaps('{{ loja.google_maps }}')" class="btn-maps mt-2 d-block">
+                <i class="fas fa-map-marker-alt"></i> Como Chegar
+            </a>
+        </div>
+    </div>
+
         </div>
         {% endfor %}
     </div>
