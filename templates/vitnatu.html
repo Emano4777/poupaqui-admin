@@ -638,6 +638,8 @@ h2 {
     </div>
 </nav>
 
+
+
 <!-- ✅ Modal do Menu Mobile -->
 <div class="mobile-menu-modal" id="mobileMenuModal">
     <div class="mobile-menu-content">
@@ -746,6 +748,16 @@ h2 {
 <div class="container mt-5">
     <h2 class="text-danger">LINHA VITNATU: SAÚDE E BEM ESTAR PARA TODA A FAMÍLIA</h2>
 
+
+     <div class="search-container mt-3">
+    <input type="text" id="searchInput" class="search-box" placeholder="Buscar produto...">
+    <button class="search-btn" onclick="filtrarProdutosCarrossel()">
+        <i class="fas fa-search"></i>
+    </button>
+</div>
+
+
+
     <div class="vitnatu-carousel-wrapper position-relative">
         <i class="fas fa-chevron-left arrow left-arrow" onclick="prevProduct()"></i>
     
@@ -757,6 +769,7 @@ h2 {
     </div>
     
 </div>
+
 <div class="container mt-4">
     <h3 style="color: #333;">Conheça a linha VitNatu</h3>
     <p style="color: #555;">
@@ -783,6 +796,7 @@ h2 {
     </p>
 </footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
     
     // Lista de Produtos
@@ -816,7 +830,51 @@ h2 {
             img: "https://res.cloudinary.com/dizfq460q/image/upload/v1742308299/Screenshot_32_add3gr.png",
             desc: "Ação energética, melhora desempenho físico e reduz fadiga.",
             dose: "Tomar 1 cápsula ao dia."
-        }
+        },
+                {
+            name: "Curcuma",
+            img: "https://res.cloudinary.com/dizfq460q/image/upload/v1753378678/Screenshot_78_rhg1io.png",
+            desc: "Ação antioxidante e anti-inflamatória. Ajuda no combate a dores articulares e fortalecimento do sistema imunológico.",
+            dose: "Tomar 1 cápsula por dia."
+        },
+        {
+            name: "CARTVIT",
+            img: "https://res.cloudinary.com/dizfq460q/image/upload/v1753378808/Screenshot_79_vbqqnt.png",
+            desc: "Indicado para saúde das articulações, melhora mobilidade e reduz inflamações com colágeno tipo II, cúrcuma e vitaminas",
+            dose: "Tomar 2 caps por dia"
+        },
+        {
+    name: "VIT NATU MULHER",
+    img: "https://res.cloudinary.com/dizfq460q/image/upload/v1753379741/Screenshot_82_vegb5b.png",
+    desc: "Suplemento completo para saúde feminina. Auxilia no equilíbrio hormonal, energia e fortalecimento de cabelo e unhas.",
+    dose: "Tomar 2 cápsulas ao dia"
+},
+{
+    name: "VIT NATU HAIR",
+    img: "https://res.cloudinary.com/dizfq460q/image/upload/v1753379890/Screenshot_84_yyq2eh.png",
+    desc: "Fortalecimento e crescimento capilar. Rico em biotina, zinco e vitaminas essenciais.",
+    dose: "Tomar 1 cápsula ao dia"
+},
+{
+    name: "VIT NATU GINKGO BILOBA 120MG",
+    img: "https://res.cloudinary.com/dizfq460q/image/upload/v1753380904/vitnatu-ginkgo120.png",
+    desc: "Melhora a circulação cerebral, foco, memória e prevenção de vertigens.",
+    dose: "Tomar 1 cápsula ao dia"
+},
+{
+    name: "VIT NATU BIOTINA",
+    img: "https://res.cloudinary.com/dizfq460q/image/upload/v1753381017/vitnatu-biotina.png",
+    desc: "Fortalece cabelo, pele e unhas. Essencial na produção de queratina.",
+    dose: "Tomar 1 cápsula ao dia"
+},
+{
+    name: "VIT NATU MELATONINA + TRIPTOFANO",
+    img: "https://res.cloudinary.com/dizfq460q/image/upload/v1753381129/vitnatu-melatonina.png",
+    desc: "Promove relaxamento, melhora o sono e reduz o estresse.",
+    dose: "Tomar 1 cápsula antes de dormir"
+}
+
+
     ];
 
     let currentIndex = 0;
@@ -853,7 +911,50 @@ h2 {
         descricao: "Ação energética, melhora desempenho físico e reduz fadiga.",
         imagem: "https://res.cloudinary.com/dizfq460q/image/upload/v1742308299/Screenshot_32_add3gr.png",
         tabela: "https://res.cloudinary.com/dizfq460q/image/upload/v1753376868/Screenshot_76_t5rgdi.png"
-    }
+    },
+    {
+    nome: "CURCUMA",
+    descricao: "Ação antioxidante e anti-inflamatória. Ajuda no combate a dores articulares e fortalecimento do sistema imunológico.",
+    imagem: "https://res.cloudinary.com/dizfq460q/image/upload/v1753378678/Screenshot_78_rhg1io.png",
+    tabela: "https://res.cloudinary.com/dizfq460q/image/upload/v1753379046/Screenshot_81_xqqvbc.png"
+},
+{
+    nome: " CARTVIT",
+    descricao: "Indicado para saúde das articulações, melhora mobilidade e reduz inflamações com colágeno tipo II, cúrcuma e vitaminas.",
+    imagem: "https://res.cloudinary.com/dizfq460q/image/upload/v1753378808/Screenshot_79_vbqqnt.png",
+    tabela: "https://res.cloudinary.com/dizfq460q/image/upload/v1753378994/Screenshot_80_gy0l5g.png"
+},
+{
+    nome: " MULHER",
+    descricao: "Suplemento completo para saúde feminina. Auxilia no equilíbrio hormonal, energia e fortalecimento de cabelo e unhas.",
+    imagem: "https://res.cloudinary.com/dizfq460q/image/upload/v1753379741/Screenshot_82_vegb5b.png",
+    tabela: "https://res.cloudinary.com/dizfq460q/image/upload/v1753379821/Screenshot_83_pa7ygb.png"
+},
+{
+    nome: "HAIR",
+    descricao: "Indicado para fortalecimento e crescimento capilar. Rico em biotina, zinco e vitaminas do complexo B.",
+    imagem: "https://res.cloudinary.com/dizfq460q/image/upload/v1753379890/Screenshot_84_yyq2eh.png",
+    tabela: "https://res.cloudinary.com/dizfq460q/image/upload/v1753380029/Screenshot_85_jbzzuk.png"
+},
+{
+    nome: "GINKGO BILOBA 80mg",
+    descricao: "Melhora a circulação cerebral, foco, memória e prevenção de vertigens. Ideal para idosos e estudantes.",
+    imagem: "https://res.cloudinary.com/dizfq460q/image/upload/v1753380146/Screenshot_86_elaajq.png",
+    tabela: "https://res.cloudinary.com/dizfq460q/image/upload/v1753380206/Screenshot_87_sgc77v.png"
+},
+{
+    nome: "BIOTINA",
+    descricao: "Fortalece cabelo, pele e unhas. Essencial para produção de queratina e manutenção da saúde estética.",
+    imagem: "https://res.cloudinary.com/dizfq460q/image/upload/v1753380277/Screenshot_88_l4syao.png",
+    tabela: "https://res.cloudinary.com/dizfq460q/image/upload/v1753380287/Screenshot_89_ed2i8a.png"
+},
+{
+    nome: " MELATONINA + TRIPTOFANO",
+    descricao: "Auxilia no sono profundo, relaxamento e redução do estresse. Combinação ideal para insônia e ansiedade.",
+    imagem: "https://res.cloudinary.com/dizfq460q/image/upload/v1753380378/Screenshot_90_dzxxz1.png",
+    tabela: "https://res.cloudinary.com/dizfq460q/image/upload/v1753380387/Screenshot_91_fxe7t8.png"
+}
+
 ];
 
 const container = document.getElementById('product-container');
@@ -1082,6 +1183,50 @@ function nextProduct() {
 
     console.log("✅ DOM totalmente carregado e eventos configurados.");
 });
+
+function filtrarProdutosCarrossel() {
+    const termo = document.getElementById("searchInput").value.toLowerCase().trim();
+    const container = document.getElementById("product-container");
+
+    container.innerHTML = ""; // Limpa o carrossel
+
+    vitnatuData.forEach(produto => {
+        const nome = produto.nome.toLowerCase();
+        if (nome.includes(termo) || termo === "") {
+            const card = document.createElement('div');
+            card.classList.add('card-vitnatu');
+
+            card.innerHTML = `
+            <div class="d-flex flex-column h-100 justify-content-between">
+                <div>
+                    <img src="${produto.imagem}" alt="${produto.nome}" class="img-fluid mb-3">
+                    <h5 class="text-center text-danger">${produto.nome}</h5>
+                    <p class="text-center">${produto.descricao}</p>
+                </div>
+                <div class="mt-auto text-center">
+                    ${
+                        produto.tabela
+                            ? `<a href="#" class="btn btn-sm btn-danger mb-2" onclick="abrirModalInformacoes('${produto.tabela}')">
+                                    <i class="fas fa-info-circle"></i> Informações
+                               </a><br>`
+                            : ''
+                    }
+                    <a href="javascript:void(0);" onclick="abrirModalCEP()" class="btn btn-sm btn-danger">
+                        <i class="fas fa-shopping-cart"></i> Onde Comprar
+                    </a>
+                </div>
+            </div>
+            `;
+
+            const col = document.createElement('div');
+            col.classList.add('d-flex', 'justify-content-center');
+            col.style.minWidth = '250px';
+            col.style.flexShrink = '0';
+            col.appendChild(card);
+            container.appendChild(col);
+        }
+    });
+}
     
 </script>
 <!-- Modal de Informações -->
