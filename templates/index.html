@@ -1294,31 +1294,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (exibidoSemana !== semanaAtual) {
         // Altere as imagens conforme sua URL do Cloudinary
-        const imagemSalto = 'https://res.cloudinary.com/dizfq460q/image/upload/v1753370492/qpqywshmlalixydc9cos.jpg';
-        const imagemJardinopolis = 'https://res.cloudinary.com/dizfq460q/image/upload/v1752494286/p9zj69lsx6fdwc3zravh.jpg';
+        const imagemCaxiasdoSul = 'https://res.cloudinary.com/dizfq460q/image/upload/v1753974936/WhatsApp_Image_2025-07-30_at_09.44.32_skxbr4.jpg';
+   
 
-        Swal.fire({
-            title: '🎉 Novas Unidades Inauguradas!',
-            html: `
-                <p>Conheça nossas novas lojas inauguradas nesta semana:</p>
-                <div style="text-align: left; margin-top: 15px;">
-                    <div style="margin-bottom: 20px;">
-                        <strong>🏥 Salto/SP</strong><br>
-                        <img src="${imagemSalto}" alt="Loja Salto" style="width: 100%; max-width: 300px; border-radius: 10px; margin-top: 8px;">
-                    </div>
-                    <div>
-                        <strong>🏥 Jardinópolis/SP</strong><br>
-                        <img src="${imagemJardinopolis}" alt="Loja Jardinópolis" style="width: 100%; max-width: 300px; border-radius: 10px; margin-top: 8px;">
-                    </div>
-                </div>
-            `,
-            confirmButtonText: 'Ver todas as unidades',
-            confirmButtonColor: '#e60000',
-            backdrop: true,
-            showCloseButton: true,
-            customClass: {
-                popup: 'popup-inauguracoes-custom'
-            }
+Swal.fire({
+    title: 'Novas Unidades Inauguradas!',
+    html: `
+        <div style="text-align: center;">
+            <p style="margin-bottom: 20px;">Conheça nossas novas lojas inauguradas</p>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+                <a href="/lojas" target="_blank" style="text-decoration: none; color: inherit;">
+                    <strong>🏥 Caxias do Sul/RS</strong><br>
+                    <img src="${imagemCaxiasdoSul}" alt="Loja Caxias do Sul" style="width: 100%; max-width: 300px; border-radius: 10px; margin-top: 8px; cursor: pointer;">
+                </a>
+            </div>
+        </div>
+    `,
+    confirmButtonText: 'Ver todas as unidades',
+    confirmButtonColor: '#e60000',
+    backdrop: true,
+    showCloseButton: true,
+    customClass: {
+        popup: 'popup-inauguracoes-custom'
+    }
+
         }).then((result) => {
             if (result.isConfirmed) {
                 window.location.href = '/lojas';
