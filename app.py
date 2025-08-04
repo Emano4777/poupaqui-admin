@@ -197,37 +197,41 @@ def get_coordinates_from_brasilapi(cep):
     url_brasilapi = f"https://brasilapi.com.br/api/cep/v1/{cep}"
 
     try:
-        response = requests.get(url_brasilapi, timeout=10)  # ⏳ Aumentamos o timeout
+        response = requests.get(url_brasilapi, timeout=10)
         response.raise_for_status()
-        data = response.json()
+
+        try:
+            data = response.json()
+        except ValueError:
+            print(f"❌ Resposta inválida da BrasilAPI para CEP {cep}")
+            return None, None
 
         if "state" in data and "city" in data:
             cidade = data["city"]
             estado = data["state"]
             print(f"🔍 Buscando coordenadas da cidade: {cidade}, {estado}...")
 
-            # 🔹 Busca coordenadas da cidade como fallback
+            # Busca coordenadas no OpenStreetMap
             url_osm = f"https://nominatim.openstreetmap.org/search?q={cidade},+{estado},+Brasil&format=json"
-            response = requests.get(url_osm, timeout=5)
-            data_osm = response.json()
+            resp_osm = requests.get(url_osm, timeout=5)
+            data_osm = resp_osm.json()
 
             if isinstance(data_osm, list) and len(data_osm) > 0:
                 latitude = float(data_osm[0]["lat"])
                 longitude = float(data_osm[0]["lon"])
                 print(f"✅ Coordenadas da cidade {cidade}: ({latitude}, {longitude})")
 
-                # 🔹 Adicionamos ao cache
                 cep_cache[cep] = {"lat": latitude, "lon": longitude}
                 save_cache()
                 return latitude, longitude
 
     except requests.exceptions.Timeout:
-        print(f"⚠️ Timeout na BrasilAPI para {cep}. Usando fallback de cidade cadastrada...")
-
+        print(f"⚠️ Timeout na BrasilAPI para {cep}.")
     except requests.exceptions.RequestException as e:
         print(f"❌ Erro ao buscar BrasilAPI: {e}")
 
     return None, None
+
 
 def extract_cep(endereco):
     """ Extrai o CEP do endereço se ele estiver presente. """
@@ -242,6 +246,18 @@ def extract_city(endereco):
     padrao = r",\s*([^,]+)\s*-\s*[A-Z]{2}"  # Captura a cidade antes do estado (ex: Adamantina - SP)
     match = re.search(padrao, endereco)
     return match.group(1).strip().lower() if match else "desconhecido"
+
+import math
+
+
+def calcular_distancia_km(lat1, lon1, lat2, lon2):
+    """ Calcula a distância em km entre duas coordenadas geográficas. """
+    R = 6371  # Raio médio da Terra em km
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = math.sin(dlat/2)**2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon/2)**2
+    c = 2 * math.asin(math.sqrt(a))
+    return R * c
 
 
 def load_store_images():
@@ -306,51 +322,54 @@ def haversine(lat1, lon1, lat2, lon2):
     
     return R * c  # Retorna a distância em KM
 
-@app.route('/buscar_loja', methods=['POST'])
+from geopy.distance import geodesic
+
+
+@app.route("/buscar_loja", methods=["POST"])
 def buscar_loja():
-    """ Rota para buscar a loja mais próxima pelo CEP informado, priorizando busca por cidade. """
-    cep_digitado = request.json.get("cep", "").replace("-", "").replace(" ", "").strip()
+    data = request.get_json()
+    cep_usuario = data.get("cep", "").replace("-", "").strip()
 
-    if not cep_digitado:
-        return jsonify({"error": "CEP não informado."}), 400
+    if not cep_usuario or len(cep_usuario) < 5:
+        return jsonify({"error": "CEP inválido"}), 400
 
-    data = load_store_images()
-    lojas = data.get("stores", [])
+    lojas = load_store_images()["stores"]
 
-    if not lojas:
-        return jsonify({"error": "Nenhuma loja cadastrada."}), 404
+    # Coordenadas do CEP do usuário
+    lat_usuario, lon_usuario = get_coordinates_from_cep(cep_usuario)
+    lojas_com_distancia = []
 
-    # 🔹 Obtém a cidade pelo CEP
-    cidade_usuario = get_city_from_cep(cep_digitado)
+    if lat_usuario and lon_usuario:
+        for loja in lojas:
+            cep_loja = extract_cep(loja.get("endereco", ""))
+            if not cep_loja:  
+                continue  # Pula lojas sem CEP no endereço
 
-    if not cidade_usuario:
-        return jsonify({"error": "Cidade não encontrada para o CEP informado."}), 404
-    
-    cidade_usuario = cidade_usuario.lower().strip()
+            lat_loja, lon_loja = get_coordinates_from_cep(cep_loja)
+            if lat_loja and lon_loja:
+                distancia = geodesic((lat_usuario, lon_usuario), (lat_loja, lon_loja)).km
+                lojas_com_distancia.append({**loja, "distancia_km": round(distancia, 2)})
 
-    # 🔍 Debug: Exibir todas as cidades encontradas nas lojas
-    cidades_lojas = set(loja["cidade"].lower().strip() for loja in lojas)
-    print(f"🔍 Buscando lojas na cidade: {cidade_usuario}")
-    print(f"🏢 Cidades encontradas nas lojas: {cidades_lojas}")
+        if lojas_com_distancia:
+            lojas_ordenadas = sorted(lojas_com_distancia, key=lambda l: l["distancia_km"])
+            lojas_proximas = [loja for loja in lojas_ordenadas if loja["distancia_km"] <= 50]
+            if lojas_proximas:
+                return jsonify({"lojas": lojas_proximas, "modo": "preciso"})
 
-    # 🔹 Filtra as lojas que pertencem à cidade
-    lojas_cidade = [loja for loja in lojas if cidade_usuario in loja["cidade"].lower()]
+    # 🔹 Fallback — busca por cidade, mas só com lojas que tenham CEP no endereço
+    cidade_usuario = get_city_from_cep(cep_usuario)
+    if cidade_usuario:
+        cidade_usuario = cidade_usuario.lower().strip()
+        lojas_cidade = []
+        for loja in lojas:
+            cep_loja = extract_cep(loja.get("endereco", ""))
+            if cep_loja and cidade_usuario in loja.get("cidade", "").lower():
+                lojas_cidade.append({**loja, "distancia_km": None})
 
-    if not lojas_cidade:
-        print(f"❌ Nenhuma loja encontrada na cidade: {cidade_usuario}")
-        return jsonify({
-        "error": "Nenhuma loja encontrada nesta cidade.",
-        "message": f"Nenhuma loja encontrada em {cidade_usuario}. <a href='/lojas'>Clique aqui</a> para conferir todas as nossas lojas."
-    }), 404
+        if lojas_cidade:
+            return jsonify({"lojas": lojas_cidade, "modo": "aproximado"})
 
-    print(f"🏪 Total de lojas encontradas em {cidade_usuario}: {len(lojas_cidade)}")
-
-    # 🔹 Retorna apenas a primeira loja (para evitar erro no JS)
-    loja_mais_proxima = lojas_cidade[0]
-
-    print(f"📦 Retornando loja: {loja_mais_proxima}")  # Debug
-
-    return jsonify(loja_mais_proxima)
+    return jsonify({"error": "Nenhuma loja encontrada para este CEP"}), 404
 
 
 

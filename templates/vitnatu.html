@@ -1027,19 +1027,16 @@ function abrirModalInformacoes(tabelaUrl) {
     modal.show();
 }
 
-    function buscarLoja() {
-    let isMobile = window.innerWidth <= 768;
-    let cepInputId = "cepInput";  // ID do campo de CEP no modal
-    let cepElement = document.getElementById(cepInputId);
+function buscarLoja() {
+    let cepElement = document.getElementById("cepInput");
 
     if (!cepElement) {
-        console.error("Elemento de CEP não encontrado:", cepInputId);
+        console.error("Elemento de CEP não encontrado: cepInput");
         alert("Erro ao buscar o campo de CEP.");
         return;
     }
 
-    let cep = cepElement.value.trim().replace(/\D/g, ''); // Remove caracteres não numéricos
-
+    let cep = cepElement.value.trim().replace(/\D/g, '');
     if (cep.length < 5) {
         alert("Digite pelo menos os primeiros 5 dígitos do CEP!");
         return;
@@ -1052,7 +1049,7 @@ function abrirModalInformacoes(tabelaUrl) {
     })
     .then(response => response.json())
     .then(data => {
-        console.log("🔍 Dados recebidos da API:", data); // Debug para verificar a resposta
+        console.log("🔍 Dados recebidos da API:", data);
 
         if (data.error) {
             let message = data.message ? data.message : data.error;
@@ -1060,28 +1057,41 @@ function abrirModalInformacoes(tabelaUrl) {
             
             document.getElementById("modalErro").innerHTML = errorMessage;
             let modalErro = new bootstrap.Modal(document.getElementById("modalErroContainer"));
-            modalErro.show(); // ✅ Exibe o modal de erro
+            modalErro.show();
             return;
         }
 
-        const loja = data; // A API retorna apenas 1 loja diretamente
-
-        if (!loja) {
-            let noStoreMessage = `Nenhuma loja encontrada para este CEP.<br><br> <a href="/lojas" style="color: blue; text-decoration: underline;">Ver todas as lojas</a> .`;
-
+        if (!data.lojas || data.lojas.length === 0) {
+            let noStoreMessage = `Nenhuma loja encontrada para este CEP.<br><br> <a href="/lojas" style="color: blue; text-decoration: underline;">Ver todas as lojas</a>`;
             document.getElementById("modalErro").innerHTML = noStoreMessage;
-            document.getElementById("modalErroContainer").style.display = "block"; // Exibir modal de erro
-
+            let modalErro = new bootstrap.Modal(document.getElementById("modalErroContainer"));
+            modalErro.show();
             return;
         }
 
-        document.getElementById("modalEndereco").innerHTML = `<i class="fas fa-map-marker-alt"></i> ${loja.endereco}, ${loja.cidade}`;
-        document.getElementById("modalTelefone").innerHTML = `<i class="fas fa-phone"></i> ${loja.telefone}`;
-        document.getElementById("modalWhatsapp").innerHTML = `
-    <a href="https://wa.me/${loja.telefone.replace(/\D/g, '')}" target="_blank" class="btn btn-danger">
-        <i class="fab fa-whatsapp"></i> Fale no WhatsApp
-    </a>`;
-        document.getElementById("modalGoogleMaps").href = loja.google_maps;
+        // Monta a lista de lojas
+        let listaHTML = "";
+        data.lojas.forEach(loja => {
+            listaHTML += `
+                <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                    <p><i class="fas fa-map-marker-alt"></i> ${loja.endereco}, ${loja.cidade}</p>
+                    <p><i class="fas fa-phone"></i> ${loja.telefone}</p>
+                    <a href="https://wa.me/${loja.telefone.replace(/\D/g, '')}" target="_blank" class="btn btn-success btn-sm">
+                        <i class="fab fa-whatsapp"></i> Fale no WhatsApp
+                    </a>
+                    <a href="${loja.google_maps}" target="_blank" class="btn btn-primary btn-sm">
+                        <i class="fas fa-map"></i> Ver no Google Maps
+                    </a>
+                </div>
+            `;
+        });
+
+        // Insere no modal
+        document.getElementById("modalEndereco").innerHTML = listaHTML;
+        document.getElementById("modalTelefone").innerHTML = ""; // não usamos mais
+        document.getElementById("modalWhatsapp").innerHTML = ""; // não usamos mais
+
+        // Fecha o modal de CEP e abre o modal de loja
         let cepModal = bootstrap.Modal.getOrCreateInstance(document.getElementById("cepModal"));
         cepModal.hide();
 
@@ -1090,6 +1100,7 @@ function abrirModalInformacoes(tabelaUrl) {
     })
     .catch(error => console.error("Erro ao buscar lojas:", error));
 }
+
 
 function abrirModalCEP() {
     let cepModalElement = document.getElementById('cepModal');
