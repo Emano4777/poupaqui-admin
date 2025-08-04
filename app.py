@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, send_from_directory,request, redirect, url_for, session, jsonify, flash,send_file
 import cloudinary
 import cloudinary.uploader

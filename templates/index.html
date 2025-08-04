@@ -1304,11 +1304,37 @@ Swal.fire({
             <p style="margin-bottom: 20px;">Conheça nossas novas lojas inauguradas</p>
             <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
                 <a href="/lojas" target="_blank" style="text-decoration: none; color: inherit;">
-                    <strong> Caxias do Sul/RS</strong><br>
-                    <img src="${imagemCaxiasdoSul}" alt="Loja Caxias do Sul" style="width: 100%; max-width: 300px; border-radius: 10px; margin-top: 8px; cursor: pointer;">
+                    <strong>Caxias do Sul/RS</strong><br>
+                    <img src="${imagemCaxiasdoSul}" 
+                         alt="Loja Caxias do Sul" 
+                         style="
+                            width: 90%;
+                            max-width: 300px;
+                            border-radius: 10px;
+                            margin-top: 8px;
+                            cursor: pointer;
+                         ">
                 </a>
             </div>
         </div>
+
+        <style>
+            @media (max-width: 480px) {
+                .popup-inauguracoes-custom {
+                    width: 95% !important;
+                    padding: 10px !important;
+                }
+                .popup-inauguracoes-custom img {
+                    max-width: 100% !important;
+                }
+                .popup-inauguracoes-custom strong {
+                    font-size: 1rem;
+                }
+                .popup-inauguracoes-custom p {
+                    font-size: 0.9rem;
+                }
+            }
+        </style>
     `,
     confirmButtonText: 'Ver todas as unidades',
     confirmButtonColor: '#e60000',
@@ -1317,14 +1343,13 @@ Swal.fire({
     customClass: {
         popup: 'popup-inauguracoes-custom'
     }
+}).then((result) => {
+    if (result.isConfirmed) {
+        window.location.href = '/lojas';
+    }
+});
 
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = '/lojas';
-            }
-        });
-
-        localStorage.setItem("popup_inauguracoes_semana", semanaAtual);
+localStorage.setItem("popup_inauguracoes_semana", semanaAtual);
     }
 });
 
