@@ -722,29 +722,32 @@ textarea {
     background: #a8a8a8; /* Cor ao passar o mouse */
 }
 
+/* Zere "puxões" verticais exagerados no conteúdo imediatamente acima do footer */
+#conteudo {
+  margin-bottom: 0;               /* evita gap artificial */
+}
+
+/* Rodapé padrão colado ao conteúdo */
 .footer {
-    width: 100%;
-    text-align: center;
-    padding: 15px 0;
-    font-size: 14px;
-    color: #666;
-    background: #f8f9fa;
-    position: relative;
-    box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
-    margin-top: 20px;
+  width: 100%;
+  text-align: center;
+  padding: 15px 0;
+  font-size: 14px;
+  color: #666;
+  background: #f8f9fa;
+  position: relative;             /* nada de fixed/sticky */
+  box-shadow: 0 -2px 5px rgba(0,0,0,.1);
+  margin-top: 12px;               /* diminuí de 20px → 12px */
 }
 
-.footer p {
-    margin: 5px 0;
-}
+.footer p { margin: 5px 0; }
+.footer-link { text-decoration: none; color: #d80000; font-weight: bold; transition: .3s; }
+.footer i { margin-right: 5px; font-size: 16px; }
 
-.footer-link {
-    text-decoration: none;
-    color: #d80000;
-    font-weight: bold;
-    transition: 0.3s;
+/* (Opcional) Remova alturas mínimas exageradas de seções acima do footer */
+.section, .container, .container-fluid {
+  min-height: auto !important;    /* só se você tiver usado min-height alto */
 }
-
 .menu-link {
     color: inherit; /* Mantém a cor do texto conforme o restante do menu */
     text-decoration: none; /* Remove o sublinhado */
@@ -877,7 +880,9 @@ textarea {
 }
     </style>
 </head>
-<body>
+
+  <main id="conteudo">
+    <!-- TODO: seu conteúdo da página -->
     <amp-auto-ads type="adsense"
     data-ad-client="ca-pub-7995010197286628">
 </amp-auto-ads>
@@ -1094,21 +1099,23 @@ textarea {
 </div>
 
 <!-- ✅ Rodapé -->
-<footer class="footer">
+  <!-- header / navbar ... -->
+
+<body>
+  <!-- ✅ Rodapé -->
+  <footer class="footer">
     <p>
-        <a href="https://www.instagram.com/licencefarma/" target="_blank" class="footer-link">
-            <i class="fab fa-instagram"></i> Conheça a licenciadora PoupAqui
-        </a> |
-        <a href="https://farmaciaspoupaqui.com.br/?utm_source=Trafego_Direto&utm_medium=site&utm_campaign=Direto_Site" target="_blank" class="footer-link">
-            <i class="fas fa-user-plus"></i> Tenha sua loja PoupAqui
-        </a>
+      <a href="https://www.instagram.com/licencefarma/" target="_blank" class="footer-link">
+        <i class="fab fa-instagram"></i> Conheça a licenciadora PoupAqui
+      </a> |
+      <a href="https://farmaciaspoupaqui.com.br/?utm_source=Trafego_Direto&utm_medium=site&utm_campaign=Direto_Site" target="_blank" class="footer-link">
+        <i class="fas fa-user-plus"></i> Tenha sua loja PoupAqui
+      </a>
     </p>
+  </footer>
 
-    
+    </main>
 
-</div>
-
-</footer>
 <script>
   function buscarLoja() {
     let isMobile = window.innerWidth <= 768;
@@ -1417,5 +1424,5 @@ function fecharPopupInauguracoes() {
 
 
 
-</body>
+
 </html>
