@@ -23,18 +23,40 @@
 }
 
 .loja-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    z-index: 1;
-    width: 250px;
-    background-color: red;
-    border-radius: 10px;
-    padding: 10px;
-    text-align: center;
-    color: white;
-    position: relative;
-    min-height: 500px; /* 🔧 Ajuste se necessário */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 1;
+  width: 250px;
+  background-color: red;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  color: white;
+  position: relative;
+  min-height: 500px; /* mantém a estrutura mínima */
+}
+
+/* 🔥 Nova regra só pra imagem */
+.loja-card-img {
+  width: 100%;
+  height: 180px;           /* altura consistente pros cards */
+  object-fit: cover;       /* corta suavemente sem distorcer */
+  object-position: center; /* centraliza o corte */
+  border-radius: 8px;      /* acompanha o estilo do card */
+  margin-bottom: 10px;
+}
+
+/* Opcional: responsividade */
+@media (max-width: 576px) {
+  .loja-card {
+    width: 100%;           /* cards ocupam largura total no mobile */
+    min-height: auto;      /* deixam o conteúdo se ajustar */
+  }
+
+  .loja-card-img {
+    height: 150px;         /* menor no celular */
+  }
 }
 
 .loja-card .info {
@@ -590,18 +612,34 @@ h2::after {
         </button>
     </div>
 
-    {% if lojas and lojas|length > 0 %}
-    <div class="loja-grid" id="lojaGrid">
-        {% for loja in lojas %}
-        <div class="loja-card" data-cidade="{{ loja.cidade | lower }}">
-    <img src="{{ loja.url }}" alt="Loja PoupaAqui">
-    <div class="info">
-        <div>
+{% if lojas and lojas|length > 0 %}
+  <div class="loja-grid" id="lojaGrid">
+    {% for loja in lojas %}
+      <div class="loja-card" data-cidade="{{ loja.cidade | lower }}">
+        {# ✅ Imagem otimizada (Cloudinary) #}
+        {% set l320  = loja.url|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_320/') %}
+        {% set l480  = loja.url|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_480/') %}
+        {% set l640  = loja.url|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_640/') %}
+        {% set l800  = loja.url|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_800/') %}
+        {% set l1024 = loja.url|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_1024/') %}
+
+        <img
+          src="{{ l640 }}"
+          srcset="{{ l320 }} 320w, {{ l480 }} 480w, {{ l640 }} 640w, {{ l800 }} 800w, {{ l1024 }} 1024w"
+          sizes="(max-width: 576px) 100vw, (max-width: 992px) 50vw, 33vw"
+          alt="Loja {{ loja.cidade }} - PoupaAqui"
+          loading="lazy"
+          decoding="async"
+          class="loja-img"
+        >
+
+        <div class="info">
+          <div>
             <h5>{{ loja.cidade }}</h5>
             <p><strong>Endereço:</strong> {{ loja.endereco }}</p>
             <p>{{ loja.telefone }}</p>
-        </div>
-        <div>
+          </div>
+          <div>
             <a href="javascript:void(0);"
                class="btn-whatsapp mt-2"
                onclick="registrarClique('{{ loja.whatsapp }}'); abrirModal('{{ loja.whatsapp }}')">
@@ -609,19 +647,17 @@ h2::after {
             </a>
 
             <a href="javascript:void(0);" onclick="abrirModalMaps('{{ loja.google_maps }}')" class="btn-maps mt-2 d-block">
-                <i class="fas fa-map-marker-alt"></i> Como Chegar
+              <i class="fas fa-map-marker-alt"></i> Como Chegar
             </a>
+          </div>
         </div>
-    </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p style="margin-top: 20px; color: gray;">Nenhuma loja cadastrada no momento.</p>
+{% endif %}
 
-        </div>
-        {% endfor %}
-    </div>
-    {% else %}
-        <p style="margin-top: 20px; color: gray;">Nenhuma loja cadastrada no momento.</p>
-    {% endif %}
-</div>
-    </div>
 
     <div id="modalRedirect" class="modal" style="display:none;">
   <div class="modal-content">

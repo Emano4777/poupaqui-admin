@@ -423,10 +423,31 @@ textarea {
     object-fit: cover; /* Ajuste para cobrir sem distorção */
 }
 .carousel-img {
-    width: 100vw !important; /* Ocupa 100% da largura da tela */
-    height: auto;
-    max-height: 400px;
-    object-fit: cover; /* Garante que preenche o espaço sem distorcer */
+  width: 100%;
+  display: block;
+  object-position: center;
+  /* altura fluida evita distorção e reduz corte em telas distintas */
+  height: clamp(200px, 35vw, 480px);
+  max-height: 480px;
+  object-fit: cover; /* padrão: bonito em desktop/tablet */
+  background: #000;  /* fundo neutro caso mude para contain */
+}
+
+/* Telas pequenas (evitar corte): use contain */
+@media (max-width: 576px) {
+  .banner-top,
+  .carousel-img {
+    object-fit: contain;   /* não corta em celulares */
+    background: #000;      /* faixas laterais elegantes quando sobrar espaço */
+  }
+}
+
+/* Telas muito largas (preencher melhor): cover */
+@media (min-width: 1200px) {
+  .banner-top,
+  .carousel-img {
+    object-fit: cover;     /* cobre, aceitando um corte mínimo */
+  }
 }
 
 .container-fluid {
@@ -435,10 +456,12 @@ textarea {
 }
 
 .banner-top {
-    width: 100%;
-    height: auto;
-    max-height: 400px; /* Ajuste para limitar a altura */
-    object-fit: contain; /* Mantém a proporção da imagem */
+  width: 100%;
+  display: block;
+  object-position: center;
+  /* altura fluida entre 200px e 480px, escalando ~35vw */
+  height: clamp(200px, 35vw, 480px);
+  max-height: 480px;
 }
 
 
@@ -453,13 +476,14 @@ textarea {
 
 /* Banners */
 .banner-top,
-    .banner-middle {
-    width: 100vw !important;  /* Largura total da tela */
+.banner-middle {
+    width: 100%;   /* 100% do container, evita bug do 100vw */
     height: auto;
-    max-height: 400px; /* Ajuste conforme necessário */
+    max-height: 400px;
     margin: 0;
     padding: 0;
 }
+
 
 #carouselExampleIndicators {
     width: 100vw !important;  /* Força a largura total */
@@ -959,29 +983,59 @@ textarea {
     </div>
 </div>
 
+{# ✅ Banner Top com variantes de largura e melhor qualidade #}
 {% if banner_top %}
-    <img src="{{ banner_top }}?t={{ timestamp }}" alt="Promoção Principal" class="banner-top">
+  {% set bt_base = banner_top|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_1366/') %}
+  <img
+    class="banner-top"
+    src="{{ bt_base }}&t={{ timestamp }}"
+    srcset="
+      {{ banner_top|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_768/') }} 768w,
+      {{ banner_top|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_1024/') }} 1024w,
+      {{ banner_top|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_1366/') }} 1366w,
+      {{ banner_top|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_1920/') }} 1920w,
+      {{ banner_top|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_2560/') }} 2560w
+    "
+    sizes="100vw"
+    alt="Promoção Principal"
+    decoding="async"
+    fetchpriority="high"
+  >
 {% else %}
-    <p class="text-center text-danger">Banner principal não encontrado</p>
+  <p class="text-center text-danger">Banner principal não encontrado</p>
 {% endif %}
 
 <!-- ✅ Carrossel de Banners (Largura Total) -->
 <div class="container-fluid p-0">
-    <div id="carouselExampleIndicators" class="carousel slide banner-middle" data-bs-ride="carousel">
-        <div class="carousel-indicators">
-            {% for i in range(banners|length) %}
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ i }}" 
-                    class="{% if i == 0 %}active{% endif %}" aria-label="Slide {{ i+1 }}"></button>
-            {% endfor %}
-        </div>
-        <div class="carousel-inner">
-            {% for banner in banners %}
-            <div class="carousel-item {% if loop.first %}active{% endif %}">
-                <img src="{{ banner }}" class="d-block w-100 carousel-img">
-            </div>
-            {% endfor %}
-        </div>
+  <div id="carouselExampleIndicators" class="carousel slide banner-middle" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+      {% for i in range(banners|length) %}
+      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ i }}"
+              class="{% if i == 0 %}active{% endif %}" aria-label="Slide {{ i+1 }}"></button>
+      {% endfor %}
     </div>
+
+    <div class="carousel-inner">
+      {% for banner in banners %}
+      {% set b768   = banner|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_768/') %}
+      {% set b1024  = banner|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_1024/') %}
+      {% set b1366  = banner|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_1366/') %}
+      {% set b1920  = banner|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_1920/') %}
+      {% set b2560  = banner|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_2560/') %}
+      <div class="carousel-item {% if loop.first %}active{% endif %}">
+        <img
+          class="d-block w-100 carousel-img"
+          src="{{ b1366 }}"
+          srcset="{{ b768 }} 768w, {{ b1024 }} 1024w, {{ b1366 }} 1366w, {{ b1920 }} 1920w, {{ b2560 }} 2560w"
+          sizes="100vw"
+          alt="Banner de promoção"
+          decoding="async"
+          loading="lazy"
+        >
+      </div>
+      {% endfor %}
+    </div>
+  </div>
 </div>
 
 <!-- Botão de Ajuda Flutuante -->
