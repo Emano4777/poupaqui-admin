@@ -1358,65 +1358,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const imagemPalmeiradasMissoes = 'https://res.cloudinary.com/dizfq460q/image/upload/v1755862819/qxbygfg7ygk6yc9mkjwd.jpg';
    
 
-Swal.fire({
-    title: 'Novas Unidades Inauguradas!',
-    html: `
-        <div style="text-align: center;">
-            <p style="margin-bottom: 20px;">Conheça nossas novas lojas inauguradas</p>
-            <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
-                <a href="/lojas" target="_blank" style="text-decoration: none; color: inherit;">
-                    <strong>Loja Palmeira das Missões/RS</strong><br>
-                    <img src="${imagemPalmeiradasMissoes}" 
-                         alt="Loja Palmeira das Missoes" 
-                         style="
-                            width: 90%;
-                            max-width: 300px;
-                            border-radius: 10px;
-                            margin-top: 8px;
-                            cursor: pointer;
-                         ">
-                </a>
-            </div>
-        </div>
 
-        <style>
-            @media (max-width: 480px) {
-                .popup-inauguracoes-custom {
-                    width: 95% !important;
-                    padding: 10px !important;
-                }
-                .popup-inauguracoes-custom img {
-                    max-width: 100% !important;
-                }
-                .popup-inauguracoes-custom strong {
-                    font-size: 1rem;
-                }
-                .popup-inauguracoes-custom p {
-                    font-size: 0.9rem;
-                }
-            }
-        </style>
-    `,
-    confirmButtonText: 'Ver todas as unidades',
-    confirmButtonColor: '#e60000',
-    backdrop: true,
-    showCloseButton: true,
-    customClass: {
-        popup: 'popup-inauguracoes-custom'
-    }
-}).then((result) => {
-    if (result.isConfirmed) {
-        window.location.href = '/lojas';
-    }
-});
-
-localStorage.setItem("popup_inauguracoes_semana", semanaAtual);
-    }
-});
-
-function fecharPopupInauguracoes() {
-    document.getElementById("popupInauguracoes").style.display = "none";
-}
+    }})
 
 </script>
 
