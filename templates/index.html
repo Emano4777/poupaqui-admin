@@ -1137,54 +1137,73 @@ textarea {
         return;
     }
 
-    fetch("/buscar_loja", {
+fetch("/buscar_loja", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ cep: cep })
 })
 .then(response => response.json())
 .then(data => {
-    console.log("🔍 Dados recebidos da API:", data); // Debug para verificar a resposta
+    console.log("🔍 Dados recebidos da API:", data);
 
     if (data.error) {
         let message = data.message ? data.message : data.error;
-        
-        // Criando um alerta com um link para a página de todas as lojas
-        let errorMessage = `${message} <br><br> <a href="/lojas" style="color: blue; text-decoration: underline;"></a>`;
-        
-        // Exibir a mensagem em um modal ou alerta
+        let errorMessage = `${message}<br><br><a href="/lojas" style="color: blue; text-decoration: underline;">Ver todas as lojas</a>`;
         document.getElementById("modalErro").innerHTML = errorMessage;
-        document.getElementById("modalErroContainer").style.display = "block"; // Exibir modal de erro
-
+        document.getElementById("modalErroContainer").style.display = "block";
         return;
     }
 
-    const loja = data.lojas ? data.lojas[0] : data; // Se a API retorna {"lojas": [...]}, acessamos o primeiro item
-
-    if (!loja) {
-        let noStoreMessage = ` <br><br> <a href="/lojas" style="color: blue; text-decoration: underline;"></a> .`;
-        
+    if (!data.lojas || data.lojas.length === 0) {
+        let noStoreMessage = `Nenhuma loja encontrada.<br><br><a href="/lojas" style="color: blue; text-decoration: underline;">Ver todas as lojas</a>`;
         document.getElementById("modalErro").innerHTML = noStoreMessage;
-        document.getElementById("modalErroContainer").style.display = "block"; // Exibir modal de erro
-        
+        document.getElementById("modalErroContainer").style.display = "block";
         return;
+    }
+
+    let blocosHTML = "";
+    data.lojas.forEach(loja => {
+        blocosHTML += `
+            <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 10px;">
+                <p><i class="fas fa-map-marker-alt"></i> ${loja.endereco}, ${loja.cidade}</p>
+                <p><i class="fas fa-phone"></i> ${loja.telefone}</p>
+                <a href="https://wa.me/${loja.telefone.replace(/\D/g, '')}" class="btn btn-success btn-sm" target="_blank">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+                <a href="${loja.google_maps}" class="btn btn-primary btn-sm" target="_blank">
+                    <i class="fas fa-map"></i> Google Maps
+                </a>
+            </div>
+        `;
+    });
+
+    if (data.modo === "aproximado") {
+        blocosHTML = `
+            <div style="margin-bottom: 10px; color: #e60000; font-weight: bold;">
+                Localização aproximada baseada na cidade.
+            </div>
+        ` + blocosHTML;
     }
 
     if (isMobile) {
-        document.getElementById("modalEnderecoMobile").innerHTML = `<i class=""></i>  ${loja.endereco}, ${loja.cidade}`;
-        document.getElementById("modalTelefoneMobile").innerHTML = `<i class=""></i>  ${loja.telefone}`;
-        document.getElementById("modalWhatsappMobile").innerHTML = `<i class=""></i> <a href="${loja.whatsapp}" target="_blank">Fale no WhatsApp</a>`;
-        document.getElementById("modalGoogleMapsMobile").href = loja.google_maps;
-        document.getElementById("modalLojaMobile").classList.add("show"); // Exibir modal
+        document.getElementById("modalEnderecoMobile").innerHTML = blocosHTML;
+        document.getElementById("modalTelefoneMobile").innerHTML = "";
+        document.getElementById("modalWhatsappMobile").innerHTML = "";
+        document.getElementById("modalGoogleMapsMobile").href = "#";
+        document.getElementById("modalLojaMobile").classList.add("show");
     } else {
-        document.getElementById("modalEndereco").innerHTML = `<i class=""></i>  ${loja.endereco}, ${loja.cidade}`;
-        document.getElementById("modalTelefone").innerHTML = `<i class=""></i> ${loja.telefone}`;
-        document.getElementById("modalWhatsapp").innerHTML = `<i class=""></i> <a href="${loja.whatsapp}" target="_blank">Fale no WhatsApp</a>`;
-        document.getElementById("modalGoogleMaps").href = loja.google_maps;
+        document.getElementById("modalEndereco").innerHTML = blocosHTML;
+        document.getElementById("modalTelefone").innerHTML = "";
+        document.getElementById("modalWhatsapp").innerHTML = "";
+        document.getElementById("modalGoogleMaps").href = "#";
         document.getElementById("modalLoja").style.display = "flex";
     }
-})
-.catch(error => console.error("Erro ao buscar loja:", error));
+}) // <-- esse fechamento aqui estava faltando!
+.catch(error => {
+    console.error("Erro ao buscar loja:", error);
+    document.getElementById("modalErro").innerHTML = `Erro ao buscar loja. Tente novamente mais tarde.`;
+    document.getElementById("modalErroContainer").style.display = "block";
+});
   }
 
 
