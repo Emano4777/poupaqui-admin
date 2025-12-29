@@ -118,8 +118,7 @@ def sobre_nos():
 
 @app.route("/implantacao")
 def implantacao():
-    if not session.get("admin_logged_in") and not session.get("implantacao_logged_in"):
-        flash("Você precisa estar logado para acessar a implantação.", "danger")
+    if not session.get("logged_in"):
         return redirect(url_for("login"))
 
     data = load_store_images()
@@ -127,15 +126,16 @@ def implantacao():
     return render_template("implantacao.html", logo=data["logo"], etapas=etapas)
 
 
+
 @app.route("/admin/implantacao")
 def admin_implantacao():
-    if not session.get("logged_in"):
-        flash("Você precisa estar logado para acessar esta página.", "danger")
+    if not session.get("logged_in") or session.get("role") != "admin":
         return redirect(url_for("login"))
 
     data = load_store_images()
     etapas = get_implantacao_etapas()
     return render_template("admin_implantacao.html", logo=data["logo"], etapas=etapas)
+
 
 
 def autenticar_usuario_implantacao(usuario, senha):
@@ -698,28 +698,51 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        username = request.form['username'].strip()
-        password = request.form['password'].strip()
+    data = load_store_images()
+    logo = data.get("logo")
 
-        # ✅ Admin do sistema (edição)
+    if request.method == 'POST':
+        username = (request.form.get('username') or '').strip()
+        password = (request.form.get('password') or '').strip()
+
+        # 1) ✅ ADMIN FIXO (sempre checa primeiro)
         if username == 'admin' and password == 'admin123':
-            session['admin_logged_in'] = True
+            session.clear()
+            session['logged_in'] = True
             session['role'] = 'admin'
-            session['user'] = 'admin'
+            # ✅ você pediu: admin já ir direto pro admin_implantacao
             return redirect(url_for('admin_implantacao'))
 
-        # ✅ Usuários de implantação (acesso restrito)
-        user_impl = autenticar_usuario_implantacao(username, password)
-        if user_impl:
-            session['implantacao_logged_in'] = True
-            session['role'] = user_impl['role']  # 'implantacao'
-            session['user'] = user_impl['usuario']
-            return redirect(url_for('implantacao'))
+        # 2) ✅ IMPLANTAÇÃO (no banco)
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
 
-        return render_template('login.html', error="Credenciais inválidas. Tente novamente.")
+            cur.execute("""
+                SELECT 1
+                FROM public.usuarios_implantacao
+                WHERE usuario = %s AND senha = %s
+                LIMIT 1
+            """, (username, password))
 
-    return render_template('login.html', error="Credenciais inválidas. Tente novamente.", logo=load_store_images()["logo"])
+            ok = cur.fetchone() is not None
+            cur.close()
+            conn.close()
+
+            if ok:
+                session.clear()
+                session['logged_in'] = True
+                session['role'] = 'implantacao'
+                return redirect(url_for('implantacao'))
+
+        except Exception as e:
+            print("❌ Erro no login implantação:", e)
+
+        # Falhou tudo
+        return render_template('login.html', error="Credenciais inválidas. Tente novamente.", logo=logo)
+
+    return render_template('login.html', logo=logo)
+
 
 from flask import send_file, redirect, url_for, session
 import io
