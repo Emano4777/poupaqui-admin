@@ -116,6 +116,128 @@ def sobre_nos():
     data = load_store_images() 
     return render_template('sobrenos.html', lojas=data["stores"], logo=data["logo"])
 
+@app.route("/implantacao")
+def implantacao():
+    if not session.get("admin_logged_in") and not session.get("implantacao_logged_in"):
+        flash("Você precisa estar logado para acessar a implantação.", "danger")
+        return redirect(url_for("login"))
+
+    data = load_store_images()
+    etapas = get_implantacao_etapas()
+    return render_template("implantacao.html", logo=data["logo"], etapas=etapas)
+
+
+@app.route("/admin/implantacao")
+def admin_implantacao():
+    if not session.get("logged_in"):
+        flash("Você precisa estar logado para acessar esta página.", "danger")
+        return redirect(url_for("login"))
+
+    data = load_store_images()
+    etapas = get_implantacao_etapas()
+    return render_template("admin_implantacao.html", logo=data["logo"], etapas=etapas)
+
+
+def autenticar_usuario_implantacao(usuario, senha):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT usuario, role, ativo
+        FROM public.usuarios_implantacao
+        WHERE usuario = %s AND senha = %s
+        LIMIT 1
+    """, (usuario, senha))
+    row = cur.fetchone()
+    cur.close()
+    conn.close()
+
+    if not row:
+        return None
+    if row[2] is not True:
+        return None
+
+    return {"usuario": row[0], "role": row[1]}
+
+
+@app.route("/admin/implantacao/edit/<int:etapa_id>", methods=["GET", "POST"])
+def edit_etapa_implantacao(etapa_id):
+    if not session.get("logged_in"):
+        flash("Você precisa estar logado para acessar esta página.", "danger")
+        return redirect(url_for("login"))
+
+    data = load_store_images()
+    logo = data["logo"]
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Buscar etapa
+    cur.execute("""
+        SELECT id, numero, titulo, descricao, cor
+        FROM public.implantacao_etapas
+        WHERE id = %s
+    """, (etapa_id,))
+    row = cur.fetchone()
+
+    if not row:
+        cur.close()
+        conn.close()
+        flash("Etapa não encontrada!", "danger")
+        return redirect(url_for("admin_implantacao"))
+
+    etapa = {"id": row[0], "numero": row[1], "titulo": row[2], "descricao": row[3], "cor": row[4]}
+
+    if request.method == "POST":
+        titulo = request.form.get("titulo", "").strip()
+        descricao = request.form.get("descricao", "").strip()
+        cor = request.form.get("cor", "yellow").strip()
+
+        if not titulo or not descricao:
+            flash("Preencha título e descrição.", "danger")
+            return render_template("edit_etapa_implantacao.html", logo=logo, etapa=etapa)
+
+        cur.execute("""
+            UPDATE public.implantacao_etapas
+            SET titulo = %s, descricao = %s, cor = %s, atualizado_em = CURRENT_TIMESTAMP
+            WHERE id = %s
+        """, (titulo, descricao, cor, etapa_id))
+        conn.commit()
+
+        cur.close()
+        conn.close()
+
+        flash("Etapa atualizada com sucesso!", "success")
+        return redirect(url_for("admin_implantacao"))
+
+    cur.close()
+    conn.close()
+    return render_template("edit_etapa_implantacao.html", logo=logo, etapa=etapa)
+
+
+def get_implantacao_etapas():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT id, numero, titulo, descricao, cor
+        FROM public.implantacao_etapas
+        ORDER BY numero ASC
+    """)
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    etapas = []
+    for r in rows:
+        etapas.append({
+            "id": r[0],
+            "numero": r[1],
+            "titulo": r[2],
+            "descricao": r[3],
+            "cor": r[4] or "yellow"
+        })
+    return etapas
+
+
 @app.route('/vitnatu')
 def vitnatu():
     data = load_store_images() 
@@ -580,13 +702,187 @@ def login():
         username = request.form['username'].strip()
         password = request.form['password'].strip()
 
-        if username == 'admin' and password == 'admin123':  # Usuário e senha fixos
-            session['logged_in'] = True
-            return redirect(url_for('admin'))
-        else:
-            return render_template('login.html', error="Credenciais inválidas. Tente novamente.")
+        # ✅ Admin do sistema (edição)
+        if username == 'admin' and password == 'admin123':
+            session['admin_logged_in'] = True
+            session['role'] = 'admin'
+            session['user'] = 'admin'
+            return redirect(url_for('admin_implantacao'))
 
-    return render_template('login.html')
+        # ✅ Usuários de implantação (acesso restrito)
+        user_impl = autenticar_usuario_implantacao(username, password)
+        if user_impl:
+            session['implantacao_logged_in'] = True
+            session['role'] = user_impl['role']  # 'implantacao'
+            session['user'] = user_impl['usuario']
+            return redirect(url_for('implantacao'))
+
+        return render_template('login.html', error="Credenciais inválidas. Tente novamente.")
+
+    return render_template('login.html', error="Credenciais inválidas. Tente novamente.", logo=load_store_images()["logo"])
+
+from flask import send_file, redirect, url_for, session
+import io
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.pdfgen import canvas
+from reportlab.lib import colors
+
+@app.route("/admin/implantacao/pdf")
+def download_implantacao_pdf():
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
+
+    etapas = get_implantacao_etapas()  # [{id, numero, titulo, descricao, cor}, ...]
+    etapas = sorted(etapas, key=lambda x: int(x["numero"]))
+
+    buffer = io.BytesIO()
+    page_w, page_h = landscape(A4)
+
+    c = canvas.Canvas(buffer, pagesize=(page_w, page_h))
+
+    # ====== CONFIG VISUAL ======
+    margin_x = 30
+    top_line_y = page_h - 18
+
+    # Linha superior
+    c.setStrokeColor(colors.black)
+    c.setLineWidth(1)
+    c.line(margin_x, top_line_y, page_w - margin_x, top_line_y)
+
+    # Grid: 5 colunas na primeira linha, 5 na segunda, 4 na terceira
+    rows_spec = [5, 5, 4]
+
+    gap_x = 22
+    gap_y = 18
+    box_h = 160
+    start_y = page_h - 40 - box_h
+
+    title_font = "Helvetica-Bold"
+    body_font = "Helvetica"
+    title_size = 10.5
+    body_size = 8.5
+
+    red = colors.HexColor("#D61F1F")
+    yellow = colors.HexColor("#F2C300")
+
+    def circle_color(numero):
+        return yellow if int(numero) % 2 == 1 else red
+
+    def number_color_bg(bg):
+        return colors.HexColor("#D61F1F") if bg == yellow else colors.HexColor("#F2C300")
+
+    def draw_wrapped_text(text, x, y, max_width, line_height, font_name, font_size, max_lines=None):
+        """
+        Desenha texto quebrando linha por largura usando o ReportLab.
+        y é o topo.
+        Retorna o y final.
+        Se max_lines for definido, limita a quantidade de linhas.
+        """
+        c.setFont(font_name, font_size)
+        words = (text or "").split()
+        line = ""
+        lines = []
+
+        for w in words:
+            test = (line + " " + w).strip()
+            if c.stringWidth(test, font_name, font_size) <= max_width:
+                line = test
+            else:
+                if line:
+                    lines.append(line)
+                line = w
+        if line:
+            lines.append(line)
+
+        if max_lines is not None:
+            lines = lines[:max_lines]
+
+        yy = y
+        for ln in lines:
+            c.drawString(x, yy, ln)
+            yy -= line_height
+        return yy
+
+    # ====== DESENHAR OS BLOCOS ======
+    etapa_idx = 0
+    for row_i, cols in enumerate(rows_spec):
+        col_w = (page_w - 2 * margin_x - (cols - 1) * gap_x) / cols
+        y = start_y - row_i * (box_h + gap_y)
+
+        for col_i in range(cols):
+            if etapa_idx >= len(etapas):
+                break
+
+            e = etapas[etapa_idx]
+            etapa_idx += 1
+
+            x = margin_x + col_i * (col_w + gap_x)
+
+            # Círculo + número
+            bg = circle_color(e["numero"])
+            num_color = number_color_bg(bg)
+
+            circle_r = 18
+            circle_x = x + circle_r + 2
+            circle_y = y + box_h - circle_r - 8
+
+            c.setFillColor(bg)
+            c.setStrokeColor(bg)
+            c.circle(circle_x, circle_y, circle_r, stroke=1, fill=1)
+
+            c.setFillColor(num_color)
+            c.setFont(title_font, 14)
+            num_txt = str(e["numero"])
+            tw = c.stringWidth(num_txt, title_font, 14)
+            c.drawString(circle_x - tw / 2, circle_y - 5, num_txt)
+
+            # ===== TÍTULO =====
+            title_x = x + (circle_r * 2) + 10
+            title_y = y + box_h - 18
+
+            c.setFillColor(colors.black)
+            titulo = (e.get("titulo") or "").upper()
+
+            title_end_y = draw_wrapped_text(
+                titulo,
+                title_x,
+                title_y,
+                max_width=col_w - (circle_r * 2) - 14,
+                line_height=13,
+                font_name=title_font,
+                font_size=title_size,
+                max_lines=3  # evita invadir a descrição
+            )
+
+            # ===== DESCRIÇÃO (agora DENTRO do loop) =====
+            desc_x = x + 2
+            desc_start_y = title_end_y - 8
+
+            c.setFillColor(colors.HexColor("#333333"))
+
+            # Limita linhas para não invadir a próxima linha do grid
+            draw_wrapped_text(
+                e.get("descricao") or "",
+                desc_x,
+                desc_start_y,
+                max_width=col_w - 6,
+                line_height=11,
+                font_name=body_font,
+                font_size=body_size,
+                max_lines=7
+            )
+
+    c.showPage()
+    c.save()
+    buffer.seek(0)
+
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name="implantacao_poupaqui.pdf",
+        mimetype="application/pdf"
+    )
+
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
@@ -640,8 +936,9 @@ def admin():
 
 @app.route('/logout')
 def logout():
-    session.pop('logged_in', None)
+    session.clear()
     return redirect(url_for('login'))
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

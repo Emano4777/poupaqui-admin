@@ -1,70 +1,277 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Administrativo</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - PoupAqui</title>
 
-        .container {
-            max-width: 400px;
-            margin-top: 100px;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        }
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="https://res.cloudinary.com/dizfq460q/image/upload/v1739487331/f5jacl8k23kajzp50qon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="https://res.cloudinary.com/dizfq460q/image/upload/v1739487331/f5jacl8k23kajzp50qon.png">
+  <link rel="apple-touch-icon" href="https://res.cloudinary.com/dizfq460q/image/upload/v1739487331/f5jacl8k23kajzp50qon.png">
+  <meta name="theme-color" content="#cc0000">
 
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 
-        .error-message {
-            color: red;
-            text-align: center;
-            font-size: 14px;
-            display: none;
-        }
-    </style>
-</head>
-<body>
+  <style>
+  body{
+  font-family:'Roboto',sans-serif;
+  margin:0; padding:0;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg, rgba(204,0,0,.88), rgba(255,78,78,.88));
+  position:relative;
+  overflow:hidden;
 
-<div class="container">
-    <h2>Login Administrativo</h2>
-    {% if error %}
-    <p class="error-message" style="display: block;">{{ error }}</p>
-    {% endif %}
-    <form method="POST" onsubmit="return validateForm()">
-        <div class="form-group">
-            <label for="username">Usuário:</label>
-            <input type="text" name="username" id="username" class="form-control" required>
-        </div>
-        <div class="form-group">
-            <label for="password">Senha:</label>
-            <input type="password" name="password" id="password" class="form-control" required>
-        </div>
-        <br>
-        <button type="submit" class="btn btn-primary w-100">Entrar</button>
-    </form>
-</div>
+  /* ✅ garante respiro nas bordas em telas pequenas */
+  padding: 18px;
+}
 
-<script>
-    function validateForm() {
-        let username = document.getElementById("username").value.trim();
-        let password = document.getElementById("password").value.trim();
+.login-container{
+  width: 100%;
+  max-width: 520px;      /* ✅ um pouco mais largo em telas grandes */
+  background:#fff;
+  border-radius:14px;
+  box-shadow:0 10px 30px rgba(0,0,0,.18);
+  padding:38px 34px;
+  text-align:center;
+  z-index:2;
+  position:relative;
 
-        if (username === "" || password === "") {
-            alert("Por favor, preencha todos os campos.");
-            return false;
-        }
-        return true;
+  /* ✅ garante que nunca estoure */
+  overflow: hidden;
+}
+    .watermark{
+      position:absolute;
+      font-size:96px;
+      color:rgba(255,255,255,.10);
+      white-space:nowrap;
+      transform:rotate(-30deg);
+      user-select:none;
+      z-index:1;
+      font-weight:700;
+      letter-spacing:2px;
     }
-</script>
+    .brand{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:10px;
+      margin-bottom:18px;
+    }
+    .brand img{
+      width:96px;
+      height:96px;
+      object-fit:contain;
+      border-radius:16px;
+      box-shadow:0 6px 18px rgba(0,0,0,.10);
+      background:#fff;
+    }
+    .brand h1{
+      margin:0;
+      font-size:22px;
+      color:#cc0000;
+      font-weight:700;
+      line-height:1.2;
+    }
+    .subtitle{
+      margin:0 0 18px 0;
+      color:#666;
+      font-size:14px;
+      line-height:1.4;
+    }
 
+    .badges{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+    .badge{
+      border:1px solid #eee;
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:12px;
+      color:#444;
+      background:#fafafa;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .badge i{ color:#cc0000; }
+
+    .error{
+      color:#fff;
+      background:#ff4e4e;
+      padding:10px 12px;
+      border-radius:10px;
+      margin-bottom:14px;
+      font-size:14px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      text-align:left;
+    }
+
+    form{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-top:6px;
+    }
+    .field{
+      position:relative;
+    }
+    .field i{
+      position:absolute;
+      left:14px;
+      top:50%;
+      transform:translateY(-50%);
+      color:#999;
+      font-size:14px;
+    }
+  input{
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  padding:14px 14px 14px 42px; /* um tiquinho mais alinhado com o ícone */
+  border:1px solid #ddd;
+  border-radius:10px;
+  font-size:15px;
+  outline:none;
+  transition:.15s ease;
+
+  /* ✅ remove qualquer chance de overflow */
+  min-width: 0;
+}
+    input:focus{
+      border-color:#cc0000;
+      box-shadow:0 0 0 3px rgba(204,0,0,.12);
+    }
+    button{
+      padding:14px;
+      background:#cc0000;
+      color:#fff;
+      border:none;
+      border-radius:10px;
+      font-size:15px;
+      cursor:pointer;
+      font-weight:700;
+      transition:transform .15s ease, background .15s ease;
+    }
+    button:hover{
+      background:#b30000;
+      transform:translateY(-1px);
+    }
+
+    .help{
+      margin-top:14px;
+      font-size:13px;
+      color:#666;
+    }
+    .help a{
+      color:#cc0000;
+      text-decoration:none;
+      font-weight:700;
+    }
+    .help a:hover{ text-decoration:underline; }
+
+    .small-note{
+      margin-top:10px;
+      font-size:12px;
+      color:#888;
+      line-height:1.35;
+    }
+
+ @media (max-width: 480px){
+  .login-container{
+    padding: 26px 18px;
+    border-radius: 12px;
+    max-width: 100%;
+  }
+  .watermark{ font-size: 64px; }
+  .brand img{ width: 84px; height: 84px; }
+  .brand h1{ font-size: 20px; }
+}
+
+/* ✅ telas maiores (desktop grande) */
+@media (min-width: 1100px){
+  .login-container{ max-width: 560px; }
+  .brand img{ width: 110px; height: 110px; }
+  .brand h1{ font-size: 24px; }
+}
+
+  </style>
+</head>
+
+<body>
+  <div class="watermark" style="top: 15%; left: 4%;">PoupAqui</div>
+  <div class="watermark" style="top: 48%; left: 26%;">PoupAqui</div>
+  <div class="watermark" style="top: 78%; left: 55%;">PoupAqui</div>
+
+  <div class="login-container">
+    <div class="brand">
+      <!-- ✅ Logo vem do backend -->
+      <img src="{{ logo or 'https://res.cloudinary.com/dizfq460q/image/upload/v1739487331/f5jacl8k23kajzp50qon.png' }}" alt="Logo PoupAqui">
+      <h1>Acesso PoupAqui</h1>
+    </div>
+
+    <p class="subtitle">
+      Use este login para <b>Implantação</b> (visualização) ou <b>Admin</b> (edição).
+    </p>
+
+    <div class="badges">
+      <div class="badge"><i class="fas fa-eye"></i> Implantação: acesso à página</div>
+      <div class="badge"><i class="fas fa-cog"></i> Admin: edição do site</div>
+    </div>
+
+    {% if error %}
+      <div class="error">
+        <i class="fas fa-exclamation-circle"></i>
+        <span>{{ error }}</span>
+      </div>
+    {% endif %}
+
+    <!-- ✅ Mantém os names que o backend espera: username/password -->
+    <form action="{{ url_for('login') }}" method="post" onsubmit="return validateForm()">
+      <div class="field">
+        <i class="fas fa-user"></i>
+        <input type="text" name="username" id="username" placeholder="Usuário" autocomplete="username" required>
+      </div>
+
+      <div class="field">
+        <i class="fas fa-lock"></i>
+        <input type="password" name="password" id="password" placeholder="Senha" autocomplete="current-password" required>
+      </div>
+
+      <button type="submit">Entrar</button>
+    </form>
+
+    <div class="help">
+      Precisa de ajuda? <a href="https://api.whatsapp.com/send?phone=5517997279143&text=Olá, preciso de ajuda com meu acesso." target="_blank">Falar no WhatsApp</a>
+    </div>
+
+    <div class="small-note">
+      Dica: se você for <b>Admin</b>, após entrar você vai para o painel.  
+      Se for <b>Implantação</b>, você vai direto para a página de implantação.
+    </div>
+  </div>
+
+  <script>
+    function validateForm() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!username || !password) {
+        alert("Por favor, preencha todos os campos.");
+        return false;
+      }
+      return true;
+    }
+  </script>
 </body>
 </html>

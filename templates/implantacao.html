@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7995010197286628"
+    crossorigin="anonymous"></script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="https://res.cloudinary.com/dizfq460q/image/upload/v1739487331/f5jacl8k23kajzp50qon.png" />
+  <title>Implantação - PoupaAqui</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+  <style>
+    body, html{
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    /* Navbar (mesmo padrão do seu template) */
+    .navbar-brand .logo-img { max-width: 80px; height: auto; }
+    .navbar-custom{
+      background-color: white;
+      padding: 10px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .navbar-custom .btn-danger{
+      background-color: rgb(224, 6, 40);
+      border-color: rgb(224, 6, 40);
+      border-radius: 20px;
+      font-weight: bold;
+    }
+
+    /* Menu desktop/mobile (mesmo padrão) */
+    .mobile-menu { display: none; }
+    .mobile-menu-icon { font-size: 24px; cursor: pointer; }
+
+    .mobile-menu-modal{
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: flex-end;
+      transition: opacity 0.3s ease-in-out;
+      z-index: 9999;
+    }
+    .mobile-menu-content{
+      background: white !important;
+      padding: 20px;
+      border-radius: 15px 15px 0 0;
+      width: 100%;
+      max-width: 350px;
+      text-align: center;
+      max-height: 80vh;
+      overflow-y: auto;
+      touch-action: auto;
+      box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.2);
+      transform: translateY(100%);
+      transition: transform 0.3s ease-in-out;
+      z-index: 10000;
+      position: relative;
+    }
+    .mobile-menu-modal.show{ display: flex; opacity: 1; }
+    .mobile-menu-content.show{ transform: translateY(0); }
+    .mobile-menu-content::before{
+      content: "";
+      width: 50px;
+      height: 5px;
+      background: #ccc;
+      border-radius: 5px;
+      display: block;
+      margin: 10px auto;
+    }
+    .mobile-menu-content a{
+      display: block;
+      margin: 10px 0;
+      font-size: 18px;
+      color: black !important;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .mobile-menu-content .close-btn{
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      color: rgb(224, 6, 40);
+      padding: 4px 8px;
+      border: none;
+      border-radius: 5px;
+      background: transparent;
+    }
+    @media (max-width: 768px){
+      .desktop-menu{ display:none; }
+      .mobile-menu{ display:flex; align-items:center; }
+      .mobile-licenciado{ margin: 0 auto; display:flex; justify-content:center; align-items:center; }
+    }
+    @media (min-width: 769px){
+      .mobile-menu-modal{ display:none !important; }
+    }
+
+    /* Links do menu */
+    .menu-link{
+      color: inherit;
+      text-decoration: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+    }
+    .menu-link:hover{
+      color: white !important;
+      background-color: #d80000 !important;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    /* Botão "Unidades" igual */
+    .btn-unidades{
+      background-color: transparent;
+      color: #d80000;
+      font-weight: bold;
+      text-decoration: none;
+      padding: 8px 15px;
+      border-radius: 20px;
+      transition: 0.3s;
+      display: inline-block;
+    }
+    .btn-unidades:hover{
+      background-color: #d80000;
+      color: white;
+    }
+
+    /* Título */
+    h2{
+      font-size: 28px;
+      font-weight: bold;
+      text-align: center;
+      color: #d80000;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    h2::after{
+      content: "";
+      display: block;
+      width: 60px;
+      height: 4px;
+      background-color: #d80000;
+      margin: 10px auto 0;
+      border-radius: 5px;
+    }
+
+    /* ===== Implantação (novo componente circular) ===== */
+    .etapa-wrap{
+      text-align: center;
+      padding: 10px 5px;
+    }
+
+    .etapa-circle{
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 36px;
+      box-shadow: 0px 8px 18px rgba(0,0,0,0.12);
+      user-select: none;
+    }
+
+    /* cores (igual vibe da imagem) */
+    .circle-yellow{ background: #ffd400; color: #d80000; }
+    .circle-red{ background: #d80000; color: #ffd400; }
+
+    .etapa-title{
+      margin-top: 12px;
+      font-weight: 800;
+      font-size: 14px;
+      text-transform: uppercase;
+      min-height: 40px;
+      line-height: 1.2em;
+      color: #111;
+      padding: 0 10px;
+    }
+
+    .btn-tarefas{
+      margin-top: 10px;
+      border-radius: 18px;
+      font-weight: 800;
+      border: 2px solid #d80000;
+      color: #d80000;
+      background: white;
+      padding: 8px 12px;
+      font-size: 13px;
+      transition: .2s;
+      width: 210px;
+      max-width: 100%;
+    }
+    .btn-tarefas:hover{
+      background: #d80000;
+      color: white;
+    }
+
+    /* Footer (mesmo padrão) */
+    .footer{
+      width: 100%;
+      text-align: center;
+      padding: 15px 0;
+      font-size: 14px;
+      color: #666;
+      background: #f8f9fa;
+      position: relative;
+      box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
+      margin-top: 25px;
+    }
+    .footer p{ margin: 5px 0; }
+    .footer-link{
+      text-decoration: none;
+      color: #d80000;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    .footer-link:hover{
+      color: #b00000;
+      text-decoration: underline;
+    }
+    .footer i{ margin-right: 5px; font-size: 16px; }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- Barra de Navegação -->
+  <nav class="navbar navbar-light navbar-custom px-4 py-2">
+    <a class="navbar-brand" href="{{ url_for('index') }}">
+      {% if logo %}
+        <img src="{{ logo }}" alt="PoupAqui Logo" class="logo-img">
+      {% else %}
+        <p>Logo não encontrada</p>
+      {% endif %}
+    </a>
+
+    <div class="desktop-menu">
+      <a href="{{ url_for('lojas') }}" class="btn-unidades">
+        <i class="fas fa-store"></i> Unidades
+      </a>
+      <span class="me-3"><i class="fas fa-tags"></i> Ofertas</span>
+      <a href="{{ url_for('vitnatu') }}" class="me-3 menu-link">
+        <i class="fas fa-leaf"></i> VitNatu
+      </a>
+      <a href="{{ url_for('sobre_nos') }}" class="me-3 menu-link">
+        <i class="fas fa-info-circle"></i> Sobre Nós
+      </a>
+      <button class="btn btn-danger" onclick="window.open('https://farmaciaspoupaqui.com.br/?utm_source=Trafego_Direto&utm_medium=site&utm_campaign=Direto_Site', '_blank')">
+        <i class="fas fa-user-plus"></i> Seja um Licenciado
+      </button>
+    </div>
+
+    <div class="mobile-menu">
+      <span class="mobile-menu-icon" onclick="openMobileMenu()">☰</span>
+    </div>
+  </nav>
+
+  <!-- Modal do Menu Mobile -->
+  <div class="mobile-menu-modal" id="mobileMenuModal">
+    <div class="mobile-menu-content">
+      <a href="{{ url_for('lojas') }}" class="btn-unidades">
+        <i class="fas fa-store"></i> Unidades
+      </a>
+      <a href="#"><i class="fas fa-tags"></i> Ofertas</a>
+      <a href="{{ url_for('vitnatu') }}" class="me-3 menu-link">
+        <i class="fas fa-leaf"></i> VitNatu
+      </a>
+      <a href="{{ url_for('sobre_nos') }}" class="me-3 menu-link">
+        <i class="fas fa-info-circle"></i> Sobre Nós
+      </a>
+      <button class="btn btn-danger mobile-licenciado" onclick="window.open('https://farmaciaspoupaqui.com.br/?utm_source=Trafego_Direto&utm_medium=site&utm_campaign=Direto_Site', '_blank')">
+        <i class="fas fa-user-plus"></i> Seja um Licenciado
+      </button>
+      <button class="close-btn" onclick="closeMobileMenu()"><i class="fas fa-times-circle"></i></button>
+    </div>
+  </div>
+
+  <div class="container py-4">
+    <h2>Implantação</h2>
+
+    <!-- GRID 4/4/4/2 (no desktop) -->
+    <div class="row justify-content-center g-3">
+
+      {% for e in etapas %}
+        {% if e.numero <= 12 %}
+          <div class="col-12 col-sm-6 col-lg-3">
+            <div class="etapa-wrap">
+              <div class="etapa-circle {{ 'circle-red' if e.cor == 'red' else 'circle-yellow' }}">
+                {{ e.numero }}
+              </div>
+
+              <div class="etapa-title">{{ e.titulo }}</div>
+
+              <button
+                type="button"
+                class="btn-tarefas"
+                data-bs-toggle="modal"
+                data-bs-target="#modalEtapa"
+                data-numero="{{ e.numero }}"
+                data-titulo="{{ e.titulo }}"
+                data-descricao="{{ e.descricao }}"
+              >
+                <i class="fas fa-list-check"></i> Tarefas da Etapa
+              </button>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+
+      <!-- Última linha: 2 centralizados -->
+      {% for e in etapas %}
+        {% if e.numero > 12 %}
+          <div class="col-12 col-sm-6 col-lg-3 {% if loop.first %}offset-lg-3{% endif %}">
+            <div class="etapa-wrap">
+              <div class="etapa-circle {{ 'circle-red' if e.cor == 'red' else 'circle-yellow' }}">
+                {{ e.numero }}
+              </div>
+
+              <div class="etapa-title">{{ e.titulo }}</div>
+
+              <button
+                type="button"
+                class="btn-tarefas"
+                data-bs-toggle="modal"
+                data-bs-target="#modalEtapa"
+                data-numero="{{ e.numero }}"
+                data-titulo="{{ e.titulo }}"
+                data-descricao="{{ e.descricao }}"
+              >
+                <i class="fas fa-list-check"></i> Tarefas da Etapa
+              </button>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Modal Bootstrap (popup da etapa) -->
+  <div class="modal fade" id="modalEtapa" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalEtapaTitle">Etapa</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body">
+          <p id="modalEtapaDesc" style="margin:0;"></p>
+
+          <!-- (Opcional) Adsense dentro do modal -->
+          <div class="mt-3">
+            <ins class="adsbygoogle"
+              style="display:block"
+              data-ad-client="ca-pub-7995010197286628"
+              data-ad-slot="7900389281"
+              data-ad-format="auto"
+              data-full-width-responsive="true"></ins>
+            <script>
+              (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+            <i class="fas fa-check"></i> Ok, entendi
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rodapé -->
+  <footer class="footer">
+    <p>
+      <a href="https://www.instagram.com/licencefarma/" target="_blank" class="footer-link">
+        <i class="fab fa-instagram"></i> Conheça a licenciadora PoupAqui
+      </a> |
+      <a href="https://farmaciaspoupaqui.com.br/?utm_source=Trafego_Direto&utm_medium=site&utm_campaign=Direto_Site" target="_blank" class="footer-link">
+        <i class="fas fa-user-plus"></i> Tenha sua loja PoupAqui
+      </a>
+    </p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // ===== Modal Mobile Menu (mesmo comportamento do seu template) =====
+    document.addEventListener("DOMContentLoaded", function () {
+      let modal = document.getElementById("mobileMenuModal");
+      let modalContent = modal.querySelector(".mobile-menu-content");
+      modal.style.display = "none";
+
+      let startY = 0;
+
+      function openMobileMenu() {
+        if (window.innerWidth <= 768) {
+          modal.style.display = "flex";
+          setTimeout(() => {
+            modal.classList.add("show");
+            modalContent.classList.add("show");
+          }, 10);
+          document.body.classList.add("modal-open");
+        }
+      }
+
+      function closeMobileMenu() {
+        modalContent.classList.remove("show");
+        setTimeout(() => {
+          modal.classList.remove("show");
+          modal.style.display = "none";
+          document.body.classList.remove("modal-open");
+        }, 300);
+      }
+
+      modal.addEventListener("click", function (event) {
+        if (!modalContent.contains(event.target)) {
+          closeMobileMenu();
+        }
+      });
+
+      modalContent.addEventListener("touchstart", function (event) {
+        startY = event.touches[0].clientY;
+      });
+
+      modalContent.addEventListener("touchmove", function (event) {
+        let moveY = event.touches[0].clientY;
+        let diffY = moveY - startY;
+        if (diffY > 100) closeMobileMenu();
+      });
+
+      window.openMobileMenu = openMobileMenu;
+      window.closeMobileMenu = closeMobileMenu;
+    });
+
+    // ===== Modal das Etapas (preenche conteúdo dinamicamente) =====
+    const modalEtapa = document.getElementById('modalEtapa');
+    modalEtapa.addEventListener('show.bs.modal', function (event) {
+      const btn = event.relatedTarget;
+      const numero = btn.getAttribute('data-numero');
+      const titulo = btn.getAttribute('data-titulo');
+      const descricao = btn.getAttribute('data-descricao');
+
+      document.getElementById('modalEtapaTitle').textContent = `Etapa ${numero} — ${titulo}`;
+      document.getElementById('modalEtapaDesc').textContent = descricao;
+    });
+  </script>
+</body>
+</html>

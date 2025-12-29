@@ -652,22 +652,23 @@ h2::after {
         </div>
     </div>
 </div>
-    <footer class="footer text-center mt-5 py-3 bg-light">
-        <p>&copy; 2025 PoupAqui. Todos os direitos reservados.
-            Site desenvolvido por 
-            <a href="https://wa.me/5517991436759" target="_blank" class="footer-link">
-                <i class="fab fa-whatsapp"></i> <strong>Emanuel Carlos</strong>
-            </a>
-        </p>
-        <p>
-            <a href="https://www.instagram.com/licencefarma/" target="_blank" class="footer-link">
-                <i class="fab fa-instagram"></i> Conheça a licenciadora PoupAqui
-            </a> |
-            <a href="https://farmaciaspoupaqui.com.br/?utm_source=Trafego_Direto&utm_medium=site&utm_campaign=Direto_Site" target="_blank" class="footer-link">
-                <i class="fas fa-user-plus"></i> Tenha sua loja PoupAqui
-            </a>
-        </p>
-    </footer>
+<!-- ✅ Rodapé -->
+<footer class="footer">
+  <p>
+    <a href="https://www.instagram.com/drogariaspoupaqui/" target="_blank" class="footer-link">
+      <i class="fab fa-instagram"></i> Siga a PoupAqui nas redes sociais
+    </a>
+    |
+    <a href="{{ url_for('implantacao') }}" class="footer-link">
+      <i class="fas fa-map-marker-alt"></i> Implantação
+    </a>
+    |
+    <a href="https://farmaciaspoupaqui.com.br/?utm_source=Trafego_Direto&utm_medium=site&utm_campaign=Direto_Site" target="_blank" class="footer-link">
+      <i class="fas fa-user-plus"></i> Tenha sua loja PoupAqui
+    </a>
+  </p>
+</footer>
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             let elements = document.querySelectorAll(".timeline-container");

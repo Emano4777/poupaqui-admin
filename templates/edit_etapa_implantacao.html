@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Editar Etapa</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5" style="max-width: 800px;">
+  <h2>Editar Etapa {{ etapa.numero }}</h2>
+
+  <form method="POST">
+    <div class="mb-3">
+      <label class="form-label">Título</label>
+      <input type="text" name="titulo" class="form-control" value="{{ etapa.titulo }}" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Descrição (tarefas)</label>
+      <textarea name="descricao" class="form-control" rows="6" required>{{ etapa.descricao }}</textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Cor do círculo</label>
+      <select name="cor" class="form-select">
+        <option value="yellow" {% if etapa.cor == 'yellow' %}selected{% endif %}>Amarelo</option>
+        <option value="red" {% if etapa.cor == 'red' %}selected{% endif %}>Vermelho</option>
+      </select>
+    </div>
+
+    <button class="btn btn-success" type="submit">Salvar Alterações</button>
+    <a href="{{ url_for('admin_implantacao') }}" class="btn btn-secondary">Cancelar</a>
+  </form>
+</div>
+</body>
+</html>
