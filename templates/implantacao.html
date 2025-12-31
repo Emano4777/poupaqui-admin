@@ -13,234 +13,324 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
 
   <style>
-    body, html{
-      background-color: #f8f9fa;
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-    }
+  body, html{
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
 
-    /* Navbar (mesmo padrão do seu template) */
-    .navbar-brand .logo-img { max-width: 80px; height: auto; }
-    .navbar-custom{
-      background-color: white;
-      padding: 10px;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .navbar-custom .btn-danger{
-      background-color: rgb(224, 6, 40);
-      border-color: rgb(224, 6, 40);
-      border-radius: 20px;
-      font-weight: bold;
-    }
+  /* Navbar (mesmo padrão do seu template) */
+  .navbar-brand .logo-img { max-width: 80px; height: auto; }
+  .navbar-custom{
+    background-color: white;
+    padding: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .navbar-custom .btn-danger{
+    background-color: rgb(224, 6, 40);
+    border-color: rgb(224, 6, 40);
+    border-radius: 20px;
+    font-weight: bold;
+  }
 
-    /* Menu desktop/mobile (mesmo padrão) */
-    .mobile-menu { display: none; }
-    .mobile-menu-icon { font-size: 24px; cursor: pointer; }
+  /* Menu desktop/mobile (mesmo padrão) */
+  .mobile-menu { display: none; }
+  .mobile-menu-icon { font-size: 24px; cursor: pointer; }
 
-    .mobile-menu-modal{
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      justify-content: center;
-      align-items: flex-end;
-      transition: opacity 0.3s ease-in-out;
-      z-index: 9999;
-    }
-    .mobile-menu-content{
-      background: white !important;
-      padding: 20px;
-      border-radius: 15px 15px 0 0;
-      width: 100%;
-      max-width: 350px;
-      text-align: center;
-      max-height: 80vh;
-      overflow-y: auto;
-      touch-action: auto;
-      box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.2);
-      transform: translateY(100%);
-      transition: transform 0.3s ease-in-out;
-      z-index: 10000;
-      position: relative;
-    }
-    .mobile-menu-modal.show{ display: flex; opacity: 1; }
-    .mobile-menu-content.show{ transform: translateY(0); }
-    .mobile-menu-content::before{
-      content: "";
-      width: 50px;
-      height: 5px;
-      background: #ccc;
-      border-radius: 5px;
-      display: block;
-      margin: 10px auto;
-    }
-    .mobile-menu-content a{
-      display: block;
-      margin: 10px 0;
-      font-size: 18px;
-      color: black !important;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .mobile-menu-content .close-btn{
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 13px;
-      font-weight: bold;
-      cursor: pointer;
-      color: rgb(224, 6, 40);
-      padding: 4px 8px;
-      border: none;
-      border-radius: 5px;
-      background: transparent;
-    }
-    @media (max-width: 768px){
-      .desktop-menu{ display:none; }
-      .mobile-menu{ display:flex; align-items:center; }
-      .mobile-licenciado{ margin: 0 auto; display:flex; justify-content:center; align-items:center; }
-    }
-    @media (min-width: 769px){
-      .mobile-menu-modal{ display:none !important; }
-    }
+  .mobile-menu-modal{
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: flex-end;
+    transition: opacity 0.3s ease-in-out;
+    z-index: 9999;
+  }
+  .mobile-menu-content{
+    background: white !important;
+    padding: 20px;
+    border-radius: 15px 15px 0 0;
+    width: 100%;
+    max-width: 350px;
+    text-align: center;
+    max-height: 80vh;
+    overflow-y: auto;
+    touch-action: auto;
+    box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.2);
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 10000;
+    position: relative;
+  }
+  .mobile-menu-modal.show{ display: flex; opacity: 1; }
+  .mobile-menu-content.show{ transform: translateY(0); }
+  .mobile-menu-content::before{
+    content: "";
+    width: 50px;
+    height: 5px;
+    background: #ccc;
+    border-radius: 5px;
+    display: block;
+    margin: 10px auto;
+  }
+  .mobile-menu-content a{
+    display: block;
+    margin: 10px 0;
+    font-size: 18px;
+    color: black !important;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  .mobile-menu-content .close-btn{
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    color: rgb(224, 6, 40);
+    padding: 4px 8px;
+    border: none;
+    border-radius: 5px;
+    background: transparent;
+  }
+  @media (max-width: 768px){
+    .desktop-menu{ display:none; }
+    .mobile-menu{ display:flex; align-items:center; }
+    .mobile-licenciado{ margin: 0 auto; display:flex; justify-content:center; align-items:center; }
+  }
+  @media (min-width: 769px){
+    .mobile-menu-modal{ display:none !important; }
+  }
 
-    /* Links do menu */
-    .menu-link{
-      color: inherit;
-      text-decoration: none;
-      padding: 5px 10px;
-      border-radius: 5px;
-      transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
-    }
-    .menu-link:hover{
-      color: white !important;
-      background-color: #d80000 !important;
-      padding: 5px 10px;
-      border-radius: 5px;
-    }
+  /* Links do menu */
+  .menu-link{
+    color: inherit;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+  }
+  .menu-link:hover{
+    color: white !important;
+    background-color: #d80000 !important;
+    padding: 5px 10px;
+    border-radius: 5px;
+  }
 
-    /* Botão "Unidades" igual */
-    .btn-unidades{
-      background-color: transparent;
-      color: #d80000;
-      font-weight: bold;
-      text-decoration: none;
-      padding: 8px 15px;
-      border-radius: 20px;
-      transition: 0.3s;
-      display: inline-block;
-    }
-    .btn-unidades:hover{
-      background-color: #d80000;
-      color: white;
-    }
+  /* Botão "Unidades" igual */
+  .btn-unidades{
+    background-color: transparent;
+    color: #d80000;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    transition: 0.3s;
+    display: inline-block;
+  }
+  .btn-unidades:hover{
+    background-color: #d80000;
+    color: white;
+  }
 
-    /* Título */
-    h2{
-      font-size: 28px;
-      font-weight: bold;
-      text-align: center;
-      color: #d80000;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 20px;
-      position: relative;
-    }
-    h2::after{
-      content: "";
-      display: block;
-      width: 60px;
-      height: 4px;
-      background-color: #d80000;
-      margin: 10px auto 0;
-      border-radius: 5px;
-    }
+  /* Título */
+  h2{
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    color: #d80000;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  h2::after{
+    content: "";
+    display: block;
+    width: 60px;
+    height: 4px;
+    background-color: #d80000;
+    margin: 10px auto 0;
+    border-radius: 5px;
+  }
+/* ===== MAPA IMPLANTAÇÃO (IMG REAL + BOTÕES) ===== */
 
-    /* ===== Implantação (novo componente circular) ===== */
-    .etapa-wrap{
-      text-align: center;
-      padding: 10px 5px;
-    }
+.implant-wrap{
+  width: min(1200px, 100%);
+  margin: 18px auto 10px;
+}
 
-    .etapa-circle{
-      width: 110px;
-      height: 110px;
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 900;
-      font-size: 36px;
-      box-shadow: 0px 8px 18px rgba(0,0,0,0.12);
-      user-select: none;
-    }
+/* container que define o "palco" exatamente do tamanho da imagem */
+.implant-map{
+  position: relative;
+  width: 100%;
+}
 
-    /* cores (igual vibe da imagem) */
-    .circle-yellow{ background: #ffd400; color: #d80000; }
-    .circle-red{ background: #d80000; color: #ffd400; }
+/* a imagem manda na altura (nada de clamp, nada de background-size) */
+.implant-bg{
+  width: 100%;
+  height: auto;
+  display: block;
+  user-select: none;
+  pointer-events: none;
+}
 
-    .etapa-title{
-      margin-top: 12px;
-      font-weight: 800;
-      font-size: 14px;
-      text-transform: uppercase;
-      min-height: 40px;
-      line-height: 1.2em;
-      color: #111;
-      padding: 0 10px;
-    }
+/* botão circular clicável */
+.implant-btn{
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  transform: translate(-50%, -50%);
+  width: clamp(52px, 5.8vw, 92px);
+  height: clamp(52px, 5.8vw, 92px);
+  border-radius: 50%;
+  border: none;
+  font-weight: 900;
+  font-size: clamp(20px, 2.2vw, 34px);
+  cursor: pointer;
+  box-shadow: 0 12px 26px rgba(0,0,0,0.25);
+  transition: transform .18s ease, box-shadow .18s ease;
+  z-index: 5;
+}
 
-    .btn-tarefas{
-      margin-top: 10px;
-      border-radius: 18px;
-      font-weight: 800;
-      border: 2px solid #d80000;
-      color: #d80000;
-      background: white;
-      padding: 8px 12px;
-      font-size: 13px;
-      transition: .2s;
-      width: 210px;
-      max-width: 100%;
-    }
-    .btn-tarefas:hover{
-      background: #d80000;
-      color: white;
-    }
+.implant-btn:hover{
+  transform: translate(-50%, -50%) scale(1.08);
+  box-shadow: 0 16px 34px rgba(0,0,0,0.30);
+}
 
-    /* Footer (mesmo padrão) */
-    .footer{
-      width: 100%;
-      text-align: center;
-      padding: 15px 0;
-      font-size: 14px;
-      color: #666;
-      background: #f8f9fa;
-      position: relative;
-      box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
-      margin-top: 25px;
-    }
-    .footer p{ margin: 5px 0; }
-    .footer-link{
-      text-decoration: none;
-      color: #d80000;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-    .footer-link:hover{
-      color: #b00000;
-      text-decoration: underline;
-    }
-    .footer i{ margin-right: 5px; font-size: 16px; }
+.implant-red{ background:#d80000; color:#ffd400; }
+.implant-yellow{ background:#ffd400; color:#d80000; }
 
-  </style>
+/* tooltip opcional */
+.implant-btn::after{
+  content: attr(data-title);
+  position: absolute;
+  left: 50%;
+  top: -14px;
+  transform: translate(-50%, -100%);
+  background: rgba(255,255,255,.96);
+  color: #111;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 6px 10px;
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.18);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease;
+}
+.implant-btn:hover::after{ opacity: 1; }
+
+/* MOBILE: vira lista */
+@media (max-width: 720px){
+  .implant-wrap{ display:none; }
+  .implant-list{ display:block; }
+}
+
+.implant-list{ display:none; }
+
+.implant-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin: 14px 0;
+}
+.implant-item .implant-btn{
+  position: relative;
+  left:auto; top:auto;
+  transform:none;
+}
+
+/* ===== TITULO VISIVEL AO LADO DA BOLA ===== */
+.implant-node{
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  transform: translate(-50%, -50%);
+  z-index: 6;
+}
+
+/* botão agora não precisa mais ser absolute */
+.implant-node .implant-btn{
+  position: relative;
+  left: auto;
+  top: auto;
+  transform: none;
+}
+
+.implant-label{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,.96);
+  color: #111;
+  font-weight: 900;
+  text-transform: uppercase;
+
+  font-size: clamp(10px, 0.95vw, 13px);
+  line-height: 1.15;
+
+  padding: 7px 12px;
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.14);
+
+  /* ✅ NÃO deixa virar “em pé” */
+  max-width: 240px;          /* aumenta a largura */
+  white-space: normal;       /* permite 2 linhas */
+  word-break: normal;        /* NÃO quebra no meio da palavra */
+  overflow-wrap: break-word; /* se precisar, quebra só em casos extremos */
+}
+
+/* lado do texto */
+.implant-node.right .implant-label{
+  left: calc(100% + 10px);
+  text-align: left;
+}
+.implant-node.left .implant-label{
+  right: calc(100% + 10px);
+  text-align: right;
+}
+
+/* no mobile some o label (porque você já tem lista) */
+@media (max-width: 720px){
+  .implant-label{ display:none; }
+}
+
+  /* Footer (mesmo padrão) */
+  .footer{
+    width: 100%;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 14px;
+    color: #666;
+    background: #f8f9fa;
+    position: relative;
+    box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
+    margin-top: 25px;
+  }
+  .footer p{ margin: 5px 0; }
+  .footer-link{
+    text-decoration: none;
+    color: #d80000;
+    font-weight: bold;
+    transition: 0.3s;
+  }
+  .footer-link:hover{
+    color: #b00000;
+    text-decoration: underline;
+  }
+  .footer i{ margin-right: 5px; font-size: 16px; }
+</style>
 </head>
 
 <body>
@@ -297,65 +387,107 @@
   </div>
 
   <div class="container py-4">
-    <h2>Implantação</h2>
+   <div class="container py-4">
+ <h2>Implantação</h2>
 
-    <!-- GRID 4/4/4/2 (no desktop) -->
-    <div class="row justify-content-center g-3">
+<!-- ======= MAPA (DESKTOP/TABLET) ======= -->
+<div class="implant-wrap">
+  <div class="implant-map" id="implantMap">
+    <img
+      class="implant-bg"
+      src="https://res.cloudinary.com/dizfq460q/image/upload/v1767124854/FUNDO_IMPLANTA%C3%87%C3%83O_tg83ut.png"
+      alt="Mapa de Implantação"
+      draggable="false"
+    />
 
-      {% for e in etapas %}
-        {% if e.numero <= 12 %}
-          <div class="col-12 col-sm-6 col-lg-3">
-            <div class="etapa-wrap">
-              <div class="etapa-circle {{ 'circle-red' if e.cor == 'red' else 'circle-yellow' }}">
-                {{ e.numero }}
-              </div>
+    {% for e in etapas|sort(attribute='numero') %}
 
-              <div class="etapa-title">{{ e.titulo }}</div>
+      {# Coordenadas (em %) calibradas para a imagem #}
+        {% if e.numero == 1 %}
+      {% set x, y = '10.38%', '18.05%' %}
+    {% elif e.numero == 2 %}
+      {% set x, y = '36.10%', '21.25%' %}
+    {% elif e.numero == 3 %}
+      {% set x, y = '28.37%', '32.68%' %}
+    {% elif e.numero == 4 %}
+      {% set x, y = '36.18%', '42.85%' %}
+    {% elif e.numero == 5 %}
+      {% set x, y = '28.45%', '54.14%' %}
+    {% elif e.numero == 6 %}
+      {% set x, y = '36.18%', '65.31%' %}
+    {% elif e.numero == 7 %}
+      {% set x, y = '28.37%', '76.61%' %}
 
-              <button
-                type="button"
-                class="btn-tarefas"
-                data-bs-toggle="modal"
-                data-bs-target="#modalEtapa"
-                data-numero="{{ e.numero }}"
-                data-titulo="{{ e.titulo }}"
-                data-descricao="{{ e.descricao }}"
-              >
-                <i class="fas fa-list-check"></i> Tarefas da Etapa
-              </button>
-            </div>
-          </div>
-        {% endif %}
-      {% endfor %}
+    {% elif e.numero == 8 %}
+      {% set x, y = '69.82%', '76.61%' %}
+    {% elif e.numero == 9 %}
+      {% set x, y = '61.54%', '65.58%' %}
+    {% elif e.numero == 10 %}
+      {% set x, y = '69.82%', '54.28%' %}
+    {% elif e.numero == 11 %}
+      {% set x, y = '61.59%', '43.72%' %}
+    {% elif e.numero == 12 %}
+      {% set x, y = '70.25%', '32.55%' %}
+    {% elif e.numero == 13 %}
+      {% set x, y = '61.74%', '21.25%' %}
+    {% elif e.numero == 14 %}
+      {% set x, y = '85.32%', '18.05%' %}
+    {% else %}
+      {% set x, y = '50%', '50%' %}
+    {% endif %}
 
-      <!-- Última linha: 2 centralizados -->
-      {% for e in etapas %}
-        {% if e.numero > 12 %}
-          <div class="col-12 col-sm-6 col-lg-3 {% if loop.first %}offset-lg-3{% endif %}">
-            <div class="etapa-wrap">
-              <div class="etapa-circle {{ 'circle-red' if e.cor == 'red' else 'circle-yellow' }}">
-                {{ e.numero }}
-              </div>
+    {# ✅ LADO DO LABEL (anti-colisão) #}
+{% if e.numero in [2,4,6] %}
+  {% set side = 'left' %}   {# coluna esquerda: joga pro lado de dentro #}
+{% elif e.numero in [9,11] %}
+  {% set side = 'right' %}  {# coluna direita: joga pro lado de dentro #}
+{% elif e.numero == 13 %}
+  {% set side = 'left' %}   {# exceção: evita colisão com o 14 #}
+{% else %}
+  {% set side = 'right' if e.numero <= 7 else 'left' %}
+{% endif %}
 
-              <div class="etapa-title">{{ e.titulo }}</div>
 
-              <button
-                type="button"
-                class="btn-tarefas"
-                data-bs-toggle="modal"
-                data-bs-target="#modalEtapa"
-                data-numero="{{ e.numero }}"
-                data-titulo="{{ e.titulo }}"
-                data-descricao="{{ e.descricao }}"
-              >
-                <i class="fas fa-list-check"></i> Tarefas da Etapa
-              </button>
-            </div>
-          </div>
-        {% endif %}
-      {% endfor %}
-    </div>
+<div class="implant-node {{ side }}" style="--x: {{ x }}; --y: {{ y }};">
+  <button
+    class="implant-btn {{ 'implant-red' if e.cor == 'red' else 'implant-yellow' }}"
+    data-bs-toggle="modal"
+    data-bs-target="#modalEtapa"
+    data-numero="{{ e.numero }}"
+    data-titulo="{{ e.titulo }}"
+    data-descricao="{{ e.descricao }}"
+    type="button"
+  >
+    {{ e.numero }}
+  </button>
+
+  <div class="implant-label">{{ e.titulo }}</div></div>
+
+    {% endfor %}
   </div>
+</div>
+
+<!-- ======= MOBILE (LISTA) ======= -->
+<div class="implant-list">
+  {% for e in etapas|sort(attribute='numero') %}
+    <div class="implant-item">
+      <button
+        class="implant-btn {{ 'implant-red' if e.cor == 'red' else 'implant-yellow' }}"
+        data-bs-toggle="modal"
+        data-bs-target="#modalEtapa"
+        data-numero="{{ e.numero }}"
+        data-titulo="{{ e.titulo }}"
+        data-descricao="{{ e.descricao }}"
+        type="button"
+      >
+        {{ e.numero }}
+      </button>
+      <div style="font-weight:900; text-transform:uppercase;">
+        {{ e.titulo }}
+      </div>
+    </div>
+  {% endfor %}
+</div>
 
   <!-- Modal Bootstrap (popup da etapa) -->
   <div class="modal fade" id="modalEtapa" tabindex="-1" aria-hidden="true">
@@ -403,6 +535,79 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(function(){
+  const map = document.getElementById('implantMap');
+  const img = document.getElementById('implantBg');
+  if(!map || !img) return;
+
+  function applySize(){
+    const w = map.getBoundingClientRect().width;
+    const ratio = img.naturalHeight / img.naturalWidth;
+    map.style.height = Math.round(w * ratio) + 'px';
+  }
+
+  // Calcula a área REAL da imagem dentro do contain (sem as bordas)
+  function getContainedBox(containerW, containerH, imgW, imgH){
+    const scale = Math.min(containerW / imgW, containerH / imgH);
+    const drawW = imgW * scale;
+    const drawH = imgH * scale;
+    const offsetX = (containerW - drawW) / 2;
+    const offsetY = (containerH - drawH) / 2;
+    return { drawW, drawH, offsetX, offsetY };
+  }
+
+  function positionNodes(){
+    const rect = map.getBoundingClientRect();
+    const box = getContainedBox(rect.width, rect.height, img.naturalWidth, img.naturalHeight);
+
+    document.querySelectorAll('.implant-node').forEach(node => {
+      const x = parseFloat(node.dataset.x || "50"); // 0..100
+      const y = parseFloat(node.dataset.y || "50"); // 0..100
+
+      const px = box.offsetX + (x/100) * box.drawW;
+      const py = box.offsetY + (y/100) * box.drawH;
+
+      node.style.left = px + "px";
+      node.style.top  = py + "px";
+    });
+  }
+
+  function refresh(){
+    applySize();
+    positionNodes();
+  }
+
+  if (img.complete && img.naturalWidth){
+    refresh();
+  } else {
+    img.addEventListener('load', refresh);
+  }
+
+  window.addEventListener('resize', refresh);
+})();
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const img = document.querySelector(".implant-bg");
+  if(!img) return;
+
+  img.style.pointerEvents = "auto"; // permite clique só no modo calibração
+  img.style.cursor = "crosshair";
+
+  img.addEventListener("click", (e) => {
+    const r = img.getBoundingClientRect();
+    const x = ((e.clientX - r.left) / r.width) * 100;
+    const y = ((e.clientY - r.top) / r.height) * 100;
+
+    const msg = `x='${x.toFixed(2)}%'  y='${y.toFixed(2)}%'`;
+    console.log(msg);
+
+    // copia pro clipboard
+    navigator.clipboard?.writeText(msg).catch(()=>{});
+  });
+});
+</script>
 
   <script>
     // ===== Modal Mobile Menu (mesmo comportamento do seu template) =====
@@ -423,6 +628,8 @@
           document.body.classList.add("modal-open");
         }
       }
+
+      
 
       function closeMobileMenu() {
         modalContent.classList.remove("show");
