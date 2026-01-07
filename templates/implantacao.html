@@ -275,7 +275,6 @@
   top: auto;
   transform: none;
 }
-
 .implant-label{
   position: absolute;
   top: 50%;
@@ -285,29 +284,32 @@
   font-weight: 900;
   text-transform: uppercase;
 
-  font-size: clamp(10px, 0.95vw, 13px);
-  line-height: 1.15;
+  font-size: clamp(9px, 0.78vw, 12px);
+  line-height: 1;
 
-  padding: 7px 12px;
+  padding: 6px 10px;
   border-radius: 10px;
   box-shadow: 0 10px 24px rgba(0,0,0,.14);
 
-  /* ✅ NÃO deixa virar “em pé” */
-  max-width: 240px;          /* aumenta a largura */
-  white-space: normal;       /* permite 2 linhas */
-  word-break: normal;        /* NÃO quebra no meio da palavra */
-  overflow-wrap: break-word; /* se precisar, quebra só em casos extremos */
+  /* ✅ UMA linha e mostra tudo */
+  white-space: nowrap;
+  width: max-content;      /* tamanho do texto */
+  max-width: 360px;        /* limite pra não virar gigante */
+  overflow: visible;       /* não cortar */
+
+  z-index: 40;
 }
 
-/* lado do texto */
 .implant-node.right .implant-label{
-  left: calc(100% + 10px);
+  left: calc(100% + 8px);
   text-align: left;
 }
+
 .implant-node.left .implant-label{
-  right: calc(100% + 10px);
+  right: calc(100% + 8px);
   text-align: right;
 }
+
 
 /* no mobile some o label (porque você já tem lista) */
 @media (max-width: 720px){
@@ -439,21 +441,25 @@
     {% elif e.numero == 13 %}
       {% set x, y = '61.74%', '21.25%' %}
     {% elif e.numero == 14 %}
-      {% set x, y = '85.32%', '18.05%' %}
+      {% set x, y = '89.32%', '18.05%' %}
     {% else %}
       {% set x, y = '50%', '50%' %}
     {% endif %}
 
     {# ✅ LADO DO LABEL (anti-colisão) #}
-{% if e.numero in [2,4,6] %}
-  {% set side = 'left' %}   {# coluna esquerda: joga pro lado de dentro #}
-{% elif e.numero in [9,11] %}
-  {% set side = 'right' %}  {# coluna direita: joga pro lado de dentro #}
-{% elif e.numero == 13 %}
-  {% set side = 'left' %}   {# exceção: evita colisão com o 14 #}
+{# ✅ LADO DO LABEL (ajustado pra não conflitar) #}
+{% if e.numero in [1,3,5,7] %}
+  {% set side = 'left' %}        {# coluna esquerda → label pra fora (esquerda) #}
+{% elif e.numero in [2,4,6] %}
+  {% set side = 'right' %}       {# coluna esquerda → label pra dentro (direita) #}
+{% elif e.numero in [8,10,12,14] %}
+  {% set side = 'right' %}       {# coluna direita → label pra fora (direita) #}
+{% elif e.numero in [9,11,13] %}
+  {% set side = 'right' %}        {# coluna direita → label pra dentro (esquerda) #}
 {% else %}
-  {% set side = 'right' if e.numero <= 7 else 'left' %}
+  {% set side = 'right' %}
 {% endif %}
+
 
 
 <div class="implant-node {{ side }}" style="--x: {{ x }}; --y: {{ y }};">
