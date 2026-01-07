@@ -226,25 +226,37 @@
 .implant-yellow{ background:#ffd400; color:#d80000; }
 
 .implant-btn:hover::after{ opacity: 1; }
-
-/* MOBILE: vira lista */
-@media (max-width: 720px){
-  .implant-wrap{ display:none; }
-  .implant-list{ display:block; }
-}
-
+/* ===== MOBILE: usa lista, sem mapa ===== */
 .implant-list{ display:none; }
 
-.implant-item{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin: 14px 0;
-}
-.implant-item .implant-btn{
-  position: relative;
-  left:auto; top:auto;
-  transform:none;
+@media (max-width: 720px){
+  .implant-wrap{ display:none !important; }
+  .implant-list{ display:block !important; padding: 8px 8px 0; }
+
+  .implant-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding: 10px 8px;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 12px;
+    margin: 10px 0;
+  }
+
+  /* botão na lista precisa ser "normal", não absolute */
+  .implant-item .implant-btn{
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    transform: none !important;
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+    flex: 0 0 56px;
+  }
+
+  /* no mobile não usa label flutuante */
+  .implant-label{ display:none !important; }
 }
 
 /* ===== TITULO VISIVEL AO LADO DA BOLA ===== */
@@ -534,7 +546,7 @@
 <script>
 (function(){
   const map = document.getElementById('implantMap');
-  const img = document.getElementById('implantBg');
+
   if(!map || !img) return;
 
   function applySize(){
@@ -585,7 +597,7 @@
 </script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const img = document.querySelector(".implant-bg");
+
   if(!img) return;
 
   img.style.pointerEvents = "auto"; // permite clique só no modo calibração
