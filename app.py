@@ -115,7 +115,6 @@ def ads_txt():
 def sobre_nos():
     data = load_store_images() 
     return render_template('sobrenos.html', lojas=data["stores"], logo=data["logo"])
-
 @app.route("/implantacao")
 def implantacao():
     if not session.get("logged_in"):
@@ -126,7 +125,6 @@ def implantacao():
     return render_template("implantacao.html", logo=data["logo"], etapas=etapas)
 
 
-
 @app.route("/admin/implantacao")
 def admin_implantacao():
     if not session.get("logged_in") or session.get("role") != "admin":
@@ -135,7 +133,6 @@ def admin_implantacao():
     data = load_store_images()
     etapas = get_implantacao_etapas()
     return render_template("admin_implantacao.html", logo=data["logo"], etapas=etapas)
-
 
 
 def autenticar_usuario_implantacao(usuario, senha):
@@ -153,11 +150,14 @@ def autenticar_usuario_implantacao(usuario, senha):
 
     if not row:
         return None
+
     if row[2] is not True:
         return None
 
-    return {"usuario": row[0], "role": row[1]}
-
+    return {
+        "usuario": row[0],
+        "role": row[1]
+    }
 
 @app.route("/admin/implantacao/edit/<int:etapa_id>", methods=["GET", "POST"])
 def edit_etapa_implantacao(etapa_id):
@@ -171,7 +171,6 @@ def edit_etapa_implantacao(etapa_id):
     conn = get_db_connection()
     cur = conn.cursor()
 
-    # Buscar etapa
     cur.execute("""
         SELECT id, numero, titulo, descricao, cor
         FROM public.implantacao_etapas
@@ -185,7 +184,13 @@ def edit_etapa_implantacao(etapa_id):
         flash("Etapa não encontrada!", "danger")
         return redirect(url_for("admin_implantacao"))
 
-    etapa = {"id": row[0], "numero": row[1], "titulo": row[2], "descricao": row[3], "cor": row[4]}
+    etapa = {
+        "id": row[0],
+        "numero": row[1],
+        "titulo": row[2],
+        "descricao": row[3],
+        "cor": row[4]
+    }
 
     if request.method == "POST":
         titulo = request.form.get("titulo", "").strip()
@@ -198,7 +203,10 @@ def edit_etapa_implantacao(etapa_id):
 
         cur.execute("""
             UPDATE public.implantacao_etapas
-            SET titulo = %s, descricao = %s, cor = %s, atualizado_em = CURRENT_TIMESTAMP
+            SET titulo = %s,
+                descricao = %s,
+                cor = %s,
+                atualizado_em = CURRENT_TIMESTAMP
             WHERE id = %s
         """, (titulo, descricao, cor, etapa_id))
         conn.commit()
@@ -212,8 +220,6 @@ def edit_etapa_implantacao(etapa_id):
     cur.close()
     conn.close()
     return render_template("edit_etapa_implantacao.html", logo=logo, etapa=etapa)
-
-
 def get_implantacao_etapas():
     conn = get_db_connection()
     cur = conn.cursor()
@@ -235,6 +241,7 @@ def get_implantacao_etapas():
             "descricao": r[3],
             "cor": r[4] or "yellow"
         })
+
     return etapas
 
 
