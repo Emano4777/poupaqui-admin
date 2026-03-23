@@ -17,9 +17,9 @@ CACHE_FILE = "cep_coordinates_cache.json"
 
 # Configurar a API do Cloudinary
 cloudinary.config(
-    cloud_name="dizfq460q",
-    api_key="218941668123635",
-    api_secret="bADJ8clAnP8Ghptg93-I5ZCAVd4"
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET")
 )
 from dotenv import load_dotenv
 
