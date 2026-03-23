@@ -285,28 +285,27 @@
   text-transform: uppercase;
 
   font-size: clamp(9px, 0.78vw, 12px);
-  line-height: 1;
+  line-height: 1.2;
 
   padding: 6px 10px;
   border-radius: 10px;
   box-shadow: 0 10px 24px rgba(0,0,0,.14);
 
-  /* ✅ UMA linha e mostra tudo */
-  white-space: nowrap;
-  width: max-content;      /* tamanho do texto */
-  max-width: 360px;        /* limite pra não virar gigante */
-  overflow: visible;       /* não cortar */
+  white-space: normal;          /* agora pode quebrar linha */
+  width: max-content;
+  max-width: 170px;             /* limita largura pra não invadir */
+  overflow-wrap: break-word;    /* quebra segura */
+  word-break: break-word;
 
   z-index: 40;
 }
-
 .implant-node.right .implant-label{
-  left: calc(100% + 8px);
+  left: calc(100% + 6px);
   text-align: left;
 }
 
 .implant-node.left .implant-label{
-  right: calc(100% + 8px);
+  right: calc(100% + 6px);
   text-align: right;
 }
 

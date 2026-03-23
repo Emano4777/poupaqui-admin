@@ -21,10 +21,15 @@ cloudinary.config(
     api_key="218941668123635",
     api_secret="bADJ8clAnP8Ghptg93-I5ZCAVd4"
 )
+from dotenv import load_dotenv
 
+
+load_dotenv()
 
 def get_db_connection():
-    database_url = os.getenv("DATABASE_URL") or "postgresql://postgres.wosjlqxbfajctoeztrug:Poupaqui%4013@aws-1-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require"
+    database_url = os.getenv("DATABASE_URL")
+    if not database_url:
+        raise RuntimeError("DATABASE_URL não configurada.")
     return psycopg2.connect(database_url)
 
 app = Flask(__name__)
