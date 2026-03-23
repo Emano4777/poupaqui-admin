@@ -992,20 +992,10 @@ textarea {
     </div>
 </div>
 
-{# ✅ Banner Top com variantes de largura e melhor qualidade #}
 {% if banner_top %}
-  {% set bt_base = banner_top|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_1366/') %}
   <img
     class="banner-top"
-    src="{{ bt_base }}&t={{ timestamp }}"
-    srcset="
-      {{ banner_top|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_768/') }} 768w,
-      {{ banner_top|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_1024/') }} 1024w,
-      {{ banner_top|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_1366/') }} 1366w,
-      {{ banner_top|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_1920/') }} 1920w,
-      {{ banner_top|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_2560/') }} 2560w
-    "
-    sizes="100vw"
+    src="{{ banner_top }}"
     alt="Promoção Principal"
     decoding="async"
     fetchpriority="high"
@@ -1026,17 +1016,10 @@ textarea {
 
     <div class="carousel-inner">
       {% for banner in banners %}
-      {% set b768   = banner|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_768/') %}
-      {% set b1024  = banner|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_1024/') %}
-      {% set b1366  = banner|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_1366/') %}
-      {% set b1920  = banner|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_1920/') %}
-      {% set b2560  = banner|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_2560/') %}
       <div class="carousel-item {% if loop.first %}active{% endif %}">
         <img
           class="d-block w-100 carousel-img"
-          src="{{ b1366 }}"
-          srcset="{{ b768 }} 768w, {{ b1024 }} 1024w, {{ b1366 }} 1366w, {{ b1920 }} 1920w, {{ b2560 }} 2560w"
-          sizes="100vw"
+          src="{{ banner }}"
           alt="Banner de promoção"
           decoding="async"
           loading="lazy"
@@ -1046,7 +1029,6 @@ textarea {
     </div>
   </div>
 </div>
-
 <!-- Botão de Ajuda Flutuante -->
 <button class="help-button" onclick="abrirModalAjuda()" data-bs-toggle="tooltip" data-bs-placement="left" title="Está com problemas no site? Clique aqui e obtenha ajuda!">
     <i class="fas fa-question-circle"></i>

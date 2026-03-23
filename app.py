@@ -24,8 +24,8 @@ cloudinary.config(
 
 
 def get_db_connection():
-    return psycopg2.connect("postgresql://postgres:Poupaqui123@406279.hstgr.cloud:5432/postgres")
-
+    database_url = os.getenv("DATABASE_URL") or "postgresql://postgres.wosjlqxbfajctoeztrug:Poupaqui%4013@aws-1-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require"
+    return psycopg2.connect(database_url)
 
 app = Flask(__name__)
 app.secret_key = 'segredo123'  # Chave secreta para gerenciar sessões
@@ -380,54 +380,129 @@ def calcular_distancia_km(lat1, lon1, lat2, lon2):
     c = 2 * math.asin(math.sqrt(a))
     return R * c
 
+import base64
 
+IMAGEKIT_PRIVATE_KEY = os.getenv("IMAGEKIT_PRIVATE_KEY")
+IMAGEKIT_URL_ENDPOINT = os.getenv("IMAGEKIT_URL_ENDPOINT", "").rstrip("/")
+IMAGEKIT_LIST_URL = "https://api.imagekit.io/v1/files"
+
+
+def upload_loja_imagekit(file_bytes, file_name, cidade, endereco, telefone, whatsapp, cep):
+    import json
+    import requests
+
+    data = {
+        "file": base64.b64encode(file_bytes).decode("utf-8"),
+        "fileName": file_name,
+        "useUniqueFileName": "true",
+        "folder": "/lojas_poupAqui",
+        "tags": json.dumps(["lojas_poupAqui"]),
+        "customMetadata": json.dumps({
+            "cidade": cidade,
+            "endereco": endereco,
+            "telefone": telefone,
+            "whatsapp": whatsapp,
+            "cep": cep
+        })
+    }
+
+    resp = requests.post(
+        "https://upload.imagekit.io/api/v1/files/upload",
+        headers=_imagekit_auth_header(),
+        data=data,
+        timeout=120
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+def _imagekit_auth_header():
+    token = base64.b64encode(f"{IMAGEKIT_PRIVATE_KEY}:".encode()).decode()
+    return {
+        "Authorization": f"Basic {token}"
+    }
 def load_store_images():
-    """ Busca imagens das lojas no Cloudinary e garante que os metadados sejam carregados corretamente. """
+    """Busca imagens das lojas no ImageKit e carrega os metadados."""
+    import os
+    import time
+    import base64
+    import requests
+
+    IMAGEKIT_PRIVATE_KEY = os.getenv("IMAGEKIT_PRIVATE_KEY")
+    IMAGEKIT_LIST_URL = "https://api.imagekit.io/v1/files"
+
+    def _auth_header():
+        token = base64.b64encode(f"{IMAGEKIT_PRIVATE_KEY}:".encode()).decode()
+        return {
+            "Authorization": f"Basic {token}"
+        }
+
     try:
         timestamp = int(time.time())
         stores = []
-        logo = None
+        logo = load_logo_imagekit()
+        skip = 0
+        limit = 100
 
-        # 🔹 Buscar imagens com a tag 'lojas_poupAqui', garantindo que os metadados sejam carregados
-        result = cloudinary.api.resources_by_tag("lojas_poupAqui", max_results=120, context=True)
+        while True:
+            resp = requests.get(
+                IMAGEKIT_LIST_URL,
+                headers=_auth_header(),
+                params={
+                    "path": "/lojas_poupAqui/",
+                    "type": "file",
+                    "limit": limit,
+                    "skip": skip
+                },
+                timeout=60
+            )
+            resp.raise_for_status()
 
-        for img in result["resources"]:
-            context = img.get("context", {}).get("custom", {})
-            endereco = context.get("endereco", "Endereço não informado")
-            google_maps_url = f"https://www.google.com/maps/search/?api=1&query={endereco.replace(' ', '+')}" if endereco != "Endereço não informado" else "#"
-            cep = context.get("cep", "").replace("-", "").strip()
-            cidade = context.get("cidade", "").strip()
+            files = resp.json()
+            print("FILES IMAGEKIT RAW:", files)
 
-            if not cidade:
-                cidade = extract_city(endereco)  # 🔹 Se a cidade não estiver nos metadados, extrai do endereço
-            
-            store = {
-                "url": f"{img['secure_url']}?t={timestamp}",
-                "public_id": img["public_id"],
-                "cidade": cidade,
-                "endereco": endereco,
-                "telefone": context.get("telefone", "(99) 99999-9999"),
-                "whatsapp": context.get("whatsapp", "https://wa.me/5599999999999"),
-                "google_maps": google_maps_url,
-                "cep": cep
-            }
-            stores.append(store)
+            if not files:
+                break
 
-        # 🔹 Ordena as lojas em ordem alfabética pelo nome da cidade
-        stores.sort(key=lambda loja: loja["cidade"].lower())
+            for img in files:
+                meta = img.get("customMetadata") or {}
+                print("ARQUIVO:", img.get("name"), "| META:", meta)
 
-        # 🔹 Buscar a logo apenas uma vez, fora do loop
-        result_logo = cloudinary.api.resources_by_tag("logo", max_results=1)
-        if result_logo["resources"]:
-            logo = f"{result_logo['resources'][0]['secure_url']}?t={timestamp}"
+                endereco = (meta.get("endereco") or "Endereço não informado").strip()
+                cidade = (meta.get("cidade") or "").strip()
+                telefone = (meta.get("telefone") or "").strip()
+                whatsapp = (meta.get("whatsapp") or "").strip()
+                cep = (meta.get("cep") or "").strip()
 
-        print("📸 Imagens carregadas e ordenadas:", stores)
-        print(f"🎨 Logo carregada: {logo}")
-        
+                google_maps_url = (
+                    f"https://www.google.com/maps/search/?api=1&query={endereco.replace(' ', '+')}"
+                    if endereco and endereco != "Endereço não informado"
+                    else "#"
+                )
+
+                store = {
+                    "url": f"{img.get('url')}?t={timestamp}",
+                    "public_id": img.get("fileId"),
+                    "cidade": cidade,
+                    "endereco": endereco,
+                    "telefone": telefone or "(99) 99999-9999",
+                    "whatsapp": whatsapp or "https://wa.me/5599999999999",
+                    "google_maps": google_maps_url,
+                    "cep": cep
+                }
+                stores.append(store)
+
+            if len(files) < limit:
+                break
+
+            skip += limit
+
+        stores.sort(key=lambda loja: (loja.get("cidade") or "").lower())
+
+        print("📸 Imagens carregadas do ImageKit:", stores)
         return {"stores": stores, "logo": logo}
-    
+
     except Exception as e:
-        print(f"❌ Erro ao carregar imagens das lojas: {e}")
+        print(f"❌ Erro ao carregar imagens do ImageKit: {e}")
         return {"stores": [], "logo": None}
 
 
@@ -512,48 +587,228 @@ def lojas():
     return render_template('lojas.html', lojas=data["stores"], logo=data["logo"])
 
 
+
 @app.route('/admin/lojas', methods=['GET', 'POST'])
 def admin_lojas():
-     # 🔹 Verifica se o usuário está logado antes de permitir o acesso
     if not session.get('logged_in'):
         flash('Você precisa estar logado para acessar esta página.', 'danger')
         return redirect(url_for('login'))
+
     if request.method == 'POST':
         file = request.files.get('file')
-        cidade = request.form.get("cidade").strip()
-        endereco = request.form.get("endereco").strip()
-        telefone = request.form.get("telefone").strip()
-        whatsapp = request.form.get("whatsapp").strip()
-        cep = extract_cep(endereco)  # 🔹 Extrai o CEP do endereço automaticamente
+        cidade = (request.form.get("cidade") or "").strip()
+        endereco = (request.form.get("endereco") or "").strip()
+        telefone = (request.form.get("telefone") or "").strip()
+        whatsapp = (request.form.get("whatsapp") or "").strip()
+        cep = extract_cep(endereco)
 
         if not file or file.filename == '':
             flash('Selecione uma imagem para upload.', 'danger')
             return redirect(request.url)
 
         try:
-            # 🔹 Upload da imagem
-            upload_result = cloudinary.uploader.upload(file, tags=["lojas_poupAqui"])
+            upload_result = _imagekit_upload_file(
+                file_bytes=file.read(),
+                file_name=file.filename,
+                folder="/lojas_poupAqui",
+                tags=["lojas_poupAqui"],
+                custom_metadata={
+                    "cidade": cidade,
+                    "endereco": endereco,
+                    "telefone": telefone,
+                    "whatsapp": whatsapp,
+                    "cep": cep
+                },
+                use_unique=True
+            )
 
-            # 🔹 Define os metadados corretamente após o upload
-            cloudinary.api.update(upload_result["public_id"], context={
-                "cidade": cidade,
-                "endereco": endereco,
-                "telefone": telefone,
-                "whatsapp": whatsapp,
-                "cep": cep  # 🔹 Agora o CEP também é salvo nos metadados
-            })
+            print("✅ Upload ImageKit:", upload_result)
+            flash("Imagem enviada com sucesso no ImageKit!", "success")
 
-            print("Metadados Atualizados:", cidade, endereco, telefone, whatsapp, cep)
-
-            flash("Imagem enviada com sucesso!", "success")
         except Exception as e:
-            flash(f"Erro ao enviar imagem: {e}", "danger")
+            flash(f"Erro ao enviar imagem para o ImageKit: {e}", "danger")
 
-    # 🔹 Busca as lojas e já garante que elas estejam ordenadas
     lojas = load_store_images()
-    
     return render_template('admin_lojas.html', lojas=lojas["stores"], logo=lojas["logo"])
 
+
+
+import os
+import time
+import json
+import base64
+import requests
+
+IMAGEKIT_UPLOAD_URL = "https://upload.imagekit.io/api/v1/files/upload"
+IMAGEKIT_LIST_URL = "https://api.imagekit.io/v1/files"
+
+def _imagekit_auth_header():
+    private_key = os.getenv("IMAGEKIT_PRIVATE_KEY")
+    token = base64.b64encode(f"{private_key}:".encode()).decode()
+    return {
+        "Authorization": f"Basic {token}"
+    }
+
+def _imagekit_upload_file(file_bytes, file_name, folder, tags=None, custom_metadata=None, use_unique=True):
+    data = {
+        "file": base64.b64encode(file_bytes).decode("utf-8"),
+        "fileName": file_name,
+        "useUniqueFileName": "true" if use_unique else "false",
+        "folder": folder
+    }
+
+    if tags:
+        data["tags"] = json.dumps(tags)
+
+    if custom_metadata:
+        # remove vazios
+        custom_metadata = {k: v for k, v in custom_metadata.items() if str(v or "").strip()}
+        if custom_metadata:
+            data["customMetadata"] = json.dumps(custom_metadata)
+
+    resp = requests.post(
+        IMAGEKIT_UPLOAD_URL,
+        headers=_imagekit_auth_header(),
+        data=data,
+        timeout=120
+    )
+    resp.raise_for_status()
+    return resp.json()
+def _imagekit_list_files(path, limit=100):
+    import os
+    import base64
+    import requests
+
+    IMAGEKIT_PRIVATE_KEY = os.getenv("IMAGEKIT_PRIVATE_KEY")
+    IMAGEKIT_LIST_URL = "https://api.imagekit.io/v1/files"
+
+    token = base64.b64encode(f"{IMAGEKIT_PRIVATE_KEY}:".encode()).decode()
+    headers = {
+        "Authorization": f"Basic {token}"
+    }
+
+    files = []
+    skip = 0
+
+    while True:
+        resp = requests.get(
+            IMAGEKIT_LIST_URL,
+            headers=headers,
+            params={
+                "path": path,
+                "type": "file",
+                "limit": limit,
+                "skip": skip
+            },
+            timeout=60
+        )
+        resp.raise_for_status()
+        batch = resp.json()
+
+        if not batch:
+            break
+
+        files.extend(batch)
+
+        if len(batch) < limit:
+            break
+
+        skip += limit
+
+    return files
+
+
+def load_images():
+    import time
+
+    print("🔥 ENTROU NA LOAD_IMAGES DO IMAGEKIT")
+
+    try:
+        timestamp = int(time.time())
+
+        logo_files = _imagekit_list_files("/logo/")
+        banner_top_files = _imagekit_list_files("/site_assets/banner_top/")
+        banner_files = _imagekit_list_files("/site_assets/banners/")
+
+        print("LOGO FILES IMAGEKIT:", logo_files)
+        print("BANNER TOP FILES IMAGEKIT:", banner_top_files)
+        print("BANNER FILES IMAGEKIT:", banner_files)
+
+        logo = f"{logo_files[0]['url']}?t={timestamp}" if logo_files else None
+        banner_top = f"{banner_top_files[0]['url']}?t={timestamp}" if banner_top_files else None
+
+        # ordena pelo metadata "ordem", se existir
+        def _ordem(img):
+            meta = img.get("customMetadata") or {}
+            try:
+                return int(meta.get("ordem", 999))
+            except Exception:
+                return 999
+
+        banner_files = sorted(banner_files, key=_ordem)
+        banners = [f"{img['url']}?t={timestamp}" for img in banner_files]
+
+        print(f"✅ Imagens carregadas do ImageKit: banner_top={banner_top}, logo={logo}, banners={len(banners)}")
+
+        return {
+            "banner_top": banner_top,
+            "logo": logo,
+            "banners": banners
+        }
+
+    except Exception as e:
+        print(f"❌ Erro ao carregar imagens da home no ImageKit: {e}")
+        return {
+            "banner_top": None,
+            "logo": None,
+            "banners": []
+        }
+def load_logo_imagekit():
+    try:
+        timestamp = int(time.time())
+        files = _imagekit_list_files("/logo/")
+
+        if files:
+            return f"{files[0].get('url')}?t={timestamp}"
+
+        return None
+
+    except Exception as e:
+        print(f"❌ Erro ao carregar logo do ImageKit: {e}")
+        return None
+    
+
+def load_home_images():
+    try:
+        timestamp = int(time.time())
+
+        # banner principal
+        banner_top_files = _imagekit_list_files("/site_assets/banner_top/")
+        banner_top = f"{banner_top_files[0].get('url')}?t={timestamp}" if banner_top_files else None
+
+        # logo
+        logo = load_logo_imagekit()
+
+        # banners carrossel
+        banner_files = _imagekit_list_files("/site_assets/banners/")
+        banners = [f"{img.get('url')}?t={timestamp}" for img in banner_files]
+
+        print(f"✅ Imagens carregadas do ImageKit: banner_top={banner_top}, logo={logo}, banners={len(banners)}")
+        return {
+            "banner_top": banner_top,
+            "logo": logo,
+            "banners": banners,
+            "timestamp": timestamp
+        }
+
+    except Exception as e:
+        print(f"❌ Erro ao carregar imagens da home no ImageKit: {e}")
+        return {
+            "banner_top": None,
+            "logo": None,
+            "banners": [],
+            "timestamp": int(time.time())
+        }
 
 @app.route('/admin/lojas/delete/<public_id>')
 def delete_loja(public_id):
@@ -619,48 +874,59 @@ def edit_loja(public_id):
             flash(f"Erro ao atualizar informações: {e}", "danger")
 
     return render_template('edit_loja.html', loja=loja)
+def load_images_imagekit():
+    import time
 
+    print("🔥 ENTROU NA LOAD_IMAGES_IMAGEKIT")
 
-def load_images():
-    """ Busca imagens no Cloudinary e mantém a estrutura correta. """
+    def add_cache_buster(url, timestamp):
+        if not url:
+            return None
+        return f"{url}&t={timestamp}" if "?" in url else f"{url}?t={timestamp}"
+
     try:
-        timestamp = int(time.time())  # Evita cache
+        timestamp = int(time.time())
 
-        # 🔹 Inicializando as variáveis corretamente
-        banner_top = None
-        logo = None
-        banners = []
+        logo_files = _imagekit_list_files("/logo/")
+        banner_top_files = _imagekit_list_files("/site_assets/banner_top/")
+        banner_files = _imagekit_list_files("/site_assets/banners/")
 
-        # 🔹 Buscar apenas o banner_top
-        result_top = cloudinary.api.resources_by_tag("banner_top", max_results=3)
-        if result_top["resources"]:
-            banner_top = f"{result_top['resources'][0]['secure_url']}?t={timestamp}"  # Adiciona timestamp
+        print("LOGO FILES IMAGEKIT:", logo_files)
+        print("BANNER TOP FILES IMAGEKIT:", banner_top_files)
+        print("BANNER FILES IMAGEKIT:", banner_files)
 
-        # 🔹 Buscar apenas a logo
-        result_logo = cloudinary.api.resources_by_tag("logo", max_results=3)
-        if result_logo["resources"]:
-            logo = f"{result_logo['resources'][0]['secure_url']}?t={timestamp}"  # Adiciona timestamp
+        logo = add_cache_buster(logo_files[0]["url"], timestamp) if logo_files else None
+        banner_top = add_cache_buster(banner_top_files[0]["url"], timestamp) if banner_top_files else None
 
-        # 🔹 Buscar todos os banners normais
-        result_banners = cloudinary.api.resources_by_tag("poupAqui", max_results=120)
-        for img in result_banners["resources"]:
-            tags = img.get("tags", [])
+        # ordem fixa dos 3 banners
+        ordem_banners = {
+            "ihm6ipbpibpo3z73vxhk.jpg": 1,
+            "feoylwbsfviqxxvip0qu.jpg": 2,
+            "ddetdgswawrtsoprxblh.jpg": 3,
+        }
 
-            # 🔹 Adiciona ao carrossel **somente se NÃO for banner_top nem logo**
-            if "banner_top" not in tags and "logo" not in tags:
-                banners.append(f"{img['secure_url']}?t={timestamp}")
+        def _ordem_por_nome(img):
+            nome = (img.get("name") or "").strip()
+            return ordem_banners.get(nome, 999)
 
-        print(f"✅ Imagens carregadas corretamente: banner_top={banner_top}, logo={logo}, banners={len(banners)}")
+        banner_files = sorted(banner_files, key=_ordem_por_nome)
+        banners = [add_cache_buster(img["url"], timestamp) for img in banner_files]
+
+        print(f"✅ Imagens carregadas do ImageKit: banner_top={banner_top}, logo={logo}, banners={len(banners)}")
 
         return {
-            "banners": banners,  
-            "banner_top": banner_top,  
-            "logo": logo  
+            "banner_top": banner_top,
+            "logo": logo,
+            "banners": banners
         }
-    except Exception as e:
-        print(f"❌ Erro ao carregar imagens: {str(e)}")
-        return {"banners": [], "banner_top": None, "logo": None}
 
+    except Exception as e:
+        print(f"❌ Erro ao carregar imagens da home no ImageKit: {e}")
+        return {
+            "banner_top": None,
+            "logo": None,
+            "banners": []
+        }
 
 def delete_old_image(tag):
     """ Deleta todas as imagens antigas associadas a uma tag específica (banner_top ou logo). """
@@ -683,19 +949,19 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-
 @app.route('/')
 def index():
-    data = load_images()
-    
-    print(f"🔹 Exibindo index.html: banner_top={data['banner_top']}, logo={data['logo']}, banners={len(data['banners'])}")
-    
-    return render_template('index.html', 
-                           banners=data["banners"], 
-                           logo=data["logo"], 
-                           banner_top=data["banner_top"], 
-                           timestamp=int(time.time()))
+    data = load_images_imagekit()
 
+    print(f"🔹 Exibindo index.html: banner_top={data['banner_top']}, logo={data['logo']}, banners={len(data['banners'])}")
+
+    return render_template(
+        'index.html',
+        banners=data["banners"],
+        logo=data["logo"],
+        banner_top=data["banner_top"],
+        timestamp=int(time.time())
+    )
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     data = load_store_images()

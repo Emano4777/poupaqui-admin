@@ -616,17 +616,9 @@ h2::after {
   <div class="loja-grid" id="lojaGrid">
     {% for loja in lojas %}
       <div class="loja-card" data-cidade="{{ loja.cidade | lower }}">
-        {# ✅ Imagem otimizada (Cloudinary) #}
-        {% set l320  = loja.url|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_320/') %}
-        {% set l480  = loja.url|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_480/') %}
-        {% set l640  = loja.url|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_640/') %}
-        {% set l800  = loja.url|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_800/') %}
-        {% set l1024 = loja.url|replace('/upload/', '/upload/f_auto,q_auto:best,dpr_auto,w_1024/') %}
 
         <img
-          src="{{ l640 }}"
-          srcset="{{ l320 }} 320w, {{ l480 }} 480w, {{ l640 }} 640w, {{ l800 }} 800w, {{ l1024 }} 1024w"
-          sizes="(max-width: 576px) 100vw, (max-width: 992px) 50vw, 33vw"
+          src="{{ loja.url }}"
           alt="Loja {{ loja.cidade }} - PoupaAqui"
           loading="lazy"
           decoding="async"
