@@ -492,9 +492,9 @@ def load_store_images():
                 )
 
                 store = {
+                    "fileId": img.get("fileId"),
                     "url": f"{img.get('url')}?t={timestamp}",
-                    "public_id": img.get("fileId"),
-                    "cidade": cidade,
+                    "cidade": cidade or "Sem cidade",
                     "endereco": endereco,
                     "telefone": telefone or "(99) 99999-9999",
                     "whatsapp": whatsapp or "https://wa.me/5599999999999",
@@ -598,8 +598,6 @@ def lojas():
 
     return render_template('lojas.html', lojas=data["stores"], logo=data["logo"])
 
-
-
 @app.route('/admin/lojas', methods=['GET', 'POST'])
 def admin_lojas():
     if not session.get('logged_in'):
@@ -642,7 +640,6 @@ def admin_lojas():
 
     lojas = load_store_images()
     return render_template('admin_lojas.html', lojas=lojas["stores"], logo=lojas["logo"])
-
 
 
 import os
@@ -788,7 +785,23 @@ def load_logo_imagekit():
     except Exception as e:
         print(f"❌ Erro ao carregar logo do ImageKit: {e}")
         return None
-    
+
+
+def _imagekit_delete_file(file_id):
+    import requests
+
+    if not file_id:
+        raise ValueError("file_id não informado para exclusão no ImageKit.")
+
+    delete_url = f"https://api.imagekit.io/v1/files/{file_id}"
+
+    resp = requests.delete(
+        delete_url,
+        headers=_imagekit_auth_header(),
+        timeout=60
+    )
+    resp.raise_for_status()
+    return True
 
 def load_home_images():
     try:
@@ -821,11 +834,20 @@ def load_home_images():
             "banners": [],
             "timestamp": int(time.time())
         }
+@app.route('/admin/lojas/delete/<file_id>')
+def delete_loja(file_id):
+    if not session.get('logged_in'):
+        flash('Você precisa estar logado para acessar esta página.', 'danger')
+        return redirect(url_for('login'))
 
-@app.route('/admin/lojas/delete/<public_id>')
-def delete_loja(public_id):
+    file_id = (file_id or "").strip()
+
+    if not file_id:
+        flash("ID do arquivo não informado para exclusão.", "danger")
+        return redirect(url_for('admin_lojas'))
+
     try:
-        cloudinary.uploader.destroy(public_id)
+        _imagekit_delete_file(file_id)
         flash("Imagem removida com sucesso!", "success")
     except Exception as e:
         flash(f"Erro ao excluir imagem: {e}", "danger")
@@ -833,59 +855,134 @@ def delete_loja(public_id):
     return redirect(url_for('admin_lojas'))
 
 
-@app.route('/admin/lojas/edit/<public_id>', methods=['GET', 'POST'])
-def edit_loja(public_id):
-    lojas_data = load_store_images()  # Agora retorna um dicionário {"stores": [...], "logo": "URL"}
-    lojas = lojas_data["stores"]  # Acessa apenas a lista de lojas
-    
-    loja = next((l for l in lojas if l["public_id"] == public_id), None)
+def _imagekit_get_file_details(file_id):
+    import requests
+
+    if not file_id:
+        raise ValueError("file_id não informado.")
+
+    url = f"https://api.imagekit.io/v1/files/{file_id}"
+
+    resp = requests.get(
+        url,
+        headers=_imagekit_auth_header(),
+        timeout=60
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+def _imagekit_update_file_details(file_id, custom_metadata=None, tags=None):
+    import requests
+    import json
+
+    if not file_id:
+        raise ValueError("file_id não informado.")
+
+    url = f"https://api.imagekit.io/v1/files/{file_id}/details"
+
+    payload = {}
+
+    if tags is not None:
+        payload["tags"] = tags
+
+    if custom_metadata is not None:
+        custom_metadata = {k: v for k, v in custom_metadata.items() if str(v or "").strip()}
+        payload["customMetadata"] = custom_metadata
+
+    resp = requests.patch(
+        url,
+        headers={
+            **_imagekit_auth_header(),
+            "Content-Type": "application/json"
+        },
+        data=json.dumps(payload),
+        timeout=60
+    )
+    resp.raise_for_status()
+    return resp.json()
+def _imagekit_delete_file(file_id):
+    import requests
+
+    if not file_id:
+        raise ValueError("file_id não informado para exclusão.")
+
+    url = f"https://api.imagekit.io/v1/files/{file_id}"
+
+    resp = requests.delete(
+        url,
+        headers=_imagekit_auth_header(),
+        timeout=60
+    )
+    resp.raise_for_status()
+    return True
+@app.route('/admin/lojas/edit/<file_id>', methods=['GET', 'POST'])
+def edit_loja(file_id):
+    if not session.get('logged_in'):
+        flash('Você precisa estar logado para acessar esta página.', 'danger')
+        return redirect(url_for('login'))
+
+    lojas_data = load_store_images()
+    lojas = lojas_data.get("stores", [])
+
+    loja = next((l for l in lojas if l.get("fileId") == file_id), None)
 
     if not loja:
         flash("Loja não encontrada!", "danger")
         return redirect(url_for('admin_lojas'))
 
     if request.method == 'POST':
-        cidade = request.form.get("cidade")
-        endereco = request.form.get("endereco")
-        telefone = request.form.get("telefone")
-        whatsapp = request.form.get("whatsapp")
-        file = request.files.get('file')  # Novo upload de imagem
+        cidade = (request.form.get("cidade") or "").strip()
+        endereco = (request.form.get("endereco") or "").strip()
+        telefone = (request.form.get("telefone") or "").strip()
+        whatsapp = (request.form.get("whatsapp") or "").strip()
+        cep = extract_cep(endereco)
+        file = request.files.get('file')
 
         try:
-            # Se uma nova imagem foi enviada, faz upload e deleta a antiga
+            # Se enviou nova imagem, sobe a nova no ImageKit e apaga a antiga
             if file and file.filename != '':
-                new_upload = cloudinary.uploader.upload(file, tags=["lojas_poupAqui"])
+                new_upload = _imagekit_upload_file(
+                    file_bytes=file.read(),
+                    file_name=file.filename,
+                    folder="/lojas_poupAqui",
+                    tags=["lojas_poupAqui"],
+                    custom_metadata={
+                        "cidade": cidade,
+                        "endereco": endereco,
+                        "telefone": telefone,
+                        "whatsapp": whatsapp,
+                        "cep": cep
+                    },
+                    use_unique=True
+                )
 
-                # Deletar a imagem antiga do Cloudinary
-                cloudinary.uploader.destroy(public_id)
+                # apaga imagem antiga
+                _imagekit_delete_file(file_id)
 
-                # Atualizar o ID da imagem para o novo
-                public_id = new_upload["public_id"]
-
-                # Atualizar metadados da nova imagem
-                cloudinary.api.update(public_id, context={
-                    "cidade": cidade,
-                    "endereco": endereco,
-                    "telefone": telefone,
-                    "whatsapp": whatsapp
-                })
-
-                loja["url"] = new_upload["secure_url"]  # Atualiza a URL para exibição imediata
             else:
-                # Apenas atualiza os metadados da imagem existente
-                cloudinary.api.update(public_id, context={
-                    "cidade": cidade,
-                    "endereco": endereco,
-                    "telefone": telefone,
-                    "whatsapp": whatsapp
-                })
+                # apenas atualiza metadados da imagem atual
+                _imagekit_update_file_details(
+                    file_id=file_id,
+                    custom_metadata={
+                        "cidade": cidade,
+                        "endereco": endereco,
+                        "telefone": telefone,
+                        "whatsapp": whatsapp,
+                        "cep": cep
+                    }
+                )
 
             flash("Informações da loja atualizadas com sucesso!", "success")
             return redirect(url_for('admin_lojas'))
+
         except Exception as e:
             flash(f"Erro ao atualizar informações: {e}", "danger")
 
     return render_template('edit_loja.html', loja=loja)
+
+
+
+
 def load_images_imagekit():
     import time
 

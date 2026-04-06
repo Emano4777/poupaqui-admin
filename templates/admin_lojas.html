@@ -5,100 +5,297 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciar Lojas - Painel Admin</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
     <style>
         body {
-            background-color: #f8f9fa;
+            background: #f4f6fb;
+            font-family: Arial, sans-serif;
         }
-        .container {
-            max-width: 800px;
-            margin-top: 50px;
-            background: white;
+
+        .page-wrapper {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .admin-card {
+            background: #ffffff;
+            border-radius: 18px;
             padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
         }
-        .btn-container {
-            text-align: center;
+
+        .page-title {
+            font-size: 30px;
+            font-weight: 700;
+            color: #1f2a44;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2a44;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #334;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            padding: 12px 14px;
+            border: 1px solid #d9deea;
+            box-shadow: none;
+        }
+
+        .form-control:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 0.18rem rgba(59, 130, 246, 0.15);
+        }
+
+        .btn-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
             margin-top: 20px;
         }
-        .loja-card {
-            position: relative;
-            margin-bottom: 20px;
-            text-align: center;
+
+        .btn-custom {
+            border-radius: 12px;
+            padding: 10px 18px;
+            font-weight: 600;
         }
-        .delete-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: red;
-            color: white;
-            border: none;
-            padding: 5px;
-            cursor: pointer;
-            border-radius: 5px;
+
+        .stores-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 22px;
+        }
+
+        .loja-card {
+            background: #fff;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            border: 1px solid #eef1f7;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .loja-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+        }
+
+        .loja-img-wrap {
+            width: 100%;
+            height: 240px;
+            background: #f1f3f8;
+            overflow: hidden;
+        }
+
+        .loja-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .loja-body {
+            padding: 18px;
+        }
+
+        .loja-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #182033;
+            margin-bottom: 12px;
+        }
+
+        .loja-info {
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-size: 14px;
+            word-break: break-word;
+        }
+
+        .loja-info strong {
+            color: #1f2a44;
+        }
+
+        .loja-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .loja-actions .btn {
+            border-radius: 10px;
+            font-weight: 600;
+            padding: 8px 14px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+            background: #fff;
+            border-radius: 18px;
+            border: 1px dashed #d0d7e2;
+        }
+
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .page-wrapper {
+                padding: 0 12px;
+            }
+
+            .admin-card {
+                padding: 20px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+
+            .section-title {
+                font-size: 20px;
+            }
+
+            .loja-img-wrap {
+                height: 220px;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="container">
-        <h2>Gerenciar Imagens das Lojas</h2>
-    
-        <form method="POST" enctype="multipart/form-data">
-            <div class="mb-3">
-                <label for="file" class="form-label">Upload de Nova Imagem</label>
-                <input type="file" name="file" id="file" class="form-control" accept="image/*" required>
+<div class="page-wrapper">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
             </div>
-    
-            <div class="mb-3">
-                <label for="cidade" class="form-label">Cidade</label>
-                <input type="text" name="cidade" id="cidade" class="form-control" placeholder="Digite a cidade" required>
+        {% endif %}
+    {% endwith %}
+
+    <div class="admin-card">
+        <h1 class="page-title">Gerenciar Imagens das Lojas</h1>
+
+        <form method="POST" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="file" class="form-label">Upload de Nova Imagem</label>
+                    <input type="file" name="file" id="file" class="form-control" accept="image/*" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="cidade" class="form-label">Cidade</label>
+                    <input type="text" name="cidade" id="cidade" class="form-control" placeholder="Digite a cidade" required>
+                </div>
+
+                <div class="col-md-12 mb-3">
+                    <label for="endereco" class="form-label">Endereço</label>
+                    <input type="text" name="endereco" id="endereco" class="form-control" placeholder="Digite o endereço" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="telefone" class="form-label">Telefone</label>
+                    <input type="text" name="telefone" id="telefone" class="form-control" placeholder="(99) 99999-9999" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="whatsapp" class="form-label">Link do WhatsApp</label>
+                    <input type="text" name="whatsapp" id="whatsapp" class="form-control" placeholder="https://wa.me/5599999999999" required>
+                </div>
             </div>
 
-            <div class="mb-3">
-                <label for="endereco" class="form-label">Endereço</label>
-                <input type="text" name="endereco" id="endereco" class="form-control" placeholder="Digite o endereço" required>
-            </div>
-    
-            <div class="mb-3">
-                <label for="telefone" class="form-label">Telefone</label>
-                <input type="text" name="telefone" id="telefone" class="form-control" placeholder="(99) 99999-9999" required>
-            </div>
-    
-            <div class="mb-3">
-                <label for="whatsapp" class="form-label">Link do WhatsApp</label>
-                <input type="text" name="whatsapp" id="whatsapp" class="form-control" placeholder="https://wa.me/5599999999999" required>
-            </div>
-    
-            <div class="btn-container">
-                <button type="submit" class="btn btn-success">Enviar Imagem</button>
-                <a href="{{ url_for('logout') }}" class="btn btn-danger">Sair</a>
+            <div class="btn-actions">
+                <button type="submit" class="btn btn-success btn-custom">Enviar Imagem</button>
+                <a href="{{ url_for('logout') }}" class="btn btn-danger btn-custom">Sair</a>
             </div>
         </form>
-
-    <h3 class="mt-4">Imagens Cadastradas</h3>
-    <div class="row">
-        {% for loja in lojas %}
-        <div class="col-md-4 loja-card">
-            <button class="delete-btn" data-url="{{ url_for('delete_loja', public_id=loja.public_id) }}" onclick="deleteImage(this)">🗑️</button>
-            <a href="{{ url_for('edit_loja', public_id=loja.public_id) }}" class="btn btn-warning btn-sm">✏️ Editar</a>
-            <img src="{{ loja.url }}" alt="Loja PoupaAqui">
-            <p><strong>{{ loja.cidade }}</strong></p>
-            <p>{{ loja.telefone }}</p>
-            <p>{{ loja.endereco }}</p>
-            <a href="{{ loja.whatsapp }}" target="_blank">📞 WhatsApp</a>
-        </div>
-        {% endfor %}
     </div>
 
-    <script>
-        function deleteImage(button) {
-            var url = button.getAttribute("data-url");
+    <div class="admin-card">
+        <h2 class="section-title">Imagens Cadastradas</h2>
+
+        {% if lojas and lojas|length > 0 %}
+            <div class="stores-grid">
+                {% for loja in lojas %}
+                <div class="loja-card">
+                    <div class="loja-img-wrap">
+                        <img src="{{ loja.url }}" alt="Loja {{ loja.cidade }}" class="loja-img">
+                    </div>
+
+                    <div class="loja-body">
+                        <div class="loja-title">{{ loja.cidade or 'Sem cidade' }}</div>
+
+                        <div class="loja-info">
+                            <strong>Telefone:</strong> {{ loja.telefone or 'Não informado' }}
+                        </div>
+
+                        <div class="loja-info">
+                            <strong>Endereço:</strong> {{ loja.endereco or 'Não informado' }}
+                        </div>
+
+                        <div class="loja-info">
+                            <strong>WhatsApp:</strong>
+                            {% if loja.whatsapp %}
+                                <a href="{{ loja.whatsapp }}" target="_blank">Abrir contato</a>
+                            {% else %}
+                                Não informado
+                            {% endif %}
+                        </div>
+
+                        <div class="loja-actions">
+                                <a href="{{ url_for('edit_loja', file_id=loja.fileId) }}" class="btn btn-warning btn-sm">
+                                    ✏️ Editar
+                                </a>
+
+                        <button
+                            type="button"
+                            class="btn btn-danger btn-sm"
+                            data-url="{{ url_for('delete_loja', file_id=loja.fileId if loja.fileId else '') }}"
+                            onclick="deleteImage(this)">
+                            🗑️ Excluir
+                        </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                Nenhuma imagem de loja cadastrada até o momento.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function deleteImage(button) {
+        const url = button.getAttribute("data-url");
+
+        if (confirm("Tem certeza que deseja excluir esta imagem?")) {
             window.location.href = url;
         }
-    </script>
-    
-</div>
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
